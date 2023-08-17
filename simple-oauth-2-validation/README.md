@@ -74,16 +74,16 @@ To test the policy:
             authorization: Basic dXNlcjpwYXNz
     ```
 
-3.  Configure a Flex Gateway instance to debug the policy by placing a registration.yaml file in `test/config`.
+4.  Configure a Flex Gateway instance to debug the policy by placing a registration.yaml file in `test/config`.
 
 
-4.  Run the `run` command to start the Flex Gateway instance:
+5.  Run the `run` command to start the Flex Gateway instance:
 
     ``` ssh
     make run
     ```
 
-5.  Send requests to Flex Gateway by using the following command as
+6.  Send requests to Flex Gateway by using the following command as
     example:
 
     ``` ssh

@@ -55,7 +55,7 @@ checksum = "baf1de4339761588bc0619e3cbc0120ee582ebb74b53b4efbf79117bd2da40fd"
 [[package]]
 name = "classy"
 version = "1.0.0-beta.1"
-source = "registry+https://stgx.anypoint.mulesoft.com/git/68ef9520-24e9-4cf2-b2f5-620025690913/e8cb2611-8681-4ec5-af55-6b5b812a86fa"
+source = "registry+https://anypoint.mulesoft.com/git/68ef9520-24e9-4cf2-b2f5-620025690913/19f9d123-5775-44d7-a67f-49328cfa00b0"
 checksum = "df2aa556a236122dfe712e85cc7558e9d3d46d74eaae021b0128f04eedbffe32"
 dependencies = [
  "bincode",
@@ -268,8 +268,8 @@ checksum = "de3145af08024dea9fa9914f381a17b8fc6034dfb00f3a84013f7ff43f29ed4c"
 [[package]]
 name = "pdk"
 version = "1.0.0-beta.1"
-source = "registry+https://stgx.anypoint.mulesoft.com/git/68ef9520-24e9-4cf2-b2f5-620025690913/e8cb2611-8681-4ec5-af55-6b5b812a86fa"
-checksum = "aefc20a706f495e32f93f60ee9afbfaf1fac921a2c0414e0ec302d0a07ee4608"
+source = "registry+https://anypoint.mulesoft.com/git/68ef9520-24e9-4cf2-b2f5-620025690913/19f9d123-5775-44d7-a67f-49328cfa00b0"
+checksum = "c049206dcfed77820175b11e17499109b78948fd2df3b3a6828b05b92017a90a"
 dependencies = [
  "classy",
  "pdk-cache",
@@ -281,8 +281,8 @@ dependencies = [
 [[package]]
 name = "pdk-cache"
 version = "1.0.0-beta.1"
-source = "registry+https://stgx.anypoint.mulesoft.com/git/68ef9520-24e9-4cf2-b2f5-620025690913/e8cb2611-8681-4ec5-af55-6b5b812a86fa"
-checksum = "b1252a2e4feae058abeb5b0d9b849cea38a68f506092a533f942a8102956664e"
+source = "registry+https://anypoint.mulesoft.com/git/68ef9520-24e9-4cf2-b2f5-620025690913/19f9d123-5775-44d7-a67f-49328cfa00b0"
+checksum = "cf8388a60463275630efa0311cddb6b773d1b95d8f757e5666ae1ecf886a6c13"
 dependencies = [
  "bincode",
  "cfg-if",
@@ -297,8 +297,8 @@ dependencies = [
 [[package]]
 name = "pdk-core"
 version = "1.0.0-beta.1"
-source = "registry+https://stgx.anypoint.mulesoft.com/git/68ef9520-24e9-4cf2-b2f5-620025690913/e8cb2611-8681-4ec5-af55-6b5b812a86fa"
-checksum = "cfa043e63e2dd918c925347f91d1750280183b5cc57fc014da0d2f87804bd911"
+source = "registry+https://anypoint.mulesoft.com/git/68ef9520-24e9-4cf2-b2f5-620025690913/19f9d123-5775-44d7-a67f-49328cfa00b0"
+checksum = "d08914600147f8ceb89bb234b6f5fcf1d71bce6db62c183bd42889d8b9a05fb9"
 dependencies = [
  "anyhow",
  "bitflags",
@@ -316,7 +316,7 @@ dependencies = [
 [[package]]
 name = "pdk-macros"
 version = "1.0.0-beta.1"
-source = "registry+https://stgx.anypoint.mulesoft.com/git/68ef9520-24e9-4cf2-b2f5-620025690913/e8cb2611-8681-4ec5-af55-6b5b812a86fa"
+source = "registry+https://anypoint.mulesoft.com/git/68ef9520-24e9-4cf2-b2f5-620025690913/19f9d123-5775-44d7-a67f-49328cfa00b0"
 checksum = "6f3d72de124238bf2d91ca2e8a9f6a2fcea130c2b4dbc790c89600c0d01d4805"
 dependencies = [
  "proc-macro2",
@@ -327,7 +327,7 @@ dependencies = [
 [[package]]
 name = "pel"
 version = "1.0.0-beta.1"
-source = "registry+https://stgx.anypoint.mulesoft.com/git/68ef9520-24e9-4cf2-b2f5-620025690913/e8cb2611-8681-4ec5-af55-6b5b812a86fa"
+source = "registry+https://anypoint.mulesoft.com/git/68ef9520-24e9-4cf2-b2f5-620025690913/19f9d123-5775-44d7-a67f-49328cfa00b0"
 checksum = "9d4d7a35151c570432cb985087be3dcc8393dfab292b6c9393ea907a0b01951d"
 dependencies = [
  "getrandom",
@@ -339,8 +339,8 @@ dependencies = [
 [[package]]
 name = "pel-binding"
 version = "1.0.0-beta.1"
-source = "registry+https://stgx.anypoint.mulesoft.com/git/68ef9520-24e9-4cf2-b2f5-620025690913/e8cb2611-8681-4ec5-af55-6b5b812a86fa"
-checksum = "a4abc15a57fe238b1a47eaedbb3b462478a9d45bf4eb1a54dbc3b410150c0fe7"
+source = "registry+https://anypoint.mulesoft.com/git/68ef9520-24e9-4cf2-b2f5-620025690913/19f9d123-5775-44d7-a67f-49328cfa00b0"
+checksum = "114cf19b4f218b0d8660ffc025c935115a74ff0ee3e50c138d7551fdd23854d7"
 dependencies = [
  "classy",
  "getrandom",
