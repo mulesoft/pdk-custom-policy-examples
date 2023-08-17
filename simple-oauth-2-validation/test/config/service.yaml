@@ -1,0 +1,7 @@
+---
+apiVersion: gateway.mulesoft.com/v1alpha1
+kind: Service
+metadata:
+    name: ripley2000
+spec:
+    address: http://oauth-server:8080

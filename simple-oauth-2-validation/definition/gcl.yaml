@@ -1,0 +1,29 @@
+---
+apiVersion: gateway.mulesoft.com/v1alpha1
+kind: Extension
+metadata:
+  labels:
+    title: "Simple OAuth 2.0 Validation Policy"
+    category: Custom
+spec:
+  extends:
+    - name: extension-definition
+  properties:
+    tokenExtractor:
+      type: string
+      format: dataweave
+      default: "#[dw::core::Strings::substringAfter(attributes.headers['Authorization'], 'Bearer ')]"
+    upstream:
+      type: string
+    host:
+      type: string
+    path:
+      type: string
+    authorization:
+      type: string
+  required:
+    - tokenExtractor
+    - upstream
+    - host
+    - path
+    - authorization
