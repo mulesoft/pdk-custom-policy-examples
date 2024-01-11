@@ -1,6 +1,6 @@
 # JWT Validation Policy Example
 
-This example showcases the helpers provided by the Poliy Development Kit JWT library to extract, parse and validate JWT tokens.
+This example showcases the helpers provided by the Policy Development Kit JWT library to extract, parse and validate JWT tokens.
 
 ## Prerequisites
 
