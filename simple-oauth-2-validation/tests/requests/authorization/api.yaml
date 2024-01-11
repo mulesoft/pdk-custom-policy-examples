@@ -14,15 +14,17 @@ spec:
             destinationPath: /anything/echo/
   policies:
     - policyRef:
+
+        # Override the `simple-oauth-2-validation` placeholder with the actual policy name.
+        # Look for the actual policy name at the `metadata.name` property from the `gcl.yaml` file.
         name: simple-oauth-2-validation-v1-0-impl
+        # Also, if the policy definition gcl.yaml specifies a namespace other than default, override it too
+
       # Fill the config with a policy configuration that matches the schema specified in the policy
       # definition gcl.yaml. Eg:
       # config:
       #   someProperty: desiredValue
       config:
-        tokenExtractor: "#[dw::core::Strings::substringAfter(attributes.headers['Author\
-          ization'], 'Bearer ')]"
-        upstream: ripley2000.default.svc
-        host: ripley:5001
-        path: /authorize
-        authorization: Basic dXNlcjpwYXNz
+        oauthService: http://falopa.com
+        authorization: whatever
+        tokenExtractor: "#['pimba']"

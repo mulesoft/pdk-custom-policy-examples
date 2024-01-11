@@ -14,24 +14,21 @@ use reqwest::StatusCode;
 const TESTS_CONFIG_DIR: &str =
     concat!(env!("CARGO_MANIFEST_DIR"), "/tests/requests/validate_token");
 
-
-/**
- * A valid JWT token signed using the configured HMAC secret
- * Headers
- * {"alg": "HS256", "typ": "JWT", "classid": 439}
- * Payload
- * {
- *   "iss": "Library",
- *   "sub": "12345",
- *   "aud": "member-group",
- *   "iat": 1704460407,
- *   "nbf": 1704460407,
- *   "exp": 2704460407,
- *   "username": "LibraryFan1984",
- *   "role": "Member"
- * }
-*/
-pub const VALID_TOKEN: &str = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCIsImNsYXNzaWQiOjQzOX0.eyJpc3MiOiJMaWJyYXJ5Iiwic3ViIjoiMTIzNDUiLCJhdWQiOiJtZW1iZXItZ3JvdXAiLCJpYXQiOjE3MDQ0NjA0MDcsIm5iZiI6MTcwNDQ2MDQwNywiZXhwIjoyNzA0NDYwNDA3LCJ1c2VybmFtZSI6IkxpYnJhcnlGYW4xOTg0Iiwicm9sZSI6Ik1lbWJlciJ9.-100JFDt5ET4DA0hFnCRQKk5BNok0LCCF6jqyNU19sE";
+/// A valid JWT token signed using the configured HMAC secret
+/// Headers
+/// {"alg": "HS256", "typ": "JWT", "classid": 439}
+/// Payload
+/// {
+///   "iss": "Library",
+///   "sub": "12345",
+///   "aud": "member-group",
+///   "iat": 1704460407,
+///   "nbf": 1704460407,
+///   "exp": 2704460407,
+///   "username": "LibraryFan1984",
+///   "role": "Member"
+/// }
+pub const VALID_TOKEN: &str = include_str!("VALID_TOKEN.txt");
 
 // An expired JWT token signed using the configured HMAC secret
 pub const EXPIRED_TOKEN: &str = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCIsImNsYXNzaWQiOjQzOX0.eyJpc3MiOiJMaWJyYXJ5Iiwic3ViIjoiMTIzNDUiLCJhdWQiOiJtZW1iZXItZ3JvdXAiLCJpYXQiOjE3MDQ0NjA0MDcsIm5iZiI6MTcwNDQ2MDQwNywiZXhwIjoxNzA0NDYxNDA3LCJ1c2VybmFtZSI6IkxpYnJhcnlGYW4xOTg0Iiwicm9sZSI6Ik1lbWJlciJ9.51yQLhxGV9IYK8XYF8rSIwne5ZrgxxeQgkCcHidOuZE";
@@ -45,9 +42,6 @@ pub const INVALID_SIGNATURE_TOKEN: &str = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCIsI
 // Flex port for the internal test network
 const FLEX_PORT: Port = 8081;
 
-/**
- * 
- */
 async fn assert_request(
     flex_url: &str,
     token: &str,
@@ -112,7 +106,7 @@ async fn validate_token() -> anyhow::Result<()> {
         flex_url.as_str(),
         VALID_TOKEN,
         StatusCode::OK,
-        "\"Username\": \"LibraryFan1984\"",
+        r#""Username": "LibraryFan1984""#,
     )
     .await?;
 
