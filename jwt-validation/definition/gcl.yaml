@@ -1,0 +1,27 @@
+---
+apiVersion: gateway.mulesoft.com/v1alpha1
+kind: Extension
+metadata:
+  labels:
+    title: JWT Validation
+    category: Custom
+spec:
+  extends:
+    - name: extension-definition
+      namespace: default
+  properties:
+    secret:
+      type: string
+    customRule:
+      type: string
+      format: dataweave
+      default: "#[vars.claimSet.role=='Member']"
+      bindings:
+        payload:
+          mimeType: text
+        attributes: true
+        authentication: false
+        vars: [claimSet]
+  required:
+    - secret
+    - customRule
