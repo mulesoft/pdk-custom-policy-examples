@@ -17,7 +17,7 @@ spec:
     tokenExtractor:
       type: string
       format: dataweave
-      default: "#['pimba']" # "#[dw::core::Strings::substringAfter(attributes.headers['Authorization'], 'Bearer ')]"
+      default: "#[dw::core::Strings::substringAfter(attributes.headers['Authorization'], 'Bearer ')]"
   required:
     - authorization
     - oauthService

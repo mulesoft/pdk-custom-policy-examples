@@ -10,7 +10,7 @@ edition = "2018"
 [package.metadata.anypoint]
 group_id = "3ec46a72-4c44-489e-9ff5-8458b345f7a7"
 definition_asset_id = "simple-oauth-2-validation"
-asset_id = "simple-oauth-2-validation-flex-gateway"
+implementation_asset_id = "simple-oauth-2-validation-flex"
 
 [dependencies]
 pdk = { path = "../../mgw-policy-development-kit/pdk" }

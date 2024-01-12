@@ -13,7 +13,13 @@ pub struct Config {
 }
 #[pdk::hl::entrypoint_flex]
 fn init(abi: &dyn pdk::flex_abi::api::FlexAbi) -> Result<(), anyhow::Error> {
-    let config: Config = serde_json::from_slice(abi.get_configuration()).unwrap();
+    let config: Config = serde_json::from_slice(abi.get_configuration())
+        .map_err(|err| {
+            anyhow::anyhow!(
+                "Failed to parse configuration '{}'. Cause: {}",
+                String::from_utf8_lossy(abi.get_configuration()), err
+            )
+        })?;
     abi.service_create(config.oauth_service)?;
     Ok(())
 }

@@ -25,6 +25,5 @@ spec:
       # config:
       #   someProperty: desiredValue
       config:
-        oauthService: http://falopa.com
+        oauthService: http://oauth.com
         authorization: whatever
-        tokenExtractor: "#['pimba']"

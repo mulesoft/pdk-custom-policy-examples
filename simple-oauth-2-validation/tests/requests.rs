@@ -77,8 +77,6 @@ async fn authorization() -> anyhow::Result<()> {
 
     const VALID_TOKEN: &str = "valid";
 
-    println!("about to mock the instrospection server valid req");
-
     introspection_server
         .mock_async(|when, then| {
             when.body(serde_urlencoded::to_string([("token", VALID_TOKEN)]).unwrap());
@@ -87,8 +85,6 @@ async fn authorization() -> anyhow::Result<()> {
         })
         .await;
 
-    println!("about to mock the instrospection server invalid req");
-
     introspection_server
         .mock_async(|when, then| {
             when.any_request();
@@ -96,8 +92,6 @@ async fn authorization() -> anyhow::Result<()> {
                 .json_body(serde_json::from_str::<Value>(r#"{"active": false}"#).unwrap());
         })
         .await;
-
-    println!("performing a request to the flex service");
 
     // Perform an actual request
     let response = reqwest::Client::new()
@@ -108,8 +102,6 @@ async fn authorization() -> anyhow::Result<()> {
 
     // Assert on the response
     assert_eq!(response.status(), 202);
-
-    println!("performing another request to the flex service");
 
     let response = reqwest::Client::new()
         .get(format!("{flex_url}/hello"))
