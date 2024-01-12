@@ -3,7 +3,9 @@ mod generated;
 
 use anyhow::Result;
 
-use pdk::api::hl::*;
+use pdk::cache::{Cache, CacheBuilder, CacheError};
+use pdk::hl::*;
+use pdk::logger;
 
 use crate::generated::config::Config;
 
@@ -167,11 +169,11 @@ async fn save_to_cache(
     // Awaits for the headers
     let headers_state = response_state.into_headers_state().await;
     let status_code = headers_state.status_code(); // Get the status code.
-    let headers = headers_state.headers(); // Get the headers.
+    let headers = headers_state.handler().headers(); // Get the headers.
 
     // Awaits for the body
     let body_state = headers_state.into_body_state().await;
-    let body = body_state.body(); // Get the body.
+    let body = body_state.handler().body(); // Get the body.
 
     // Calculates the time of logical expiration of the cached response.
     let valid_until = calculate_validity(
@@ -236,10 +238,10 @@ async fn configure(
     let config: Config = serde_json::from_slice(&bytes).unwrap();
 
     // Create the cache
-    let cache = cache_builder.build(
-        "awesome-caching".to_string(),
-        config.max_cached_values as usize,
-    );
+    let cache = cache_builder
+        .new("awesome-caching".to_string())
+        .max_entries(config.max_cached_values as usize)
+        .build();
 
     let filter = on_request(|request_state| request_filter(request_state, &config, &cache))
         .on_response(|response_state, request_data| {
