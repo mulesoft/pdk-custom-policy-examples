@@ -8,13 +8,34 @@ use pdk_test::services::httpmock::{HttpMock, HttpMockConfig};
 use pdk_test::{pdk_test, TestComposite};
 
 use common::*;
+use reqwest::StatusCode;
 use serde_json::Value;
 
 // Directory with the configurations for the `hello` test.
-const HELLO_CONFIG_DIR: &str = concat!(env!("CARGO_MANIFEST_DIR"), "/tests/requests/authorization");
+const TEST_CONFIG_DIR: &str = concat!(env!("CARGO_MANIFEST_DIR"), "/tests/requests/authorization");
 
 // Flex port for the internal test network
 const FLEX_PORT: Port = 8081;
+
+async fn assert_response(
+    response: reqwest::Response,
+    expected_status: StatusCode,
+    expected_body: &str,
+) {
+    let status = response.status();
+    let body = String::from_utf8(response.bytes().await.unwrap().to_vec()).unwrap();
+
+    assert_eq!(
+        status, expected_status,
+        "Expected status {} but got {}. The response body was {}",
+        expected_status, status, body
+    );
+    assert_eq!(
+        body, expected_body,
+        "Expected body {}, but got {}",
+        expected_body, body
+    );
+}
 
 // This integration test shows how to build a test to compose a local-flex instance
 // with a MockServer backend
@@ -28,88 +49,79 @@ async fn authorization() -> anyhow::Result<()> {
         .config_mounts([
             (POLICY_DIR, "policy"),
             (COMMON_CONFIG_DIR, "common"),
-            (HELLO_CONFIG_DIR, "hello"),
+            (TEST_CONFIG_DIR, "authorization"),
         ])
         .build();
 
     // Configuring the upstream service
-    let backend_conf = HttpMockConfig::builder()
+    let mock_conf = HttpMockConfig::builder()
         .port(80)
         .version("latest")
-        .hostname("backend")
-        .build();
-
-    // Configuring the request introspection service
-    let oauth_conf = HttpMockConfig::builder()
-        .port(80)
-        .version("latest")
-        .hostname("oauth.com")
+        .hostname("mock")
         .build();
 
     // Compose the services
     let composite = TestComposite::builder()
         .with_service(flex_config)
-        .with_service(backend_conf)
-        .with_service(oauth_conf)
+        .with_service(mock_conf)
         .build()
         .await?;
 
     // Get a handle to the Flex service
-    let flex: Flex = composite.service()?;
+    let flex: Flex = composite.service_by_hostname("local-flex")?;
 
     // Get an external URL to point the Flex service
     let flex_url = flex.external_url(FLEX_PORT).unwrap();
 
-    // Mock for backend server
-    let backend_server =
-        MockServer::connect_async(composite.service_by_name::<HttpMock>("backend")?.socket()).await;
+    let mock_server =
+        MockServer::connect_async(composite.service_by_hostname::<HttpMock>("mock")?.socket())
+            .await;
 
-    backend_server
+    mock_server
         .mock_async(|when, then| {
             when.path_contains("/hello");
             then.status(202).body("World!");
         })
         .await;
 
-    let introspection_server =
-        MockServer::connect_async(composite.service_by_name::<HttpMock>("oauth.com")?.socket())
-            .await;
-
     const VALID_TOKEN: &str = "valid";
+    const INVALID_TOKEN: &str = "not_vlid";
 
-    introspection_server
+    mock_server
         .mock_async(|when, then| {
-            when.body(serde_urlencoded::to_string([("token", VALID_TOKEN)]).unwrap());
+            when.path("/auth").and(|when| {
+                when.body(serde_urlencoded::to_string([("token", VALID_TOKEN)]).unwrap())
+            });
             then.status(200)
                 .json_body(serde_json::from_str::<Value>(r#"{"active": true}"#).unwrap());
         })
         .await;
 
-    introspection_server
+    mock_server
         .mock_async(|when, then| {
-            when.any_request();
+            when.path("/auth").and(|when| {
+                when.body(serde_urlencoded::to_string([("token", INVALID_TOKEN)]).unwrap())
+            });
             then.status(200)
                 .json_body(serde_json::from_str::<Value>(r#"{"active": false}"#).unwrap());
         })
         .await;
 
-    // Perform an actual request
     let response = reqwest::Client::new()
         .get(format!("{flex_url}/hello"))
         .header("Authorization", format!("Bearer {}", VALID_TOKEN))
         .send()
         .await?;
 
-    // Assert on the response
-    assert_eq!(response.status(), 202);
+    assert_response(response, StatusCode::ACCEPTED, "World!").await;
 
     let response = reqwest::Client::new()
         .get(format!("{flex_url}/hello"))
-        .header("Authorization", format!("Bearer not_valid"))
+        .header("Authorization", format!("Bearer {}", INVALID_TOKEN))
         .send()
         .await?;
 
-    assert_eq!(response.status(), 401);
+    assert_response(response, StatusCode::UNAUTHORIZED, "").await;
 
     Ok(())
 }

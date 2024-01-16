@@ -10,7 +10,7 @@ edition = "2018"
 [package.metadata.anypoint]
 group_id = "f7a576be-e707-4ce3-9c68-3432d591846c"
 definition_asset_id = "jwt-validation"
-asset_id = "jwt-validation-flex-gateway"
+implementation_asset_id = "jwt-validation-flex-gateway"
 
 [dependencies]
 pdk = { path = "../../mgw-policy-development-kit/pdk" }

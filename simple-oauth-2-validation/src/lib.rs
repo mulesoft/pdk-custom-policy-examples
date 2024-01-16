@@ -39,6 +39,8 @@ async fn introspect_token(
     let body =
         serde_urlencoded::to_string([("token", token)]).map_err(|_| FilterError::Unexpected)?;
 
+    logger::debug!("sending body: {}", body);
+
     // Sets the content type and add the configured authentication header
     let headers = vec![
         ("content-type", "application/x-www-form-urlencoded"),
@@ -59,6 +61,9 @@ async fn introspect_token(
     if response.status_code() == 200 {
         serde_json::from_slice(response.body()).map_err(FilterError::NonParsableIntrospectionBody)
     } else {
+        let status = response.status_code();
+        let body = String::from_utf8_lossy(response.body());
+        logger::debug!("status is {} and body is {}", status, body);
         Err(FilterError::InactiveToken)
     }
 }
