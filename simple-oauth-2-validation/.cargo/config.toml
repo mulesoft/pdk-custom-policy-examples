@@ -2,7 +2,7 @@
 global-credential-providers = ["cargo:token"]
 
 [registries]
-anypoint = { index = "https://stgx.anypoint.mulesoft.com/git/68ef9520-24e9-4cf2-b2f5-620025690913/e8cb2611-8681-4ec5-af55-6b5b812a86fa" }
+anypoint = { index = "https://qax.anypoint.mulesoft.com/git/68ef9520-24e9-4cf2-b2f5-620025690913/9be4ef3a-cb3e-479c-a1c4-e47cf2e02540" }
 
 [net]
 git-fetch-with-cli = true

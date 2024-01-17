@@ -1,6 +1,7 @@
 TARGET                	:= wasm32-wasi
 TARGET_DIR            	:= target/$(TARGET)/release
 CARGO_ANYPOINT        	:= cargo-anypoint
+POLICY_REF_NAME_SUFFIX 	:= -impl
 DEFINITION_NAME        	= $(shell anypoint-cli-v4 pdk policy-project definition get gcl-metadata-name)
 DEFINITION_NAMESPACE   	= $(shell anypoint-cli-v4 pdk policy-project definition get gcl-metadata-namespace)
 DEFINITION_SRC_GCL_PATH = $(shell anypoint-cli-v4 pdk policy-project locate-gcl definition-src)
@@ -8,6 +9,7 @@ DEFINITION_GCL_PATH    	= $(shell anypoint-cli-v4 pdk policy-project locate-gcl 
 CRATE_NAME             	= $(shell cargo anypoint get-name)
 ANYPOINT_METADATA_JSON 	= $(shell cargo anypoint get-anypoint-metadata)
 OAUTH_TOKEN            	= $(shell anypoint-cli-v4 pdk get-token)
+POLICY_REF_NAME        	= $(DEFINITION_NAME)$(POLICY_REF_NAME_SUFFIX)
 SETUP_ERROR_CMD        	= (echo "ERROR:\n\tMissing custom policy project setup. Please run 'make setup'\n")
 
 ifeq ($(OS), Windows_NT)
@@ -24,11 +26,12 @@ build: build-asset-files ## Build the policy definition and implementation
 	@cargo build --target $(TARGET) --release
 	@cp $(DEFINITION_GCL_PATH) $(TARGET_DIR)/$(CRATE_NAME)_definition.yaml
 	@cargo anypoint gcl-gen -d $(DEFINITION_NAME) -n $(DEFINITION_NAMESPACE) -w $(TARGET_DIR)/$(CRATE_NAME).wasm -o $(TARGET_DIR)/$(CRATE_NAME)_implementation.yaml
+	@echo $(POLICY_REF_NAME) > target/policy-ref-name.txt
 
 .PHONY: run
 run: build ## Run the policy in local flex
 	@anypoint-cli-v4 pdk log -t "warn" -m "Remember to update the config values in playground/config/api.yaml file for the policy configuration"
-	@anypoint-cli-v4 pdk patch-gcl -f playground/config/api.yaml -p "spec.policies[0].policyRef.name" -v "$(DEFINITION_NAME)-impl"
+	@anypoint-cli-v4 pdk patch-gcl -f playground/config/api.yaml -p "spec.policies[0].policyRef.name" -v "$(POLICY_REF_NAME)"
 	@anypoint-cli-v4 pdk patch-gcl -f playground/config/api.yaml -p "spec.policies[0].policyRef.namespace" -v "$(DEFINITION_NAMESPACE)"
 	rm -f playground/config/custom-policies/*.yaml
 	cp $(TARGET_DIR)/$(CRATE_NAME)_implementation.yaml playground/config/custom-policies/$(CRATE_NAME)_implementation.yaml
@@ -38,7 +41,7 @@ run: build ## Run the policy in local flex
 
 .PHONY: test
 test: build ## Run integration tests
-	@cargo test
+	@cargo test -- --nocapture
 
 .PHONY: publish
 publish: build ## Publish a development version of the policy
@@ -67,7 +70,11 @@ registry-creds:
 
 .PHONY: install-cargo-anypoint
 install-cargo-anypoint:
-	cargo install cargo-anypoint@1.0.0-rc.2 --registry anypoint --config .cargo/config.toml
+	cargo install cargo-anypoint@1.0.0-rc.3 --registry anypoint --config .cargo/config.toml
+
+.PHONY: show-policy-ref-name
+show-policy-ref-name:
+	@echo $(POLICY_REF_NAME)
 
 ifneq ($(OS), Windows_NT)
 all: help

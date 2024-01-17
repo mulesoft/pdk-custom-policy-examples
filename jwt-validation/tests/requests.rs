@@ -14,7 +14,7 @@ use reqwest::StatusCode;
 const TESTS_CONFIG_DIR: &str =
     concat!(env!("CARGO_MANIFEST_DIR"), "/tests/requests/validate_token");
 
-/// A valid JWT token signed using the configured HMAC secret
+/// Returns valid JWT token signed using the configured HMAC secret
 /// Headers
 /// {"alg": "HS256", "typ": "JWT", "classid": 439}
 /// Payload
@@ -28,16 +28,27 @@ const TESTS_CONFIG_DIR: &str =
 ///   "username": "LibraryFan1984",
 ///   "role": "Member"
 /// }
-pub const VALID_TOKEN: &str = include_str!("VALID_TOKEN.txt");
+fn valid_token() -> String {
+    include_str!("resources/valid_token.txt").trim().to_string()
+}
 
-// An expired JWT token signed using the configured HMAC secret
-pub const EXPIRED_TOKEN: &str = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCIsImNsYXNzaWQiOjQzOX0.eyJpc3MiOiJMaWJyYXJ5Iiwic3ViIjoiMTIzNDUiLCJhdWQiOiJtZW1iZXItZ3JvdXAiLCJpYXQiOjE3MDQ0NjA0MDcsIm5iZiI6MTcwNDQ2MDQwNywiZXhwIjoxNzA0NDYxNDA3LCJ1c2VybmFtZSI6IkxpYnJhcnlGYW4xOTg0Iiwicm9sZSI6Ik1lbWJlciJ9.51yQLhxGV9IYK8XYF8rSIwne5ZrgxxeQgkCcHidOuZE";
+fn expired_token() -> String {
+    include_str!("resources/expired_token.txt")
+        .trim()
+        .to_string()
+}
 
 // An admin role JWT token with signed using the configured HMAC secret
-pub const ADMIN_TOKEN: &str = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCIsImNsYXNzaWQiOjQzOX0.eyJpc3MiOiJMaWJyYXJ5Iiwic3ViIjoiMTIzNDUiLCJhdWQiOiJtZW1iZXItZ3JvdXAiLCJpYXQiOjE3MDQ0NjA0MDcsIm5iZiI6MTcwNDQ2MDQwNywiZXhwIjozNzA0NDYxNDA3LCJ1c2VybmFtZSI6IkxpYnJhcnlGYW4xOTg0Iiwicm9sZSI6IkFkbWluIn0.dkoDJjslnI2yj1-0Ozkrt4BY27a8IcoxJdEKksawnYQ";
+fn admin_token() -> String {
+    include_str!("resources/admin_token.txt").trim().to_string()
+}
 
 // A token with invalid signature
-pub const INVALID_SIGNATURE_TOKEN: &str = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCIsImNsYXNzaWQiOjQzOX0.eyJpc3MiOiJMaWJyYXJ5Iiwic3ViIjoiMTIzNDUiLCJhdWQiOiJtZW1iZXItZ3JvdXAiLCJpYXQiOjE3MDQ0NjA0MDcsIm5iZiI6MTcwNDQ2MDQwNywiZXhwIjoxNzA0NDYxNDA3LCJ1c2VybmFtZSI6IkxpYnJhcnlGYW4xOTg0Iiwicm9sZSI6IkFkbWluIn0.yqJBs6UaxxgKlRuakcrF780ybVfjHixC0yGZeIbcgJY";
+fn invalid_signature_token() -> String {
+    include_str!("resources/invalid_signature_token.txt")
+        .trim()
+        .to_string()
+}
 
 // Flex port for the internal test network
 const FLEX_PORT: Port = 8081;
@@ -62,7 +73,12 @@ async fn assert_request(
         "Expected {} but got {}. Respose body was: \"{}\"",
         expected_status, status, body
     );
-    assert!(body.contains(expected_body), "Error: Expected body: {} to contain {}", body, expected_body);
+    assert!(
+        body.contains(expected_body),
+        "Error: Expected body: {} to contain {}",
+        body,
+        expected_body
+    );
 
     Ok(())
 }
@@ -94,17 +110,15 @@ async fn validate_token() -> anyhow::Result<()> {
         .build()
         .await?;
 
-    // Get a handle to the Flex service
     let flex: Flex = composite.service()?;
 
-    // Get an external URL to point the Flex service
     let flex_url = flex.external_url(FLEX_PORT).unwrap();
 
     // Upon receiving a valid token, assert the echo service
     // response body contains the header produced with JWT claims content
     assert_request(
         flex_url.as_str(),
-        VALID_TOKEN,
+        &valid_token(),
         StatusCode::OK,
         r#""Username": "LibraryFan1984""#,
     )
@@ -113,7 +127,7 @@ async fn validate_token() -> anyhow::Result<()> {
     // Validate the response when the token is expired
     assert_request(
         flex_url.as_str(),
-        EXPIRED_TOKEN,
+        &expired_token(),
         StatusCode::UNAUTHORIZED,
         "Expired token",
     )
@@ -131,7 +145,7 @@ async fn validate_token() -> anyhow::Result<()> {
     // Validate the response when the token signature is corrupt
     assert_request(
         flex_url.as_str(),
-        INVALID_SIGNATURE_TOKEN,
+        &invalid_signature_token(),
         StatusCode::UNAUTHORIZED,
         "Invalid token",
     )
@@ -140,7 +154,7 @@ async fn validate_token() -> anyhow::Result<()> {
     // Validate the response when the custom claim "role" is not "member"
     assert_request(
         flex_url.as_str(),
-        ADMIN_TOKEN,
+        &admin_token(),
         StatusCode::BAD_REQUEST,
         "Invalid token: Only authenticated customers allowed",
     )
