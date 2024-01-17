@@ -21,4 +21,4 @@ An error in the caching flow should not make a request fail. By default, the cac
 
 ## Integration tests
 
-The integration tests included in the `tests` directory show the policy behavior in a scenario where it always caches the upstream response, but the amount of simultaneously cached requests is just 1. Therefore, it will always cache the latest distinct request, but with every new cached request, it forgets the previous one.
+The integration tests included in the `tests` directory show the policy behavior in a scenario where it always caches all requests, but the max cache entries is just 1. Therefore, it will always cache the latest request, but with every new cached request, it forgets the previous cache entry.
