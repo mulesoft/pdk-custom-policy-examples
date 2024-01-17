@@ -1,0 +1,22 @@
+---
+apiVersion: gateway.mulesoft.com/v1alpha1
+kind: Extension
+metadata:
+  labels:
+    title: Query Parameter forwarder
+    description: Transform a list of incoming query parameters into header with the "X-Query-" preamble.
+    category: Custom
+spec:
+  extends:
+    - name: extension-definition
+      namespace: default
+  properties:
+    query:
+      title: Query Parameters
+      description: List of query parameters that will be forwarded as headers.
+      type: array
+      default: []
+      items:
+        type: string
+  required:
+    - query
