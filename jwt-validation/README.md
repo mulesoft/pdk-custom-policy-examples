@@ -2,10 +2,6 @@
 
 This example showcases the helpers provided by the Policy Development Kit JWT library to extract, parse and validate JWT tokens.
 
-## Prerequisites
-
--- link to prerequisites doc page --
-
 ## Policy use case
 
 A local library in a small town is using an open source software that manages the books inventory, and provides an API to keep track of the book consults and borrowings made by the library customers. The software contains an authentication system that leverages JSON Web tokens.
