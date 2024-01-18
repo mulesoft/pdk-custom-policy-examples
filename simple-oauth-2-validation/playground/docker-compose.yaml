@@ -13,6 +13,6 @@ services:
   oauth-server:
     image: colinodell/static-response-server
     environment:
-      - 'HTTP_CODE=200'
-      - 'HTTPw_BODY={"active":true}'
-      - 'HTTP_HEADERS=Content-Type: application/json'
+      - "HTTP_CODE=200"
+      - 'HTTP_BODY={"active":true}'
+      - "HTTP_HEADERS=Content-Type: application/json"
