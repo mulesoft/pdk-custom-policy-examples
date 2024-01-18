@@ -25,3 +25,14 @@ The policy performs several validations:
 ## Integration tests
 
 The integration tests included in the `tests` directory assert that all the above mentioned validations are performed to the incoming requests.
+
+## Run the Policy Locally
+
+You can run this policy by using the `make run` command. The `playground/config/api.yaml` already has a secret configured. If you don't change it, you can also reuse the different tokens stored in `tests/resources` directory. Copy one of the values defined in the `.txt` files (without the newline character at the end), and use it to send requests to the API protected by the JWT validation policy, eg:
+
+```sh
+curl --location --request GET 'localhost:8081' \
+--header 'Authorization: Bearer <copied value>'
+```
+
+Of course, you can create your own HMAC tokens using another secret, and setting custom JWT claims. There are several sites online that instantly create tokens by prompting the algorithm, the signing keys or secret, and the desired JWT claims.

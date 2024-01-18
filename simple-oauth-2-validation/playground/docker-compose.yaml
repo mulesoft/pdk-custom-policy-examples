@@ -10,3 +10,9 @@ services:
       - ./config:/usr/local/share/mulesoft/flex-gateway/conf.d/
   backend:
     image: kennethreitz/httpbin
+  oauth-server:
+    image: colinodell/static-response-server
+    environment:
+      - 'HTTP_CODE=200'
+      - 'HTTPw_BODY={"active":true}'
+      - 'HTTP_HEADERS=Content-Type: application/json'

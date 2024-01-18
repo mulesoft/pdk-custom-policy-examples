@@ -14,11 +14,7 @@ spec:
             destinationPath: /anything/echo/
   policies:
     - policyRef:
-        name: data-caching # This value will be overriden during 'make run' execution
-      # Fill the config with a policy configuration that matches the schema specified in the policy
-      # definition gcl.yaml. Eg:
-      # config:
-      #   someProperty: desiredValue
+        name: data-caching
       config:
         max_cached_values: 10
         start_hour: 18

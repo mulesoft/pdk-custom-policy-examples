@@ -16,9 +16,5 @@ spec:
     - policyRef:
         name: jwt-validation-v1-0-impl
         namespace: default
-      # Fill the config with a policy configuration that matches the schema specified in the policy
-      # definition gcl.yaml. Eg:
-      # config:
-      #   someProperty: desiredValue
       config:
         secret: Make-sure-this-is-a-secret-dont-share-it

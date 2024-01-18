@@ -22,3 +22,65 @@ An error in the caching flow should not make a request fail. By default, the cac
 ## Integration tests
 
 The integration tests included in the `tests` directory show the policy behavior in a scenario where it always caches all requests, but the max cache entries is just 1. Therefore, it will always cache the latest request, but with every new cached request, it forgets the previous cache entry.
+
+## Run the Policy Locally
+
+To test the policy:
+
+1.  Run the `build` command to compile the policy:
+
+    ``` ssh
+    make build
+    ```
+
+2. Configure the `playground/config/api.yaml` as follows:
+
+    ``` yaml
+    # Copyright 2023 Salesforce, Inc. All rights reserved.
+    ---
+    apiVersion: gateway.mulesoft.com/v1alpha1
+    kind: ApiInstance
+    metadata:
+    name: ingress-http
+    spec:
+    address: http://0.0.0.0:8081
+    services:
+        upstream:
+        address: http://backend
+        routes:
+            - config:
+                destinationPath: /anything/echo/
+    policies:
+        - policyRef:
+            name: awesome-caching-v1-0-impl
+        config:
+            max_cached_values: 10
+            start_hour: 18
+            end_hour: 10
+    ```
+
+3.  Configure a Flex Gateway instance to debug the policy by placing a registration.yaml file in `playground/config`.
+
+4.  Run the `run` command to start the Flex Gateway instance:
+
+    ``` ssh
+    make run
+    ```
+
+5.  Send requests to Flex Gateway:
+
+    ``` ssh
+    curl http://127.0.0.1:8081/catalog/1 -H "cache_check: cache_value"
+    ```
+
+    The upstream service used in the debugging environment included with PDK responds with an echo of the request.
+
+6.  Send another request to Flex Gateway changing the included header:
+
+    ``` ssh
+    curl http://127.0.0.1:8081/catalog/1 -H "cache_check: cache_value1"
+    ```
+
+    If requests are made outside of business hours, the header cache_check: cache_value is included in the response body instead of cache_check: cache_value1. If requests are made inside of business hours, the header cache_check: cache_value1 is included in the response body.
+
+7.  Change the non-business hours and request path to view different responses.
