@@ -9,21 +9,16 @@ spec:
   extends:
     - name: extension-definition
   properties:
+    authorization:
+      type: string
+    oauthService:
+      type: string
+      format: service
     tokenExtractor:
       type: string
       format: dataweave
       default: "#[dw::core::Strings::substringAfter(attributes.headers['Authorization'], 'Bearer ')]"
-    upstream:
-      type: string
-    host:
-      type: string
-    path:
-      type: string
-    authorization:
-      type: string
   required:
-    - tokenExtractor
-    - upstream
-    - host
-    - path
     - authorization
+    - oauthService
+    - tokenExtractor

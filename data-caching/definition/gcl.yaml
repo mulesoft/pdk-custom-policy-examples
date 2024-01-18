@@ -3,11 +3,12 @@ apiVersion: gateway.mulesoft.com/v1alpha1
 kind: Extension
 metadata:
   labels:
-    title: "Data Caching Policy"
+    title: Data caching
     category: Custom
 spec:
   extends:
     - name: extension-definition
+      namespace: default
   properties:
     max_cached_values:
       type: integer

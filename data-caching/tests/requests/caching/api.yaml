@@ -1,0 +1,31 @@
+# Copyright 2023 Salesforce, Inc. All rights reserved.
+---
+apiVersion: gateway.mulesoft.com/v1alpha1
+kind: ApiInstance
+metadata:
+  name: ingress-http
+spec:
+  address: http://0.0.0.0:8081
+  services:
+    upstream:
+      address: http://backend
+      routes:
+        - config:
+            destinationPath: /anything/echo/
+  policies:
+    - policyRef:
+        # Override the `data-caching` placeholder with the actual policy name.
+        # Look for the actual policy name at the `metadata.name` property from the `gcl.yaml` file.
+        name: data-caching-v1-0-impl
+        # Also, if the policy definition gcl.yaml specifies a namespace other than default, override it too
+        namespace: default
+
+      # Fill the config with a policy configuration that matches the schema specified in the policy
+      # definition gcl.yaml. Eg:
+      # config:
+      #   someProperty: desiredValue
+      config:
+        max_cached_values: 1
+        # Forcing the interval so that current time is always in range
+        start_hour: 00
+        end_hour: 23

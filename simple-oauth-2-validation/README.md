@@ -1,7 +1,9 @@
-# Simple OAuth 2.0 Validation Policy Template
-Use the simple OAuth 2.0 validation policy template as an example of how you create a policy that makes HTTP requests.
+# Simple OAuth 2.0 Validation Policy Example
 
-## Policy Use Case
+This example shows a policy that has to perform http requests to external services, in this case, a token introspection service.
+
+## Policy use case
+
 An antique store that buys and sells items needs to track the stock of each item in its collection and who buys it. To track the inventory movement, the company uses an API.
 
 Because the company is franchising, they need to expose the API on the internet for all the store managers to access. To do this, they must protect the API with an authentication layer.
@@ -16,11 +18,15 @@ The introspection endpoint provided by “Ripley 2000” requires a custom token
 
 To reuse the policy, the introspection endpoint URL, how to extract the OAuth 2.0 token, and the custom authorization values are configurable.
 
-## Test the Policy
+## Integration tests
+
+The integration tests included in the `tests` directory show how to mock not only the upstream service, but also the introspection service, using an HTTP MockServer. Depending on the token, the token introspection mock might accept or reject the incoming request token. For each case, the test asserts the expected policy behavior.
+
+## Run the Policy Locally
 
 To test the policy:
 
-1.  Add a `Service` resource defining your introspection service in the `test/config` folder.
+1.  Add a `Service` resource defining your introspection service in the `playground/config` folder.
 
     For example, the following resource defines the Ripley 2000 service from the use case:
 
@@ -36,7 +42,7 @@ To test the policy:
 
     <div class="note">
 
-    If you don’t have an introspection service, you can use the mock that is already defined in `test/docker-compose.yaml` named `oauth-service` which always returns a valid response to the policy by setting the address to `http://oauth-server:8080` in the above YAML.
+    If you don’t have an introspection service, you can use the mock that is already defined in `playground/docker-compose.yaml` named `oauth-service` which always returns a valid response to the policy by setting the address to `http://oauth-server:8080` in the above YAML.
 
     </div>
 
@@ -45,8 +51,8 @@ To test the policy:
     ``` ssh
     make build
     ```
-    
-3. Configure the `test/config/api.yaml` replacing the Ripley 2000 examples with your authentication service details:
+
+3. Configure the `playground/config/api.yaml` replacing the Ripley 2000 examples with your authentication service details:
 
     ``` yaml
     # Copyright 2023 Salesforce, Inc. All rights reserved.
@@ -68,13 +74,15 @@ To test the policy:
             name: awesome-oauth-2-validation-v1-0-impl
           config:
             tokenExtractor: "#[dw::core::Strings::substringAfter(attributes.headers['Authorization'], 'Bearer ')]"
-            upstream: ripley2000.default.svc
-            host: ripley:5001
-            path: /authorize
+            # If you want to use the Oauth Service mock defined in docker-compose.
+            # yaml, use `http://oauth-server:8080` for `oauthService` value. If
+            # you created a local mock in your host, listening at port 5001, use
+            # `http://host.docker.internal:5001`
+            oauthService: http://host.docker.internal:5001
             authorization: Basic dXNlcjpwYXNz
     ```
 
-4.  Configure a Flex Gateway instance to debug the policy by placing a registration.yaml file in `test/config`.
+4.  Configure a Flex Gateway instance to debug the policy by placing a registration.yaml file in `playground/config`.
 
 
 5.  Run the `run` command to start the Flex Gateway instance:
@@ -90,4 +98,4 @@ To test the policy:
     curl http://127.0.0.1:8081 -H "Authorization: Bearer <your.oauth2.token>"
     ```
 
-    Test both valid and invalid tokens.
+Test both valid and invalid tokens.
