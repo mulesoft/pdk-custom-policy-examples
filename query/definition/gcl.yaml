@@ -4,7 +4,7 @@ kind: Extension
 metadata:
   labels:
     title: Query Parameter forwarder
-    description: Transform a list of incoming query parameters into header with the "X-Query-" preamble.
+    description: Transform a list of incoming query parameters into header with the "X-Query-" preamble. The query parameters are removed and a new "removed" query parameter is added with the keys of the parameters that were effectively removed.
     category: Custom
 spec:
   extends:

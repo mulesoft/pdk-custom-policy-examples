@@ -68,9 +68,20 @@ async fn query() -> anyhow::Result<()> {
 
     assert_eq!(response.status().as_u16(), 200u16);
 
-    // We assert that the query parameters were transformed to headers by the policy.
+    // We parse the body to assert the request that the server received.
     let body = response.bytes().await.unwrap().to_vec();
     let echoed: HttpBinResponse = serde_json::from_slice(body.as_slice())?;
+
+    // We assert that the query parameters were modified.
+    assert_eq!(
+        echoed
+            .headers
+            .get("X-Envoy-Original-Path")
+            .map(String::as_str),
+        Some("/hello?absent=absent&removed=extra&removed=key")
+    );
+
+    // We assert that the query parameters were transformed to headers by the policy.
     assert_eq!(
         echoed.headers.get("X-Query-Key").map(String::as_str),
         Some("value")

@@ -2386,6 +2386,7 @@ version = "1.0.0"
 dependencies = [
  "anyhow",
  "httpmock",
+ "itertools 0.12.0",
  "pdk",
  "pdk-test",
  "reqwest",
