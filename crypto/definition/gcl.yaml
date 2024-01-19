@@ -5,7 +5,7 @@ metadata:
   labels:
     title: Crypto
     category: Custom
-    description: Decrypts a the RSA encrypted header "nonce" from incoming requests, and uses it to encrypt the body of the response with AES-GCM encryption.
+    description: Decrypts the RSA encrypted header "nonce" from incoming requests, and uses it to encrypt the body of the response with AES-GCM encryption.
 spec:
   extends:
     - name: extension-definition
@@ -14,11 +14,11 @@ spec:
     rsa_key:
       type: string
       title: RSA KEY
-      description: The private key used to decode data from incoming requests.
+      description: The private key used to decode data from incoming requests in PEM format.
     aes_key:
       type: string
       title: AES KEY
-      description: The aes key used to decode the data encrypted by the policy.
+      description: The 32 bit AES key used to decode the data encrypted by the policy.
   required:
     - rsa_key
     - aes_key

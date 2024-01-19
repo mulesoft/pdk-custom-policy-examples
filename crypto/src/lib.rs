@@ -26,7 +26,7 @@ async fn request_filter(state: RequestState, key: &RsaPrivateKey) -> Flow<Vec<u8
     }
 }
 
-/// This function will read the "nonce" header incomig request, decode it, decrypt it and saves it to be used in the response flow.
+/// This function reads the "nonce" header incoming request, decode it, decrypt it and saves it to be used in the response flow.
 async fn inner_request_filter(
     state: RequestState,
     key: &RsaPrivateKey,
@@ -42,7 +42,7 @@ async fn inner_request_filter(
     // Once read we remove the header to avoid propagation to the backend.
     state.handler().remove_header(NONCE_HEADER);
 
-    // This example assumes that the bytes to be used as the "nonce" to be used int the aes-gcm algorithm was encoding in hex.
+    // This example assumes that the bytes to be used as the "nonce" to be used in the aes-gcm algorithm was encoded in hex.
     let decoded = hex::decode(header).map_err(|_| {
         Response::new(401).with_body(format!("Failed to decode {NONCE_HEADER} header."))
     })?;
@@ -58,14 +58,14 @@ async fn inner_request_filter(
     Ok(nonce)
 }
 
-/// This function modify the payload by encrypting in aes-gcm with the nonce provided in the request.
+/// This function modifies the payload by encrypting in aes-gcm with the nonce provided in the request.
 async fn response_filter(
     state: ResponseState,
     RequestData(nonce_bytes): RequestData<Vec<u8>>,
     aes: &Aes256Gcm,
 ) {
     let state = state.into_headers_state().await;
-    // Removing the content-lenght header enables us to modify the size of the payload, otherwise we might be loosing or adding bytes to the reponse.
+    // Removing the content-lenght header enables us to modify the size of the payload, otherwise we might be losing or adding bytes to the response.
     state.handler().remove_header("content-length");
 
     let state = state.into_body_state().await;
