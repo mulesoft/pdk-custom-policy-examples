@@ -12,7 +12,7 @@ use std::collections::HashMap;
 use common::*;
 
 // Directory with the configurations for the `query` test.
-const QUERT_CONFIG_DIR: &str = concat!(env!("CARGO_MANIFEST_DIR"), "/tests/requests/query");
+const QUERY_CONFIG_DIR: &str = concat!(env!("CARGO_MANIFEST_DIR"), "/tests/requests/query");
 
 // Flex port for the internal test network
 const FLEX_PORT: Port = 8081;
@@ -36,7 +36,7 @@ async fn query() -> anyhow::Result<()> {
         .config_mounts([
             (POLICY_DIR, "policy"),
             (COMMON_CONFIG_DIR, "common"),
-            (QUERT_CONFIG_DIR, "query"),
+            (QUERY_CONFIG_DIR, "query"),
         ])
         .build();
 
