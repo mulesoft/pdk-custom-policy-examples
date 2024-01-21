@@ -6,13 +6,13 @@ To learn more about the PDK JWT library, see [Configuring JWT Library Functions]
 
 ## Policy use case
 
-A local library in a small town uses an open source software that manages the book inventory. The software provides an API to keep track of information about the book and if the books are checked out. The software contains an authentication system that leverages JSON Web Tokens (JWT).
+A local library in a small town uses an open source software to manage their book inventory. The software provides an API to keep track of information about the book and if the books are checked out. The software contains an authentication system that leverages JSON Web Tokens (JWT).
 
 JWTs are an industry-standard method to represent claims securely between different parties. JWTs can transport small sets of data securely. They can be digitally signed either with a secret using the HMAC algorithm or with a set of private and public keys using the RSA or ECDSA algorithms.
 
-The library also implements a benefit system for their regular customers that return their books on tiem and in good condition. The benefit system uses a different open source software from the software managing the book inventory. However, the library must reuse the authentication system provided by the book inventory software.
+The library also implements a benefit system for their regular customers that return their books on time and in good condition. The benefit system uses a different open source software from the software managing the book inventory. Using the signing keys provided by the book inventory service to sign the JWT tokens, a policy can provide an authentication mechanism that reuses these tokens for the benefit service.
 
-Using the signing keys used by the book inventory service to sign the JWT tokens, a policy can provide an authentication mechanism that reuses these tokens. This policy is responsible for validating the signature of the tokens, ensuring they are not expired, and obtaining the role of the user (customer or administrator). As this information is contained in the tokens, the policy must ensure the token is current and trustworthy, and then extract the required information to forward it to the benefits service.
+The policy is responsible for validating the signature of the tokens, ensuring they are not expired, and obtaining the role of the user (customer or administrator). As this information is contained in the tokens, the policy must ensure the token is current and trustworthy, and then extract the required information to forward it to the benefits service.
 
 ## Policy behavior
 
@@ -35,7 +35,6 @@ To find the prereqs for using either environment and to learn more about either 
 
 ### Integration Testing
 
-The test can be invoked by using the `test` command:
 This example contains an [integration test](./tests/requests.rs) to simplify its testing. To begin testing:
 
 1. Add the `registration.yaml` in the `./tests/common` folder.
