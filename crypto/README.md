@@ -1,6 +1,6 @@
 # Crypto Policy Template
 
-Use the Crypto Policy template as an example of how to use third-party party libraries that provide cryptography capabilities. 
+Use the Crypto Policy template as an example of how to use third-party party libraries that provide cryptography capabilities.
 
 PDK does not support libraries that make OS calls. For example, the [RustCrypto](https://github.com/RustCrypto) libraries are compatible because they are fully implemented in Rust.
 
@@ -10,7 +10,7 @@ For more information about third-party library support, see [Use Third-Party Lib
 
 Test the policy using either integration testing or the policy playground.
 
-To find the prereqs for using the either environment and to learn more about either environment, see:
+To find the prereqs for using either environment and to learn more about either environment, see:
 
 * [Writing Integration Tests](https://docs.mulesoft.com/pdk/latest/policies-pdk-integration-tests).
 * [Debug Policies With the PDK Playground](https://docs.mulesoft.com/pdk/latest/policies-pdk-debug-local).
