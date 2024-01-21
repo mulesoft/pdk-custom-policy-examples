@@ -45,7 +45,7 @@ make run
 curl "http://127.0.0.1:8081?key=value&extra&absent=absent" -v
 ```
 
-Flex Gateway should returns a response with the query parameters as headers.
+Flex Gateway should return a response with the query parameters as headers:
 
 ```json
 {
