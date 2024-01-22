@@ -2,7 +2,7 @@
 
 This example demonstrates how to use caching in your custom policy.
 
-To learn more about the PDK JWT library, see [Sharing Data Between Workers and Caching](https://docs.mulesoft.com/pdk/latest/policies-pdk-configure-features-caching).
+To learn more about caching, see [Sharing Data Between Workers and Caching](https://docs.mulesoft.com/pdk/latest/policies-pdk-configure-features-caching).
 
 ## Policy use case
 
