@@ -1,16 +1,18 @@
 # JWT Validation Policy Example
 
-This example showcases the helpers provided by the Policy Development Kit JWT library to extract, parse and validate JWT tokens.
+This example showcases the helpers provided by the PDK JWT library to extract, parse, and validate JWT tokens.
+
+To learn more about the PDK JWT library, see [Configuring JWT Library Functions](https://docs.mulesoft.com/pdk/latest/policies-pdk-configure-features-jwt).
 
 ## Policy use case
 
-A local library in a small town is using an open source software that manages the books inventory, and provides an API to keep track of the book consults and borrowings made by the library customers. The software contains an authentication system that leverages JSON Web tokens.
+A local library in a small town uses an open source software to manage their book inventory. The software provides an API to keep track of information about the book and if the books are checked out. The software contains an authentication system that leverages JSON Web Tokens (JWT).
 
-JSON Web tokens are an industry standard method to represent claims securely between different parties. These tokens can transport securely small sets of data and be trusted because they can be digitally signed, either using a secret (with the HMAC algorithm) or with a set of private and public keys (using RSA or ECDSA algorithms).
+JWTs are an industry-standard method to represent claims securely between different parties. JWTs can transport small sets of data securely. They can be digitally signed either with a secret using the HMAC algorithm or with a set of private and public keys using the RSA or ECDSA algorithms.
 
-Now the library implemented a benefit system for regular customers that take care of the books and return them in a timely manner. Again, they are using a new open source software, but they need to reuse the authentication system provided by the book manager software.
+The library also implements a benefit system for their regular customers that return their books on time and in good condition. The benefit system uses a different open source software from the software managing the book inventory. Using the signing keys provided by the book inventory service to sign the JWT tokens, a policy can provide an authentication mechanism that reuses these tokens for the benefit service.
 
-With the signing keys used by the book management service to sign the JWT tokens, a policy can provide an authentication mechanism that reuses these tokens. This policy will be responsible for validating the signature of the tokens, ensuring they are not expired, and obtaining the role of the user (can be a customer or an administrator). All this information is contained in the tokens, the policy simply must make sure the token is current and trustworthy, and extract the required information to forward it to the benefits service.
+The policy is responsible for validating the signature of the tokens, ensuring they are not expired, and obtaining the role of the user (customer or administrator). As this information is contained in the tokens, the policy must ensure the token is current and trustworthy, and then extract the required information to forward it to the benefits service.
 
 ## Policy behavior
 
@@ -20,19 +22,46 @@ The policy performs several validations:
 - Validates the signature and extracts the payload
 - Validates the token is not expired
 - Validates through dataweave one of the custom claims contained in the JWT payload
-- Forwards the "username" JWT custom claim value to the upstream in "username" header.
+- Forwards the "username" JWT custom claim value to the upstream service in "username" header.
 
-## Integration tests
+## Test the Policy
 
-The integration tests included in the `tests` directory assert that all the above mentioned validations are performed to the incoming requests.
+Test the policy using either integration testing or the policy playground.
 
-## Run the Policy Locally
+To find the prereqs for using either environment and to learn more about either environment, see:
 
-You can run this policy by using the `make run` command. The `playground/config/api.yaml` already has a secret configured. If you don't change it, you can also reuse the different tokens stored in `tests/resources` directory. Copy one of the values defined in the `.txt` files (without the newline character at the end), and use it to send requests to the API protected by the JWT validation policy, eg:
+* [Writing Integration Tests](https://docs.mulesoft.com/pdk/latest/policies-pdk-integration-tests).
+* [Debug Policies With the PDK Playground](https://docs.mulesoft.com/pdk/latest/policies-pdk-debug-local).
+
+### Integration Testing
+
+This example contains an [integration test](./tests/requests.rs) to simplify its testing. To begin testing:
+
+1. Add the `registration.yaml` in the `./tests/common` folder.
+
+2. Execute the `test` command:
+
+``` shell
+make test
+```
+
+### Playground Testing
+
+The API in `playground/config/api.yaml` file has a secret configured. If you don't change it, you can use the secrets in `/tests/resources` text files.
+
+To use the policy in the playground:
+
+1. Add the `registration.yaml` in the `./payground/config` folder
+
+2. Execute the `run` command to begin testing:
+
+3. Copy one of the secrets from the `/tests/resources` text files. Do not add a new line character to the end of the secret.
+
+4. Make requests to the Flex Gateway by using the following Curl command:
 
 ```sh
 curl --location --request GET 'localhost:8081' \
---header 'Authorization: Bearer <copied value>'
+--header 'Authorization: Bearer <copied-secret>'
 ```
 
-Of course, you can create your own HMAC tokens using another secret, and setting custom JWT claims. There are several sites online that instantly create tokens by prompting the algorithm, the signing keys or secret, and the desired JWT claims.
+5. Additionally, you can create your own HMAC tokens by using another secret and setting custom JWT claims. There are several sites online that instantly create tokens by prompting the algorithm with the signing keys or secret and the desired JWT claims.

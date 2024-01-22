@@ -1,6 +1,8 @@
 # Data Caching Policy Example
 
-This example shows how to use cache on a PDK policy.
+This example demonstrates how to use caching in your custom policy.
+
+To learn more about caching, see [Sharing Data Between Workers and Caching](https://docs.mulesoft.com/pdk/latest/policies-pdk-configure-features-caching).
 
 ## Policy use case
 
@@ -19,68 +21,83 @@ To reuse the policy, the amount of cached requests and the non-business hours ar
 
 An error in the caching flow should not make a request fail. By default, the caching policy does not block requests.
 
-## Integration tests
+## Test the Policy
 
-The integration tests included in the `tests` directory show the policy behavior in a scenario where it always caches all requests, but the max cache entries is just 1. Therefore, it will always cache the latest request, but with every new cached request, it forgets the previous cache entry.
+Test the policy using either integration testing or the policy playground.
 
-## Run the Policy Locally
+To find the prereqs for using either environment and to learn more about either environment, see:
+
+* [Writing Integration Tests](https://docs.mulesoft.com/pdk/latest/policies-pdk-integration-tests).
+* [Debug Policies With the PDK Playground](https://docs.mulesoft.com/pdk/latest/policies-pdk-debug-local).
+
+### Integration tests
+
+This example contains an [integration test](./tests/requests.rs) to simplify its testing. In the included integration tests, the policy always caches all requests but the max cache entries parameter is one. Therefore with every new request, it caches the response and forgets the previous cache entry.
+
+To begin testing:
+
+1. Add the `registration.yaml` in the `./tests/common` folder.
+
+2. Execute the `test` command:
+
+### Playground Testing
 
 To test the policy:
 
-1.  Run the `build` command to compile the policy:
+1. Run the `build` command to compile the policy:
 
-    ``` ssh
-    make build
-    ```
+``` shell
+make build
+```
 
 2. Configure the `playground/config/api.yaml` as follows:
 
-    ``` yaml
-    # Copyright 2023 Salesforce, Inc. All rights reserved.
-    ---
-    apiVersion: gateway.mulesoft.com/v1alpha1
-    kind: ApiInstance
-    metadata:
-    name: ingress-http
-    spec:
-    address: http://0.0.0.0:8081
-    services:
-        upstream:
-        address: http://backend
-        routes:
-            - config:
-                destinationPath: /anything/echo/
-    policies:
-        - policyRef:
-            name: awesome-caching-v1-0-impl
-        config:
-            max_cached_values: 10
-            start_hour: 18
-            end_hour: 10
-    ```
+``` yaml
+# Copyright 2023 Salesforce, Inc. All rights reserved.
+---
+apiVersion: gateway.mulesoft.com/v1alpha1
+kind: ApiInstance
+metadata:
+name: ingress-http
+spec:
+address: http://0.0.0.0:8081
+services:
+    upstream:
+    address: http://backend
+    routes:
+        - config:
+            destinationPath: /anything/echo/
+policies:
+    - policyRef:
+        name: awesome-caching-v1-0-impl
+    config:
+        max_cached_values: 10
+        start_hour: 18
+        end_hour: 10
+```
 
-3.  Configure a Flex Gateway instance to debug the policy by placing a registration.yaml file in `playground/config`.
+3. Configure a Flex Gateway instance to debug the policy by placing a `registration.yaml` file in `playground/config`.
 
-4.  Run the `run` command to start the Flex Gateway instance:
+4. Run the `run` command to start the Flex Gateway instance:
 
-    ``` ssh
-    make run
-    ```
+``` shell
+make run
+```
 
-5.  Send requests to Flex Gateway:
+5. Send requests to Flex Gateway:
 
-    ``` ssh
-    curl http://127.0.0.1:8081/catalog/1 -H "cache_check: cache_value"
-    ```
+``` shell
+curl http://127.0.0.1:8081/catalog/1 -H "cache_check: cache_value"
+```
 
-    The upstream service used in the debugging environment included with PDK responds with an echo of the request.
+The upstream service used in the debugging environment included with PDK responds with an echo of the request.
 
-6.  Send another request to Flex Gateway changing the included header:
+6. Send another request to Flex Gateway by changing the included header:
 
-    ``` ssh
-    curl http://127.0.0.1:8081/catalog/1 -H "cache_check: cache_value1"
-    ```
+``` shell
+curl http://127.0.0.1:8081/catalog/1 -H "cache_check: cache_value1"
+```
 
-    If requests are made outside of business hours, the header cache_check: cache_value is included in the response body instead of cache_check: cache_value1. If requests are made inside of business hours, the header cache_check: cache_value1 is included in the response body.
+If requests are made outside of business hours, the header `cache_check: cache_value` is included in the response body instead of `cache_check: cache_value1`. If requests are made inside of business hours, the header `cache_check: cache_value1` is included in the response body.
 
-7.  Change the non-business hours and request path to view different responses.
+7. Change the non-business hours and request path to view different responses.
