@@ -1,6 +1,6 @@
-# Query Policy Template
+# Query Policy Example
 
-Use the Query Policy template as an example of how to handle query parameters in your custom policy. 
+Use the Query Policy as an example of how to handle query parameters in your custom policy. 
 
 Because ProxyWasm exposes the query parameters as part of the path string, you must leverage a third-party dependency to parse, extract, and modify the query parameters.
 
