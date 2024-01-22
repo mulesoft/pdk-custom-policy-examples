@@ -1,6 +1,6 @@
-# Crypto Policy Template
+# Crypto Policy Example
 
-Use the Crypto Policy template as an example of how to use third-party party libraries that provide cryptography capabilities.
+Use the Crypto Policy as an example of how to use third-party party libraries that provide cryptography capabilities.
 
 PDK does not support libraries that make OS calls. For example, the [RustCrypto](https://github.com/RustCrypto) libraries are compatible because they are fully implemented in Rust.
 
