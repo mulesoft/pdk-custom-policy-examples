@@ -1,7 +1,7 @@
 // Copyright 2023 Salesforce, Inc. All rights reserved.
 mod generated;
 
-use anyhow::Result;
+use anyhow::{anyhow, Result};
 
 use pdk::cache::{Cache, CacheBuilder, CacheError};
 use pdk::hl::*;
@@ -71,13 +71,13 @@ fn calculate_validity(
 ) -> Result<DateTime<Local>, CachingResponseError> {
     // If we have a same day range or if we are already on the second day of a partitioned range
     if end >= start || now.hour() < start {
-        set_to_hour(now, end as u32)
+        set_to_hour(now, end)
     } else {
         // We are on the first day of a partitioned range
         let time = now
             .checked_add_days(Days::new(1))
             .ok_or(CachingResponseError::Time)?;
-        set_to_hour(time, end as u32)
+        set_to_hour(time, end)
     }
 }
 
@@ -100,24 +100,24 @@ async fn try_from_cache(
     // Get the time in the current timezone.
     let now = Local::now();
 
-    // Check if cache should be uses
+    // Check if cache should be used
     if !check_time_in_range(now.hour(), config.start_hour as u32, config.end_hour as u32) {
         return Err(CachingRequestError::OutsideRange);
     }
 
-    // Gets the request path to use as caching key
+    // Get the request path to use as caching key
     let path = headers_state.path();
 
-    // Reads the value from the cache
+    // Read the value from the cache
     let cached = cache
         .get(path.as_str())
         .ok_or_else(|| CachingRequestError::CacheMiss(path.clone()))?;
 
-    // Deserializes the retrieved data
+    // Deserialize the retrieved data
     let deserialized: CachedResponse = serde_json::from_slice(cached.as_slice())
         .map_err(|e| CachingRequestError::Deserialize(path.clone(), e))?;
 
-    // Checks the logical expiration of the cached value
+    // Check the logical expiration of the cached value
     if deserialized.has_expired(&now) {
         return Err(CachingRequestError::CacheMiss(path));
     }
@@ -235,7 +235,13 @@ async fn configure(
     cache_builder: CacheBuilder,
 ) -> Result<()> {
     // Deserialize the configuration
-    let config: Config = serde_json::from_slice(&bytes).unwrap();
+    let config: Config = serde_json::from_slice(&bytes).map_err(|err| {
+        anyhow!(
+            "Failed to parse configuration '{}'. Cause: {}",
+            String::from_utf8_lossy(&bytes),
+            err
+        )
+    })?;
 
     // Create the cache
     let cache = cache_builder

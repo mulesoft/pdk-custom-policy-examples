@@ -33,7 +33,7 @@ async fn inner_request_filter(
 ) -> Result<Vec<u8>, Response> {
     let state = state.into_headers_state().await;
 
-    // read the desired header.
+    // Read the desired header.
     let header = state
         .handler()
         .header(NONCE_HEADER)
@@ -65,7 +65,7 @@ async fn response_filter(
     aes: &Aes256Gcm,
 ) {
     let state = state.into_headers_state().await;
-    // Removing the content-lenght header enables us to modify the size of the payload, otherwise we might be losing or adding bytes to the response.
+    // Removing the content-length header enables us to modify the size of the payload, otherwise we might be losing or adding bytes to the response.
     state.handler().remove_header("content-length");
 
     let state = state.into_body_state().await;
@@ -79,7 +79,7 @@ async fn response_filter(
         let text = hex::encode(bytes);
         // We set the body bytes.
         if let Err(err) = state.handler().set_body(text.as_bytes()) {
-            warn!("Error writting the body. Cause: {err}");
+            warn!("Error writing the body. Cause: {err}");
         }
     }
 }
@@ -94,11 +94,11 @@ async fn configure(launcher: Launcher, Configuration(bytes): Configuration) -> R
         )
     })?;
 
-    // Parse rsa key from the config.
+    // Parse RSA key from the config.
     let rsa_key = RsaPrivateKey::from_pkcs1_pem(config.rsa_key.as_str())
         .map_err(|err| anyhow!("Failed to parse rsa key. Cause: {err}"))?;
 
-    // Parse aes key from the confg.
+    // Parse AES key from the config.
     let aes_key: [u8; 32] = config
         .aes_key
         .as_bytes()
