@@ -22,7 +22,7 @@ pub struct Subject {
 
 /// This function extracts the name and email from the given subject field.
 fn parse_subject(subject_field: &str) -> Result<Subject> {
-    let split = subject_field.split(",");
+    let split = subject_field.split(',');
     let mut email = None;
     let mut name = None;
     for segment in split {
@@ -66,7 +66,7 @@ async fn request_filter(request_state: RequestState, stream: StreamProperties) -
 
 #[entrypoint]
 async fn configure(launcher: Launcher) -> Result<()> {
-    let filter = on_request(|rs, s| request_filter(rs, s));
+    let filter = on_request(request_filter);
     launcher.launch(filter).await?;
     Ok(())
 }

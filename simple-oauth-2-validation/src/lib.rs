@@ -1,7 +1,7 @@
 // Copyright 2023 Salesforce, Inc. All rights reserved.
 mod generated;
 
-use anyhow::Result;
+use anyhow::{anyhow, Result};
 
 use crate::generated::config::Config;
 use pdk::hl::*;
@@ -173,11 +173,19 @@ async fn request_filter(
 
 #[entrypoint]
 async fn configure(launcher: Launcher, Configuration(bytes): Configuration) -> Result<()> {
-    let config: Config = serde_json::from_slice(&bytes).unwrap();
+    let config: Config = serde_json::from_slice(&bytes).map_err(|err| {
+        anyhow!(
+            "Failed to parse configuration '{}'. Cause: {}",
+            String::from_utf8_lossy(&bytes),
+            err
+        )
+    })?;
+
     launcher
         .launch(on_request(|request, client, eval| {
             request_filter(request, client, &config, eval)
         }))
         .await?;
+
     Ok(())
 }

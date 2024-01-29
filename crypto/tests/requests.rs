@@ -54,16 +54,15 @@ async fn crypto() -> anyhow::Result<()> {
         .build();
 
     // Configure an HttpMock service
-    let httpmock_config = HttpMockConfig::builder()
+    let upstream_config = HttpMockConfig::builder()
         .port(80)
-        .version("latest")
         .hostname("backend")
         .build();
 
     // Compose the services
     let composite = TestComposite::builder()
         .with_service(flex_config)
-        .with_service(httpmock_config)
+        .with_service(upstream_config)
         .build()
         .await?;
 
@@ -80,12 +79,10 @@ async fn crypto() -> anyhow::Result<()> {
     let mock_server = MockServer::connect_async(httpmock.socket()).await;
 
     // Mock a /hello request
-    mock_server
-        .mock_async(|when, then| {
-            when.path_contains("/hello");
-            then.status(202).body("World!");
-        })
-        .await;
+    mock_server.mock(|when, then| {
+        when.path_contains("/hello");
+        then.status(202).body("World!");
+    });
 
     // We instantiate the rsa encryption tool
     let mut rng = rand::thread_rng();
