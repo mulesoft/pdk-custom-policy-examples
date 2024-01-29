@@ -6,7 +6,7 @@ use anyhow::{anyhow, Result};
 use crate::generated::config::Config;
 use pdk::hl::*;
 use pdk::logger;
-use pdk::script::{DefaultBindings, TryFromValue};
+use pdk::script::{HandlerAttributesBinding, TryFromValue};
 use serde::Deserialize;
 use std::time::{SystemTime, UNIX_EPOCH};
 
@@ -67,11 +67,10 @@ async fn do_filter(
     request: RequestHeadersState,
     config: &Config,
     client: HttpClient,
-    eval: DefaultBindings,
 ) -> Result<(), FilterError> {
     // Extracts the token from the request
-    let mut evaluator = eval.evaluator(&config.token_extractor);
-    evaluator.bind_headers(request.handler());
+    let mut evaluator = config.token_extractor.evaluator();
+    evaluator.bind_attributes(&HandlerAttributesBinding::partial(request.handler()));
 
     let token: String = evaluator
         .eval()
@@ -120,15 +119,10 @@ fn server_error_response() -> Flow<()> {
 }
 
 /// Defines a filter function that works as a wrapper for the real filter function that enables simplified error handling
-async fn request_filter(
-    state: RequestState,
-    client: HttpClient,
-    config: &Config,
-    eval: DefaultBindings,
-) -> Flow<()> {
+async fn request_filter(state: RequestState, client: HttpClient, config: &Config) -> Flow<()> {
     let state = state.into_headers_state().await;
 
-    match do_filter(state, config, client, eval).await {
+    match do_filter(state, config, client).await {
         Ok(_) => Flow::Continue(()),
         Err(err) => match err {
             FilterError::Unexpected => {
@@ -182,8 +176,8 @@ async fn configure(launcher: Launcher, Configuration(bytes): Configuration) -> R
     })?;
 
     launcher
-        .launch(on_request(|request, client, eval| {
-            request_filter(request, client, &config, eval)
+        .launch(on_request(|request, client| {
+            request_filter(request, client, &config)
         }))
         .await?;
 

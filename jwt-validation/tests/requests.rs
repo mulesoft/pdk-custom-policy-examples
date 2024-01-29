@@ -58,11 +58,13 @@ async fn validate_token() -> anyhow::Result<()> {
     // Connect to the handle of the upstream service
     let upstream_server = MockServer::connect_async(upstream.socket()).await;
 
-    upstream_server.mock(|when, then| {
-        when.header("Username", "LibraryFan1984");
-        then.status(200)
-            .json_body(json!({"Username": "LibraryFan1984"}));
-    });
+    upstream_server
+        .mock_async(|when, then| {
+            when.header("Username", "LibraryFan1984");
+            then.status(200)
+                .json_body(json!({"Username": "LibraryFan1984"}));
+        })
+        .await;
 
     // Upon receiving a valid token, assert the echo service
     // response body contains the header produced with JWT claims content
@@ -106,7 +108,7 @@ async fn validate_token() -> anyhow::Result<()> {
         flex_url.as_str(),
         &admin_token(),
         StatusCode::BAD_REQUEST,
-        "Invalid token: Only authenticated customers allowed",
+        "Invalid token: Only members are allowed",
     )
     .await?;
 

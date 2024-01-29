@@ -54,11 +54,13 @@ async fn certs() -> anyhow::Result<()> {
     // Connect to the handle of the upstream service
     let upstream_server = MockServer::connect_async(upstream.socket()).await;
 
-    let mock = upstream_server.mock(|when, then| {
-        when.header("X-Peer-Email", "joker@phantomthieves.com")
-            .header("X-Peer-Name", "Joker");
-        then.status(200);
-    });
+    let mock = upstream_server
+        .mock_async(|when, then| {
+            when.header("X-Peer-Email", "joker@phantomthieves.com")
+                .header("X-Peer-Name", "Joker");
+            then.status(200);
+        })
+        .await;
 
     // Get an external URL to point the Flex service
     let flex_url = flex

@@ -59,23 +59,27 @@ async fn query() -> anyhow::Result<()> {
 
     // Set up mock that should not be invoked if everything works correctly. In this case it's a mock for the case when
     // the header that should not be present, actually is
-    let failed_mock = upstream_server.mock(|when, then| {
-        when.header_exists("X-Query-Absent");
-        then.status(500)
-            .body("Header X-Query-Absent should not get to the backend");
-    });
+    let failed_mock = upstream_server
+        .mock_async(|when, then| {
+            when.header_exists("X-Query-Absent");
+            then.status(500)
+                .body("Header X-Query-Absent should not get to the backend");
+        })
+        .await;
 
     // Set up mock that represents the desired behavior
-    let success_mock = upstream_server.mock(|when, then| {
-        when.header("X-Query-Key", "value")
-            .header("X-Query-Missing", "Undefined")
-            .header("X-Query-Extra", "")
-            .header(
-                "X-Envoy-Original-Path",
-                "/hello?absent=absent&removed=extra&removed=key",
-            );
-        then.status(200);
-    });
+    let success_mock = upstream_server
+        .mock_async(|when, then| {
+            when.header("X-Query-Key", "value")
+                .header("X-Query-Missing", "Undefined")
+                .header("X-Query-Extra", "")
+                .header(
+                    "X-Envoy-Original-Path",
+                    "/hello?absent=absent&removed=extra&removed=key",
+                );
+            then.status(200);
+        })
+        .await;
 
     // Send a request with two query parameters.
     let response = reqwest::Client::new()
