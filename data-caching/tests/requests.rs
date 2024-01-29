@@ -57,11 +57,12 @@ async fn caching() -> anyhow::Result<()> {
 
     // First we test that the policy is mocking the first value obtained from upstream
     // server.
-
-    let mut first_value_mock = backend_server.mock(|when, then| {
-        when.path_contains("/route_1");
-        then.status(200).body("Value 1");
-    });
+    let mut first_value_mock = backend_server
+        .mock_async(|when, then| {
+            when.path_contains("/route_1");
+            then.status(200).body("Value 1");
+        })
+        .await;
 
     // The first request should go to the upstream server.
     let response = reqwest::get(format!("{flex_url}/route_1")).await?;
@@ -81,10 +82,12 @@ async fn caching() -> anyhow::Result<()> {
     // Removing mock to override it
     first_value_mock.delete();
 
-    let second_value_mock = backend_server.mock(|when, then| {
-        when.path_contains("/route_1");
-        then.status(200).body("Value 2");
-    });
+    let second_value_mock = backend_server
+        .mock_async(|when, then| {
+            when.path_contains("/route_1");
+            then.status(200).body("Value 2");
+        })
+        .await;
 
     let response: reqwest::Response = reqwest::get(format!("{flex_url}/route_1")).await?;
 
@@ -93,10 +96,12 @@ async fn caching() -> anyhow::Result<()> {
 
     // Now we test a different route that will respond with different content
 
-    let alt_route_mock = backend_server.mock(|when, then| {
-        when.path_contains("/route_2");
-        then.status(200).body("Alt route value 1");
-    });
+    let alt_route_mock = backend_server
+        .mock_async(|when, then| {
+            when.path_contains("/route_2");
+            then.status(200).body("Alt route value 1");
+        })
+        .await;
 
     let response: reqwest::Response = reqwest::get(format!("{flex_url}/route_2")).await?;
 

@@ -79,10 +79,12 @@ async fn crypto() -> anyhow::Result<()> {
     let mock_server = MockServer::connect_async(httpmock.socket()).await;
 
     // Mock a /hello request
-    mock_server.mock(|when, then| {
-        when.path_contains("/hello");
-        then.status(202).body("World!");
-    });
+    mock_server
+        .mock_async(|when, then| {
+            when.path_contains("/hello");
+            then.status(202).body("World!");
+        })
+        .await;
 
     // We instantiate the rsa encryption tool
     let mut rng = rand::thread_rng();

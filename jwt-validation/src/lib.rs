@@ -2,10 +2,8 @@
 use anyhow::{anyhow, Result};
 use chrono::Utc;
 use pdk::hl::*;
-use pdk::jwt::model::ScriptClaimRule;
 use pdk::jwt::*;
 use pdk::logger::debug;
-use pdk::script::HandlerAttributesBinding;
 
 use crate::generated::config::Config;
 
@@ -13,15 +11,13 @@ mod generated;
 
 async fn filter(
     state: RequestState,
+    config: &Config,
     signature_validator: &SignatureValidator,
-    custom_validator: &ScriptClaimValidator,
 ) -> Flow<()> {
     let headers_state = state.into_headers_state().await;
 
     // Extract token
-    let token = match TokenProvider::BearerProvider
-        .provide(&HandlerAttributesBinding::partial(headers_state.handler()))
-    {
+    let token = match TokenProvider::bearer(headers_state.handler()) {
         Ok(t) => t,
         Err(_) => {
             return Flow::Break(Response::new(401).with_body("Bearer not found"));
@@ -37,24 +33,26 @@ async fn filter(
     };
 
     // Validate expiration
-    let exp_validator = ClaimValidator::Exp {
-        mandatory: true,
-        current_time: Utc::now(),
-    };
-
-    if exp_validator.validate(&claims).is_err() {
-        return Flow::Break(Response::new(401).with_body("Expired token"));
+    if let Some(exp) = claims.expiration() {
+        if exp < Utc::now() {
+            return Flow::Break(Response::new(401).with_body("Expired token"));
+        }
+    } else {
+        return Flow::Break(Response::new(401).with_body("Token missing exp claim"));
     }
 
     // Custom claim validation
-    let custom_validation = custom_validator.validate(
-        &claims,
-        &HandlerAttributesBinding::partial(headers_state.handler()),
-    );
+    let mut evaluator = config.custom_rule.evaluator();
+    evaluator.bind_vars("claimSet", claims.get_claims());
 
-    if custom_validation.is_err() {
+    if !evaluator
+        .eval()
+        .ok()
+        .and_then(|value| value.as_bool())
+        .unwrap_or_default()
+    {
         return Flow::Break(
-            Response::new(400).with_body("Invalid token: Only authenticated customers allowed"),
+            Response::new(400).with_body("Invalid token: Only members are allowed."),
         );
     }
 
@@ -93,21 +91,12 @@ async fn configure(launcher: Launcher, Configuration(configuration): Configurati
     let signature_validator = SignatureValidator::new(
         model::SigningAlgorithm::Hmac,
         model::SigningKeyLength::Len256,
-        config.clone().secret,
+        config.secret.clone(),
     )?;
-
-    let custom_rules = [ScriptClaimRule::new(
-        String::from("role"),
-        &config.custom_rule,
-    )]
-    .to_vec();
-
-    let custom_validator: ScriptClaimValidator =
-        ScriptClaimValidator::new(custom_rules, Vec::new());
 
     launcher
         .launch(on_request(|request| {
-            filter(request, &signature_validator, &custom_validator)
+            filter(request, &config, &signature_validator)
         }))
         .await?;
     Ok(())

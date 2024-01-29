@@ -24,6 +24,45 @@ const FLEX_PORT: Port = 8081;
 const VALID_TOKEN: &str = "valid";
 const INVALID_TOKEN: &str = "not_valid";
 
+// This integration test shows how to build a test to compose a local-flex instance
+// with a MockServer backend
+#[pdk_test]
+async fn token_from_header() -> anyhow::Result<()> {
+    // Configure Flex Gateway
+    let flex_config = flex_config(AUTHORIZATION_CONFIG_DIR);
+
+    // Configure the upstream service
+    let upstream_config = HttpMockConfig::builder().port(80).hostname("mock").build();
+
+    // Compose the services
+    let composite = setup_services(flex_config, upstream_config).await?;
+
+    // Get a handle to the Flex service
+    let flex: Flex = composite.service_by_hostname("local-flex")?;
+
+    // Get a handle to the upstream service
+    let upstream =
+        MockServer::connect_async(composite.service_by_hostname::<HttpMock>("mock")?.socket())
+            .await;
+
+    // Mock upstream service interactions
+    mock_backend_path(&upstream).await;
+
+    // Mock authorization service interactions
+    mock_auth_server_path(&upstream).await;
+
+    // Get an external URL to point the Flex service
+    let flex_url = flex.external_url(FLEX_PORT).unwrap();
+
+    let response = request(format!("{flex_url}/hello").as_str(), VALID_TOKEN).await?;
+    assert_response(response, StatusCode::ACCEPTED, "World!").await;
+
+    let response = request(format!("{flex_url}/hello").as_str(), INVALID_TOKEN).await?;
+    assert_response(response, StatusCode::UNAUTHORIZED, "").await;
+
+    Ok(())
+}
+
 #[pdk_test]
 async fn token_from_query_parameter() -> anyhow::Result<()> {
     // Configure Flex Gateway
@@ -39,13 +78,15 @@ async fn token_from_query_parameter() -> anyhow::Result<()> {
     let flex: Flex = composite.service_by_hostname("local-flex")?;
 
     // Get a handle to the upstream service
-    let upstream = MockServer::connect(composite.service_by_hostname::<HttpMock>("mock")?.socket());
+    let upstream =
+        MockServer::connect_async(composite.service_by_hostname::<HttpMock>("mock")?.socket())
+            .await;
 
     // Mock upstream service interactions
-    mock_backend_path(&upstream);
+    mock_backend_path(&upstream).await;
 
     // Mock authorization service interactions
-    mock_auth_server_path(&upstream);
+    mock_auth_server_path(&upstream).await;
 
     // Get an external URL to point the Flex service
     let flex_url = flex.external_url(FLEX_PORT).unwrap();
@@ -63,62 +104,31 @@ async fn token_from_query_parameter() -> anyhow::Result<()> {
     Ok(())
 }
 
-// This integration test shows how to build a test to compose a local-flex instance
-// with a MockServer backend
-#[pdk_test]
-async fn token_from_query_parameter2() -> anyhow::Result<()> {
-    // Configure Flex Gateway
-    let flex_config = flex_config(AUTHORIZATION_CONFIG_DIR);
+async fn mock_auth_server_path(upstream: &MockServer) {
+    upstream
+        .mock_async(|when, then| {
+            when.path("/auth")
+                .body(serde_urlencoded::to_string([("token", VALID_TOKEN)]).unwrap());
+            then.status(200).json_body(json!({"active": true}));
+        })
+        .await;
 
-    // Configure the upstream service
-    let upstream_config = HttpMockConfig::builder().port(80).hostname("mock").build();
-
-    // Compose the services
-    let composite = setup_services(flex_config, upstream_config).await?;
-
-    // Get a handle to the Flex service
-    let flex: Flex = composite.service_by_hostname("local-flex")?;
-
-    // Get a handle to the upstream service
-    let upstream = MockServer::connect(composite.service_by_hostname::<HttpMock>("mock")?.socket());
-
-    // Mock upstream service interactions
-    mock_backend_path(&upstream);
-
-    // Mock authorization service interactions
-    mock_auth_server_path(&upstream);
-
-    // Get an external URL to point the Flex service
-    let flex_url = flex.external_url(FLEX_PORT).unwrap();
-
-    let response = request(format!("{flex_url}/hello").as_str(), VALID_TOKEN).await?;
-    assert_response(response, StatusCode::ACCEPTED, "World!").await;
-
-    let response = request(format!("{flex_url}/hello").as_str(), INVALID_TOKEN).await?;
-    assert_response(response, StatusCode::UNAUTHORIZED, "").await;
-
-    Ok(())
+    upstream
+        .mock_async(|when, then| {
+            when.path("/auth")
+                .body(serde_urlencoded::to_string([("token", INVALID_TOKEN)]).unwrap());
+            then.status(200).json_body(json!({"active": false}));
+        })
+        .await;
 }
 
-fn mock_auth_server_path(upstream: &MockServer) {
-    upstream.mock(|when, then| {
-        when.path("/auth")
-            .body(serde_urlencoded::to_string([("token", VALID_TOKEN)]).unwrap());
-        then.status(200).json_body(json!({"active": true}));
-    });
-
-    upstream.mock(|when, then| {
-        when.path("/auth")
-            .body(serde_urlencoded::to_string([("token", INVALID_TOKEN)]).unwrap());
-        then.status(200).json_body(json!({"active": false}));
-    });
-}
-
-fn mock_backend_path(upstream: &MockServer) {
-    upstream.mock(|when, then| {
-        when.path_contains("/hello");
-        then.status(202).body("World!");
-    });
+async fn mock_backend_path(upstream: &MockServer) {
+    upstream
+        .mock_async(|when, then| {
+            when.path_contains("/hello");
+            then.status(202).body("World!");
+        })
+        .await;
 }
 
 /// Configuring the Flex service
