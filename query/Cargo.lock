@@ -473,9 +473,9 @@ checksum = "a2bd12c1caf447e69cd4528f47f94d203fd2582878ecb9e9465484c4148a8223"
 
 [[package]]
 name = "cache-lib"
-version = "1.0.0-rc.3"
-source = "registry+https://anypoint.mulesoft.com/git/68ef9520-24e9-4cf2-b2f5-620025690913/19f9d123-5775-44d7-a67f-49328cfa00b0"
-checksum = "30671edc4d61623674dfa652e9056aaa6ac48ca50776e6526d0869fa6c050526"
+version = "1.0.0-rc.4"
+source = "registry+https://qax.anypoint.mulesoft.com/git/68ef9520-24e9-4cf2-b2f5-620025690913/9be4ef3a-cb3e-479c-a1c4-e47cf2e02540"
+checksum = "e49ef61c37716bc4fe540dbf080e4b69ff53cdc2b990a0753c9880a38b9ad6af"
 dependencies = [
  "bincode",
  "cfg-if",
@@ -550,9 +550,9 @@ dependencies = [
 
 [[package]]
 name = "classy"
-version = "1.0.0-rc.3"
-source = "registry+https://anypoint.mulesoft.com/git/68ef9520-24e9-4cf2-b2f5-620025690913/19f9d123-5775-44d7-a67f-49328cfa00b0"
-checksum = "9faa41e59c3036711d2a3d8288bc941c39b2df6e10a23119df31fd5966d14d42"
+version = "1.0.0-rc.4"
+source = "registry+https://qax.anypoint.mulesoft.com/git/68ef9520-24e9-4cf2-b2f5-620025690913/9be4ef3a-cb3e-479c-a1c4-e47cf2e02540"
+checksum = "ce38d4f53bd63243a24d7180d57e62bbc8e2307c0b17f56bb39fea3d22cf5ae7"
 dependencies = [
  "bincode",
  "futures",
@@ -560,6 +560,7 @@ dependencies = [
  "http",
  "log",
  "proxy-wasm",
+ "proxy-wasm-stub",
  "serde",
  "serde_derive",
  "thiserror",
@@ -1570,9 +1571,9 @@ dependencies = [
 
 [[package]]
 name = "jwt-lib"
-version = "1.0.0-rc.3"
-source = "registry+https://anypoint.mulesoft.com/git/68ef9520-24e9-4cf2-b2f5-620025690913/19f9d123-5775-44d7-a67f-49328cfa00b0"
-checksum = "f0f2d113688bd461ebe9c8c78b257b7703a656e7856e8b5b057a960a8cb6bbab"
+version = "1.0.0-rc.4"
+source = "registry+https://qax.anypoint.mulesoft.com/git/68ef9520-24e9-4cf2-b2f5-620025690913/9be4ef3a-cb3e-479c-a1c4-e47cf2e02540"
+checksum = "945df9f68bdeaaac941cc05c97fd36215a80f42081da4a67c0120f0c54d28658"
 dependencies = [
  "base64 0.13.1",
  "chrono",
@@ -2040,9 +2041,9 @@ checksum = "de3145af08024dea9fa9914f381a17b8fc6034dfb00f3a84013f7ff43f29ed4c"
 
 [[package]]
 name = "pdk"
-version = "1.0.0-rc.3"
-source = "registry+https://anypoint.mulesoft.com/git/68ef9520-24e9-4cf2-b2f5-620025690913/19f9d123-5775-44d7-a67f-49328cfa00b0"
-checksum = "cb5a3ef6499d850e029df2af78d2130ae0894847f5f687fdcc1a78231445d146"
+version = "1.0.0-rc.4"
+source = "registry+https://qax.anypoint.mulesoft.com/git/68ef9520-24e9-4cf2-b2f5-620025690913/9be4ef3a-cb3e-479c-a1c4-e47cf2e02540"
+checksum = "4afc1794c7ae11db9d87abb4cba5189fe906f7bdaba13e1c1e749fff2dd7d360"
 dependencies = [
  "cache-lib",
  "classy",
@@ -2055,9 +2056,9 @@ dependencies = [
 
 [[package]]
 name = "pdk-core"
-version = "1.0.0-rc.3"
-source = "registry+https://anypoint.mulesoft.com/git/68ef9520-24e9-4cf2-b2f5-620025690913/19f9d123-5775-44d7-a67f-49328cfa00b0"
-checksum = "b437032ff3c8d50dbd24b40785f159953b5e0c00e1dd6073beeda08bb0f9a5d7"
+version = "1.0.0-rc.4"
+source = "registry+https://qax.anypoint.mulesoft.com/git/68ef9520-24e9-4cf2-b2f5-620025690913/9be4ef3a-cb3e-479c-a1c4-e47cf2e02540"
+checksum = "33a167336a25f8eab84d67815b29f7759ddfd5def257f704a1e0d162a996be54"
 dependencies = [
  "anyhow",
  "classy",
@@ -2074,9 +2075,9 @@ dependencies = [
 
 [[package]]
 name = "pdk-flex-abi"
-version = "1.0.0-rc.3"
-source = "registry+https://anypoint.mulesoft.com/git/68ef9520-24e9-4cf2-b2f5-620025690913/19f9d123-5775-44d7-a67f-49328cfa00b0"
-checksum = "bb3609202141ec4e23552c5d829f98dc2d32ea48a778b6a1db820cfb7ccfde04"
+version = "1.0.0-rc.4"
+source = "registry+https://qax.anypoint.mulesoft.com/git/68ef9520-24e9-4cf2-b2f5-620025690913/9be4ef3a-cb3e-479c-a1c4-e47cf2e02540"
+checksum = "a0f5ecb6760143f8ad3d56e78382af28744f82d7bf5008a2ff3b83abd3bd1781"
 dependencies = [
  "anyhow",
  "pdk-core",
@@ -2087,9 +2088,9 @@ dependencies = [
 
 [[package]]
 name = "pdk-macros"
-version = "1.0.0-rc.3"
-source = "registry+https://anypoint.mulesoft.com/git/68ef9520-24e9-4cf2-b2f5-620025690913/19f9d123-5775-44d7-a67f-49328cfa00b0"
-checksum = "d379baf71617af639dd2f66704c1b6465850bf51af234759c33aca4db3768422"
+version = "1.0.0-rc.4"
+source = "registry+https://qax.anypoint.mulesoft.com/git/68ef9520-24e9-4cf2-b2f5-620025690913/9be4ef3a-cb3e-479c-a1c4-e47cf2e02540"
+checksum = "70d94a9fb1f2f4a6f3eeab042ef0fb73acf3fa790172d3b40f4d800d64f77466"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -2098,9 +2099,9 @@ dependencies = [
 
 [[package]]
 name = "pdk-script"
-version = "1.0.0-rc.3"
-source = "registry+https://anypoint.mulesoft.com/git/68ef9520-24e9-4cf2-b2f5-620025690913/19f9d123-5775-44d7-a67f-49328cfa00b0"
-checksum = "229c2c1e21d8e3baeeddb0ada8d06a13b3d08edd45aeb7d2b423362406335d8d"
+version = "1.0.0-rc.4"
+source = "registry+https://qax.anypoint.mulesoft.com/git/68ef9520-24e9-4cf2-b2f5-620025690913/9be4ef3a-cb3e-479c-a1c4-e47cf2e02540"
+checksum = "8f47425b987108a23b62503cc4d45390463cb3ccc969683d96054036fd4fdadd"
 dependencies = [
  "classy",
  "getrandom",
@@ -2115,9 +2116,9 @@ dependencies = [
 
 [[package]]
 name = "pdk-test"
-version = "1.0.0-rc.3"
-source = "registry+https://anypoint.mulesoft.com/git/68ef9520-24e9-4cf2-b2f5-620025690913/19f9d123-5775-44d7-a67f-49328cfa00b0"
-checksum = "16216d207d50053ee2fb56eba8d1f1848e95461c7f486731bebf212b80a235d4"
+version = "1.0.0-rc.4"
+source = "registry+https://qax.anypoint.mulesoft.com/git/68ef9520-24e9-4cf2-b2f5-620025690913/9be4ef3a-cb3e-479c-a1c4-e47cf2e02540"
+checksum = "ace4b441d0eeeb7e4b3dfd910da0300f0bbc4edd75c27c6b18eae729051ad079"
 dependencies = [
  "async-trait",
  "bollard",
@@ -2132,9 +2133,9 @@ dependencies = [
 
 [[package]]
 name = "pdk-test-macros"
-version = "1.0.0-rc.3"
-source = "registry+https://anypoint.mulesoft.com/git/68ef9520-24e9-4cf2-b2f5-620025690913/19f9d123-5775-44d7-a67f-49328cfa00b0"
-checksum = "453473a4c5824e48271e47cc0a5922171951775b372c9264e4161accb52014a0"
+version = "1.0.0-rc.4"
+source = "registry+https://qax.anypoint.mulesoft.com/git/68ef9520-24e9-4cf2-b2f5-620025690913/9be4ef3a-cb3e-479c-a1c4-e47cf2e02540"
+checksum = "bf79d690055ccaea083a65438e6d2e398bee706321b3c3e77d1a80493ee35151"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -2143,9 +2144,9 @@ dependencies = [
 
 [[package]]
 name = "pel"
-version = "1.0.0-rc.3"
-source = "registry+https://anypoint.mulesoft.com/git/68ef9520-24e9-4cf2-b2f5-620025690913/19f9d123-5775-44d7-a67f-49328cfa00b0"
-checksum = "ec7c44045ea631fc72ecde47af48cf3dab46da324a93ade59c399249b48f59f8"
+version = "1.0.0-rc.4"
+source = "registry+https://qax.anypoint.mulesoft.com/git/68ef9520-24e9-4cf2-b2f5-620025690913/9be4ef3a-cb3e-479c-a1c4-e47cf2e02540"
+checksum = "f15b5be4574db48ccddfac3970a99bc719f37de8459c2c75a1a44fbf663a6a59"
 dependencies = [
  "getrandom",
  "serde_json",
@@ -2379,6 +2380,12 @@ dependencies = [
  "hashbrown 0.13.2",
  "log",
 ]
+
+[[package]]
+name = "proxy-wasm-stub"
+version = "1.0.0-rc.4"
+source = "registry+https://qax.anypoint.mulesoft.com/git/68ef9520-24e9-4cf2-b2f5-620025690913/9be4ef3a-cb3e-479c-a1c4-e47cf2e02540"
+checksum = "d817bbda904d2c014cceef607e0a00b263a1d45c84e41685f669a1ead3916e4c"
 
 [[package]]
 name = "query"
