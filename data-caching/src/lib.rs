@@ -204,12 +204,12 @@ async fn save_to_cache(
 /// Wraps the actual policy logic to unify the error handling.
 async fn response_filter(
     response_state: ResponseState,
-    RequestData(caching_data): RequestData<CachingData>,
+    caching_data: RequestData<CachingData>,
     config: &Config,
     cache: &impl Cache,
 ) {
     // Check if we should save the response to the cache
-    if let CachingData::SaveResponse(path) = caching_data {
+    if let RequestData::Continue(CachingData::SaveResponse(path)) = caching_data {
         match save_to_cache(response_state, path.as_str(), config, cache).await {
             Ok(()) => {
                 logger::debug!("Response successfully cached.")

@@ -59,11 +59,12 @@ async fn inner_request_filter(
 }
 
 /// This function modifies the payload by encrypting in aes-gcm with the nonce provided in the request.
-async fn response_filter(
-    state: ResponseState,
-    RequestData(nonce_bytes): RequestData<Vec<u8>>,
-    aes: &Aes256Gcm,
-) {
+async fn response_filter(state: ResponseState, nonce_bytes: RequestData<Vec<u8>>, aes: &Aes256Gcm) {
+    let RequestData::Continue(nonce_bytes) = nonce_bytes else {
+        debug!("Nonce bytes were not fully generated in the request filter.");
+        return;
+    };
+
     let state = state.into_headers_state().await;
     // Removing the content-length header enables us to modify the size of the payload, otherwise we might be losing or adding bytes to the response.
     state.handler().remove_header("content-length");
