@@ -45,7 +45,7 @@ impl From<CachedResponse> for Response {
 
 /// Checks if the time is between the given range
 fn check_time_in_range(now: u32, start: u32, end: u32) -> bool {
-    logger::debug!("Checking {now} in rime range: {start}-{end}.");
+    logger::debug!("Checking {now} in time range: {start}-{end}.");
     if end >= start {
         // Same day range. Eg: from 10 to 14
         now >= start && now < end
@@ -181,6 +181,8 @@ async fn save_to_cache(
         config.start_hour as u32,
         config.end_hour as u32,
     )?;
+
+    logger::debug!("Stored response is valid until {}", valid_until);
 
     // Creates the object that we'll store in the cache.
     let response = CachedResponse {
