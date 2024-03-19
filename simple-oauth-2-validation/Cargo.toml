@@ -21,7 +21,7 @@ anyhow = "1.0"
 
 [dev-dependencies]
 pdk-test = { version = "1.0.1", registry = "anypoint" }
-httpmock = "0.6"
+httpmock = "0.7"
 reqwest = "0.11"
 
 [lib]
