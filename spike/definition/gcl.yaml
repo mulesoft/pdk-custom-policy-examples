@@ -1,0 +1,25 @@
+---
+apiVersion: gateway.mulesoft.com/v1alpha1
+kind: Extension
+metadata:
+  labels:
+    title: spike
+    category: Custom
+spec:
+  extends:
+    - name: extension-definition
+      namespace: default
+  properties:
+    requests:
+      type: integer
+    millis:
+      type: integer
+    maxAttempts:
+      type: integer
+    delay:
+      type: integer
+  required:
+    - requests
+    - millis
+    - maxAttempts
+    - delay

@@ -20,7 +20,7 @@ const FLEX_PORT: Port = 8081;
 // This integration test shows how to build a test to compose a local-flex instance
 // with a MockServer backend
 #[pdk_test]
-async fn hello() -> anyhow::Result<()> {
+async fn metrics() -> anyhow::Result<()> {
     // Configure a Flex service
     let flex_config = FlexConfig::builder()
         .version("1.6.1")
