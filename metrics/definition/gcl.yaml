@@ -1,0 +1,22 @@
+---
+apiVersion: gateway.mulesoft.com/v1alpha1
+kind: Extension
+metadata:
+  labels:
+    title: metrics
+    category: Custom
+spec:
+  extends:
+    - name: extension-definition
+      namespace: default
+  properties:
+    metricsSink:
+      type: string
+      format: service
+    pushFrequency:
+      type: integer
+    maxRetries:
+      type: integer
+  required:
+    - metricsSink
+    - pushFrequency
