@@ -11,10 +11,6 @@ use std::time::Duration;
 
 use common::*;
 
-const MAX_ATTEMPTS: u32 = 3;
-const DELAY: Duration = Duration::from_millis(1000);
-const EPSILON: Duration = Duration::from_millis(100);
-
 // Directory with the configurations for the `hello` test.
 const HELLO_CONFIG_DIR: &str = concat!(env!("CARGO_MANIFEST_DIR"), "/tests/requests/hello");
 
@@ -24,7 +20,7 @@ const FLEX_PORT: Port = 8081;
 // This integration test shows how to build a test to compose a local-flex instance
 // with a MockServer backend
 #[pdk_test]
-async fn spike() -> anyhow::Result<()> {
+async fn block() -> anyhow::Result<()> {
     // Configure a Flex service
     let flex_config = FlexConfig::builder()
         .version("1.6.1")
@@ -71,40 +67,35 @@ async fn spike() -> anyhow::Result<()> {
         })
         .await;
 
-    // Perform requests
-    generate_load(100, format!("{flex_url}/hello")).await;
+    let mock = mock_server
+        .mock_async(|when, then| {
+            when.path_contains("/blocked");
+            then.status(200)
+                .body("24.152.57.0/24\n24.232.0.0/16\n45.4.92.0/22");
+        })
+        .await;
 
+    // wait 2 * freq for policy to fetch ips from seconds.
+    std::thread::sleep(Duration::from_secs(3));
+
+    assert_request(flex_url.as_str(), "24.152.57.1", 403).await?;
+    assert_request(flex_url.as_str(), "24.232.2.2.1", 403).await?;
+    assert_request(flex_url.as_str(), "45.4.92.0", 403).await?;
+    assert_request(flex_url.as_str(), "46.4.92.0", 202).await?;
+
+    // Was only hit by one of the workers.
+    mock.assert_hits(1);
     Ok(())
 }
 
-async fn execute_request(url: String) -> u16 {
-    let start = std::time::SystemTime::now();
-    let response = reqwest::get(url.clone()).await.unwrap();
-    let end = std::time::SystemTime::now();
+async fn assert_request(url: &str, ip: &str, status_code: u16) -> anyhow::Result<()> {
+    let client = reqwest::Client::new();
+    let response = client
+        .get(format!("{url}/hello"))
+        .header("ip", ip)
+        .send()
+        .await?;
 
-    let elapsed = end.duration_since(start).unwrap();
-
-    if response.status() == 202 {
-        // Accepted request should have been served as soon as possible.
-        assert!(elapsed <= MAX_ATTEMPTS * (DELAY + EPSILON))
-    } else if response.status() == 429 {
-        // Rejected request should have spent time waiting.
-        assert!(elapsed >= MAX_ATTEMPTS * DELAY)
-    }
-
-    response.status().as_u16()
-}
-
-async fn generate_load(load: usize, url: String) {
-    let vec: Vec<_> = (0..load)
-        .into_iter()
-        .map(|_| url.clone())
-        .map(execute_request)
-        .collect();
-
-    let resp = futures::future::join_all(vec).await;
-
-    assert!(resp.contains(&202));
-    // This assertion might fail if workers >= amount / 4 or if request are executed sequentially
-    assert!(resp.contains(&429));
+    assert_eq!(response.status().as_u16(), status_code);
+    Ok(())
 }

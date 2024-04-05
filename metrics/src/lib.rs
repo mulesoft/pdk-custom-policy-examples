@@ -200,16 +200,14 @@ async fn configure(
     let publish = publish_loop(&timer, &client, &config, &metrics);
 
     // Future that will handle the requests
-    let launch = launcher
+    let launched = launcher
         .launch(on_request(request_filter).on_response(|rs, rd| response_filter(rs, rd, &metrics)));
 
     // Await for both futures to finish
     // Note: Proxy-Wasm Guarantees that they won't be executed in a parallel fashion. Only one tas will
     // progress at a time, interleaving only at points where functions are 'await'ed.
-    let joined = join!(launch, publish);
-
+    let joined = join!(launched, publish);
     // Propagate the error of the launcher
     joined.0?;
-
     Ok(())
 }
