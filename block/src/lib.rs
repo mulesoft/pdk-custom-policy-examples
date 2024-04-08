@@ -200,7 +200,7 @@ async fn configure(
     // Cache to share the ip data between workers.
     let cache = cache.new(ID.to_string()).build();
 
-    // Configure the lock to expire with a value bigger that all possible timeouts in the async task,
+    // Configure the lock to expire with a value bigger than all possible timeouts in the async task,
     // this way, if some worker stops responding, the other will be able to recover the lock and
     // continue working as expected.
     let lock = lock

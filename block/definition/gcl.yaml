@@ -13,12 +13,15 @@ spec:
     source:
       type: string
       format: service
+      description: The url of service that provides the list of IP ranges to block.
     frequency:
       type: integer
+      description: The frequency in seconds with which the service will be queried.
     ip:
       type: string
       format: dataweave
       default: "#[attributes.headers['ip']]"
+      description: Dataweave expression that extracts the ip from the request.
   required:
     - source
     - frequency

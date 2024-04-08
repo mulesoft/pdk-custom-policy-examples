@@ -1,7 +1,13 @@
-# Metrics Policy
+# Spike Policy
 
 Use the Spike Policy as an example of how to delay requests before they reach the backend.
 This policy will do a Spike Control inside each worker.
+
+The policy takes the following parameters:
+* requests: The amount of request that will be able to go through in the given window.
+* millis: The duration in millis of the sliding window.
+* maxAttempts: The maximum number of attempts the request will be throttled before rejecting it.
+* delay: The delay in millis between each throttled re-attempt.
 
 ## Test the Policy
 

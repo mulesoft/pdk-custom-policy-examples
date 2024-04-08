@@ -1,6 +1,14 @@
-# Metrics Policy
+# Block Policy
 
-Use the Metrics Policy as an example of how to create a task that is executed periodically in a single worker.
+Use the Block Policy as an example of how to create a task that is executed periodically in a single worker.
+
+This policy periodically queries a service that returns a list of ip ranges, and blocks all requests coming from those
+ranges. The fetch from the server is done by a single worker and then the data is shared with the workers.
+
+The policy takes the following parameters:
+* source: The url of the service that provides the list of IP ranges to block.
+* frequency: The frequency in seconds with which the service will be queried.
+* ip: Dataweave expression that extracts the ip from the request.
 
 ## Test the Policy
 

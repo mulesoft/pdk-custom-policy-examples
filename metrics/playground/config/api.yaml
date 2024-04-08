@@ -14,12 +14,8 @@ spec:
             destinationPath: /anything/echo/
   policies:
     - policyRef:
-        name: metrics-v1-0-impl # This value will be overriden during 'make run' execution
+        name: metrics-v1-0-impl
         namespace: default
-      # Fill the config with a policy configuration that matches the schema specified in the policy
-      # definition gcl.yaml. Eg:
-      # config:
-      #   someProperty: desiredValue
       config:
         metricsSink: http://backend/anything/echo/metrics
         pushFrequency: 10
