@@ -2,7 +2,7 @@
 
 Use the Spike Policy as an example of how to delay requests before they reach the backend.
 
-This policy provides spike control for each worker
+This policy provides spike control for each worker. For example, if you set `requests` to `100` and have two workers, 200 requests are serviced during the time window.
 
 The policy takes the following parameters:
 * `requests`: The amount of requests that can reach the backend service in the given time window.
