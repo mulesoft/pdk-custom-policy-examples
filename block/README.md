@@ -1,14 +1,17 @@
 # Block Policy
 
-Use the Block Policy as an example of how to create a task that is executed periodically in a single worker.
+Use the Block Policy as an example of how to execute a task periodically in a single worker and then shares the information with other workers.
 
-This policy periodically queries a service that returns a list of ip ranges, and blocks all requests coming from those
-ranges. The fetch from the server is done by a single worker and then the data is shared with the workers.
+This policy periodically queries a service that returns a list of IP ranges and then blocks all requests coming from those ranges. Each worker first ensures that the IP does not need to be requested. If it does, the worker makes a request to the IP source and then shares the data with the other workers.
 
 The policy takes the following parameters:
-* source: The url of the service that provides the list of IP ranges to block.
-* frequency: The frequency in seconds with which the service will be queried.
-* ip: Dataweave expression that extracts the ip from the request.
+* `source`: The url of the service that provides the list of IP ranges to block.
+* `frequency`: The frequency in seconds that the service is queried.
+* `ip`: A DataWeave expression that extracts the IP address from the request.
+
+To learn more about periodic functions and HTTP calls, see:
+* [Configuring Delayed and Periodic Functions](https://docs.mulesoft.com/pdk/latest/policies-pdk-configure-timer).
+* [Performing an HTTP Call](https://docs.mulesoft.com/pdk/latest/policies-pdk-configure-features-http-request).
 
 ## Test the Policy
 
@@ -25,7 +28,6 @@ This example contains an [integration test](./tests/requests.rs) to simplify its
 
 1. Add the `registration.yaml` in the `./tests/common` folder.
 
-The test can be invoked by using the `test` command:
 2. Execute the `test` command:
 
 ``` shell
@@ -51,4 +53,4 @@ make run
  curl http://127.0.0.1:8081/ -v -H "ip: 25.152.57.0"
 ```
 
-You should see that the first request was rejected and the second was completed successfully.
+The policy rejects the first request and successfully completes the second.
