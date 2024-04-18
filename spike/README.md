@@ -1,13 +1,16 @@
 # Spike Policy
 
 Use the Spike Policy as an example of how to delay requests before they reach the backend.
-This policy will do a Spike Control inside each worker.
+
+This policy provides spike control for each worker
 
 The policy takes the following parameters:
-* requests: The amount of request that will be able to go through in the given window.
-* millis: The duration in millis of the sliding window.
-* maxAttempts: The maximum number of attempts the request will be throttled before rejecting it.
-* delay: The delay in millis between each throttled re-attempt.
+* `requests`: The amount of requests that can reach the backend service in the given time window.
+* `millis`: The duration in milliseconds of the time window.
+* `maxAttempts`: The maximum number of attempts the request is throttled for before it is rejected.
+* `delay`: The delay in milliseconds between each throttled attempt.
+
+To learn more about periodic functions, see [Configuring Delayed and Periodic Functions](https://docs.mulesoft.com/pdk/latest/policies-pdk-configure-timer).
 
 ## Test the Policy
 
@@ -24,7 +27,6 @@ This example contains an [integration test](./tests/requests.rs) to simplify its
 
 1. Add the `registration.yaml` in the `./tests/common` folder.
 
-The test can be invoked by using the `test` command:
 2. Execute the `test` command:
 
 ``` shell
@@ -49,7 +51,7 @@ make run
 curl "https://localhost:8081"
 ```
 
-You should see in the logs how many retries each request took before being accepted/rejected:
+4. View the Flex Gateway logs to find how many retries each request took before being accepted or rejected, for example:
 
 ```text
 local-flex-1  | [flex-gateway-envoy][debug] wasm log ingress-http-spike-v1-0-impl-1.default.ingress-http.default.svc main: [policy: ingress-http-spike-v1-0-impl-1.default][api: ingress-http.default.svc][req: 41dfe989-3ee2-4995-b509-0e740204f7b8] Retries: 0
