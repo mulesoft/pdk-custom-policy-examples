@@ -1,13 +1,16 @@
 # Spike Policy
 
 Use the Spike Policy as an example of how to delay requests before they reach the backend.
-This policy will do a Spike Control inside each worker.
+
+This policy provides spike control for each worker
 
 The policy takes the following parameters:
 * `requests`: The amount of requests that can reach the backend service in the given time window.
 * `millis`: The duration in milliseconds of the time window.
 * `maxAttempts`: The maximum number of attempts the request is throttled for before it is rejected.
 * `delay`: The delay in milliseconds between each throttled attempt.
+
+To learn more about periodic functions, see [Configuring Delayed and Periodic Functions](https://docs.mulesoft.com/pdk/latest/policies-pdk-configure-timer).
 
 ## Test the Policy
 

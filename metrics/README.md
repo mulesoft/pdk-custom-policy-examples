@@ -9,6 +9,10 @@ The policy takes the following parameters:
 * `pushFrequency`: The frequency the worker sends the metrics.
 * `maxRetries`: The number of attempts the worker makes to send the metrics if the metrics push is unsuccessful. If left empty, the worker retries until success.
 
+To learn more about periodic functions and HTTP calls, see:
+* [Configuring Delayed and Periodic Functions](https://docs.mulesoft.com/pdk/latest/policies-pdk-configure-timer).
+* [Performing an HTTP Call](https://docs.mulesoft.com/pdk/latest/policies-pdk-configure-features-http-request).
+
 ## Test the Policy
 
 Test the policy using either integration testing or the policy playground.

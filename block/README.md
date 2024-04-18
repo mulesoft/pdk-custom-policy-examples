@@ -1,6 +1,6 @@
 # Block Policy
 
-Use the Block Policy as an example of how to execute a task periodically in a single worker and then share the information with other workers.
+Use the Block Policy as an example of how to execute a task periodically in a single worker and then shares the information with other workers.
 
 This policy periodically queries a service that returns a list of IP ranges and then blocks all requests coming from those ranges. Each worker first ensures that the IP does not need to be requested. If it does, the worker makes a request to the IP source and then shares the data with the other workers.
 
@@ -8,6 +8,10 @@ The policy takes the following parameters:
 * `source`: The url of the service that provides the list of IP ranges to block.
 * `frequency`: The frequency in seconds that the service is queried.
 * `ip`: A DataWeave expression that extracts the IP address from the request.
+
+To learn more about periodic functions and HTTP calls, see:
+* [Configuring Delayed and Periodic Functions](https://docs.mulesoft.com/pdk/latest/policies-pdk-configure-timer).
+* [Performing an HTTP Call](https://docs.mulesoft.com/pdk/latest/policies-pdk-configure-features-http-request).
 
 ## Test the Policy
 
