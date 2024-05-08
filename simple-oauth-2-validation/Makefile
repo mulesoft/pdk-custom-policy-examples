@@ -11,14 +11,15 @@ OAUTH_TOKEN            	= $(shell anypoint-cli-v4 pdk get-token)
 POLICY_REF_NAME        	= $(DEFINITION_NAME)$(POLICY_REF_NAME_SUFFIX)
 SETUP_ERROR_CMD        	= (echo "ERROR:\n\tMissing custom policy project setup. Please run 'make setup'\n")
 ifeq ($(OS), Windows_NT)
-ANYPOINT_METADATA_JSON  = $(shell cargo anypoint get-anypoint-metadata | ConvertTo-Json)
-else
-ANYPOINT_METADATA_JSON  = $(shell cargo anypoint get-anypoint-metadata)
-endif
-
-ifeq ($(OS), Windows_NT)
     SHELL = powershell.exe
     .SHELLFLAGS = -NoProfile -ExecutionPolicy Bypass -Command
+	ifneq ($(shell make -v | FIND "GNU Make 4"),)
+		ANYPOINT_METADATA_JSON  = $(shell cargo anypoint get-anypoint-metadata | ConvertTo-Json)
+	else
+		ANYPOINT_METADATA_JSON  = $(shell cargo anypoint get-anypoint-metadata)
+	endif
+else
+	ANYPOINT_METADATA_JSON  = $(shell cargo anypoint get-anypoint-metadata)
 endif
 
 .PHONY: setup
@@ -28,7 +29,7 @@ setup: registry-creds login install-cargo-anypoint ## Setup all required tools t
 .PHONY: build
 build: build-asset-files ## Build the policy definition and implementation
 	@cargo build --target $(TARGET) --release
-	@cp $(DEFINITION_GCL_PATH) $(TARGET_DIR)/$(CRATE_NAME)_definition.yaml
+	@$(shell cp $(DEFINITION_GCL_PATH) $(TARGET_DIR)/$(CRATE_NAME)_definition.yaml)
 	@cargo anypoint gcl-gen -d $(DEFINITION_NAME) -n $(DEFINITION_NAMESPACE) -w $(TARGET_DIR)/$(CRATE_NAME).wasm -o $(TARGET_DIR)/$(CRATE_NAME)_implementation.yaml
 	@echo $(POLICY_REF_NAME) > target/policy-ref-name.txt
 
@@ -42,8 +43,8 @@ ifeq ($(OS), Windows_NT)
 else
 	rm -f playground/config/custom-policies/*.yaml
 endif
-	cp $(TARGET_DIR)/$(CRATE_NAME)_implementation.yaml playground/config/custom-policies/$(CRATE_NAME)_implementation.yaml
-	cp $(TARGET_DIR)/$(CRATE_NAME)_definition.yaml playground/config/custom-policies/$(CRATE_NAME)_definition.yaml
+	$(shell cp $(TARGET_DIR)/$(CRATE_NAME)_implementation.yaml playground/config/custom-policies/$(CRATE_NAME)_implementation.yaml)
+	$(shell cp $(TARGET_DIR)/$(CRATE_NAME)_definition.yaml playground/config/custom-policies/$(CRATE_NAME)_definition.yaml)
 	-docker compose -f ./playground/docker-compose.yaml down
 	docker compose -f ./playground/docker-compose.yaml up
 
