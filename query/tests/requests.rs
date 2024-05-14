@@ -22,7 +22,7 @@ const FLEX_PORT: Port = 8081;
 async fn query() -> anyhow::Result<()> {
     // Configure a Flex service
     let flex_config = FlexConfig::builder()
-        .version("1.6.1")
+        .version("1.7.0")
         .hostname("local-flex")
         .ports([FLEX_PORT])
         .config_mounts([

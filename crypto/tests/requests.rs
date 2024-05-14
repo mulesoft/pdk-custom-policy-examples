@@ -43,7 +43,7 @@ const AES_KEY: &str = "42F56B955DEA9D821F2A38E3CCDCCQWE";
 async fn crypto() -> anyhow::Result<()> {
     // Configure a Flex service
     let flex_config = FlexConfig::builder()
-        .version("1.6.1")
+        .version("1.7.0")
         .hostname("local-flex")
         .ports([FLEX_PORT])
         .config_mounts([

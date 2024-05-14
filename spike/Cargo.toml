@@ -1,0 +1,33 @@
+# Copyright 2023 Salesforce, Inc. All rights reserved.
+[package]
+name = "spike"
+version = "1.0.0"
+rust-version = "1.74.0"
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[package.metadata.anypoint]
+group_id = "f7a576be-e707-4ce3-9c68-3432d591846c"
+definition_asset_id = "spike"
+implementation_asset_id = "spike-flex"
+
+[dependencies]
+pdk = { version = "1.1.0", registry = "anypoint" }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = { version = "1.0", default-features = false, features = ["alloc"] }
+anyhow = "1.0"
+
+[dev-dependencies]
+pdk-test = { version = "1.1.0", registry = "anypoint" }
+httpmock = "0.6"
+reqwest = "0.11"
+futures = "0.3.30"
+
+[lib]
+crate-type = ["cdylib"]
+
+[profile.release]
+lto = true
+opt-level = 'z'
+strip = "debuginfo"

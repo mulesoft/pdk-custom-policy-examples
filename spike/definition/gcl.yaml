@@ -1,0 +1,29 @@
+---
+apiVersion: gateway.mulesoft.com/v1alpha1
+kind: Extension
+metadata:
+  labels:
+    title: spike
+    category: Custom
+spec:
+  extends:
+    - name: extension-definition
+      namespace: default
+  properties:
+    requests:
+      type: integer
+      description: The amount of request that will be able to go through in the given window.
+    millis:
+      type: integer
+      description: The duration in millis of the sliding window.
+    maxAttempts:
+      type: integer
+      description: The maximum number of attempts the request will be throttled before rejecting it.
+    delay:
+      type: integer
+      description: The delay in millis between each throttled re-attempt.
+  required:
+    - requests
+    - millis
+    - maxAttempts
+    - delay
