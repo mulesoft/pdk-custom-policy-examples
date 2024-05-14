@@ -134,7 +134,7 @@ async fn mock_backend_path(upstream: &MockServer) {
 /// Configuring the Flex service
 fn flex_config(test_config_dir: &str) -> FlexConfig {
     FlexConfig::builder()
-        .version("1.6.1")
+        .version("1.7.0")
         .hostname("local-flex")
         .ports([FLEX_PORT])
         .config_mounts([

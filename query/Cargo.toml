@@ -13,7 +13,7 @@ definition_asset_id = "query"
 implementation_asset_id = "query-flex"
 
 [dependencies]
-pdk = { version = "1.0.1", registry = "anypoint" }
+pdk = { version = "1.1.0", registry = "anypoint" }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = { version = "1.0", default-features = false, features = ["alloc"] }
 anyhow = "1.0"
@@ -21,7 +21,7 @@ url = "2.2"
 itertools = "0.12.0"
 
 [dev-dependencies]
-pdk-test = { version = "1.0.1", registry = "anypoint" }
+pdk-test = { version = "1.1.0", registry = "anypoint" }
 httpmock = "0.6"
 reqwest = "0.11"
 

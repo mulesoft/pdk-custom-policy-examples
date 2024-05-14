@@ -492,7 +492,9 @@ checksum = "514de17de45fdb8dc022b1a7975556c53c86f9f0aa5f534b98977b171857c2c9"
 
 [[package]]
 name = "cache-lib"
-version = "1.0.0-rc.5"
+version = "1.1.0"
+source = "registry+https://anypoint.mulesoft.com/git/68ef9520-24e9-4cf2-b2f5-620025690913/19f9d123-5775-44d7-a67f-49328cfa00b0"
+checksum = "29d9808a913bcc7011f33caf3cba1a76413d4c32098ec64fcb036c302993d9cd"
 dependencies = [
  "bincode",
  "cfg-if",
@@ -564,7 +566,9 @@ dependencies = [
 
 [[package]]
 name = "classy"
-version = "1.0.0-rc.5"
+version = "1.1.0"
+source = "registry+https://anypoint.mulesoft.com/git/68ef9520-24e9-4cf2-b2f5-620025690913/19f9d123-5775-44d7-a67f-49328cfa00b0"
+checksum = "470f01d323440b69649d8b68d1f0c0a3455cbfbf228b32f580f6f65e86c92077"
 dependencies = [
  "bincode",
  "futures",
@@ -596,6 +600,19 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d16048cd947b08fa32c24458a22f5dc5e835264f689f4f5653210c69fd107363"
 dependencies = [
  "crossbeam-utils",
+]
+
+[[package]]
+name = "const-hex"
+version = "1.11.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "5ba00838774b4ab0233e355d26710fbfc8327a05c017f6dc4873f876d1f79f78"
+dependencies = [
+ "cfg-if",
+ "cpufeatures",
+ "hex",
+ "proptest",
+ "serde",
 ]
 
 [[package]]
@@ -1726,13 +1743,15 @@ dependencies = [
 
 [[package]]
 name = "jwt-lib"
-version = "1.0.0-rc.5"
+version = "1.1.0"
+source = "registry+https://anypoint.mulesoft.com/git/68ef9520-24e9-4cf2-b2f5-620025690913/19f9d123-5775-44d7-a67f-49328cfa00b0"
+checksum = "77c63e8d9ea2df789bf74d2e33f37df8fc1cf9525e4e433244ec4f5926e02871"
 dependencies = [
  "base64 0.13.1",
  "cfg-if",
  "chrono",
+ "const-hex",
  "elliptic-curve 0.12.3",
- "hex",
  "jwt-compact",
  "jwt-simple",
  "p256 0.11.1",
@@ -1900,7 +1919,9 @@ checksum = "01cda141df6706de531b6c46c3a33ecca755538219bd484262fa09410c13539c"
 
 [[package]]
 name = "lock-lib"
-version = "1.0.0-rc.5"
+version = "1.1.0"
+source = "registry+https://anypoint.mulesoft.com/git/68ef9520-24e9-4cf2-b2f5-620025690913/19f9d123-5775-44d7-a67f-49328cfa00b0"
+checksum = "b531a38d9551822c20cc5628e19ec976bfa6d85c2b187bbee7353fbcf17a7ac7"
 dependencies = [
  "bincode",
  "pdk-core",
@@ -2244,7 +2265,9 @@ checksum = "de3145af08024dea9fa9914f381a17b8fc6034dfb00f3a84013f7ff43f29ed4c"
 
 [[package]]
 name = "pdk"
-version = "1.0.0-rc.5"
+version = "1.1.0"
+source = "registry+https://anypoint.mulesoft.com/git/68ef9520-24e9-4cf2-b2f5-620025690913/19f9d123-5775-44d7-a67f-49328cfa00b0"
+checksum = "628523568041bc42ca53624b54eaf97f3b7703dbac7e4da653ad38c4a7e79419"
 dependencies = [
  "cache-lib",
  "classy",
@@ -2258,7 +2281,9 @@ dependencies = [
 
 [[package]]
 name = "pdk-core"
-version = "1.0.0-rc.5"
+version = "1.1.0"
+source = "registry+https://anypoint.mulesoft.com/git/68ef9520-24e9-4cf2-b2f5-620025690913/19f9d123-5775-44d7-a67f-49328cfa00b0"
+checksum = "3945bb179dddb555d773618e34ff63cd93746f10305bdad47dc8d375891de6a4"
 dependencies = [
  "anyhow",
  "classy",
@@ -2278,7 +2303,9 @@ dependencies = [
 
 [[package]]
 name = "pdk-flex-abi"
-version = "1.0.0-rc.5"
+version = "1.1.0"
+source = "registry+https://anypoint.mulesoft.com/git/68ef9520-24e9-4cf2-b2f5-620025690913/19f9d123-5775-44d7-a67f-49328cfa00b0"
+checksum = "59bf13aa62c11c41179cdf6d31aa943d82c32b2e5aaade0c7ac636e0b5d809d2"
 dependencies = [
  "anyhow",
  "pdk-core",
@@ -2289,7 +2316,9 @@ dependencies = [
 
 [[package]]
 name = "pdk-macros"
-version = "1.0.0-rc.5"
+version = "1.1.0"
+source = "registry+https://anypoint.mulesoft.com/git/68ef9520-24e9-4cf2-b2f5-620025690913/19f9d123-5775-44d7-a67f-49328cfa00b0"
+checksum = "a162bb44cde02a98f6f171196b5dfa6a514824404a585fac83315c12f9f7c679"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -2298,7 +2327,9 @@ dependencies = [
 
 [[package]]
 name = "pdk-script"
-version = "1.0.0-rc.5"
+version = "1.1.0"
+source = "registry+https://anypoint.mulesoft.com/git/68ef9520-24e9-4cf2-b2f5-620025690913/19f9d123-5775-44d7-a67f-49328cfa00b0"
+checksum = "a60d8a547685b46e9167e4791c607b1390919c786d0947568fe4eb7f1a1d0226"
 dependencies = [
  "classy",
  "getrandom",
@@ -2313,7 +2344,9 @@ dependencies = [
 
 [[package]]
 name = "pdk-test"
-version = "1.0.0-rc.5"
+version = "1.1.0"
+source = "registry+https://anypoint.mulesoft.com/git/68ef9520-24e9-4cf2-b2f5-620025690913/19f9d123-5775-44d7-a67f-49328cfa00b0"
+checksum = "79b0f0da13189173a050d5f3070cd1713f2c56d78ad8f6b43626c3017feb2734"
 dependencies = [
  "async-trait",
  "bollard",
@@ -2331,7 +2364,9 @@ dependencies = [
 
 [[package]]
 name = "pdk-test-macros"
-version = "1.0.0-rc.5"
+version = "1.1.0"
+source = "registry+https://anypoint.mulesoft.com/git/68ef9520-24e9-4cf2-b2f5-620025690913/19f9d123-5775-44d7-a67f-49328cfa00b0"
+checksum = "fa2f34d3cb8642931bdc7a7198376e627e75ff109ba27cb568e0cf05452aa366"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -2340,7 +2375,9 @@ dependencies = [
 
 [[package]]
 name = "pel"
-version = "1.0.0-rc.5"
+version = "1.1.0"
+source = "registry+https://anypoint.mulesoft.com/git/68ef9520-24e9-4cf2-b2f5-620025690913/19f9d123-5775-44d7-a67f-49328cfa00b0"
+checksum = "460c14582506a52d06afdcb61b43fca7a07f9273512ae6114e1acd592e4f8634"
 dependencies = [
  "getrandom",
  "serde_json",
@@ -2577,6 +2614,22 @@ dependencies = [
 ]
 
 [[package]]
+name = "proptest"
+version = "1.4.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "31b476131c3c86cb68032fdc5cb6d5a1045e3e42d96b69fa599fd77701e1f5bf"
+dependencies = [
+ "bitflags 2.5.0",
+ "lazy_static",
+ "num-traits",
+ "rand",
+ "rand_chacha",
+ "rand_xorshift",
+ "regex-syntax",
+ "unarray",
+]
+
+[[package]]
 name = "prost"
 version = "0.12.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2651,7 +2704,9 @@ dependencies = [
 
 [[package]]
 name = "proxy-wasm-stub"
-version = "1.0.0-rc.5"
+version = "1.1.0"
+source = "registry+https://anypoint.mulesoft.com/git/68ef9520-24e9-4cf2-b2f5-620025690913/19f9d123-5775-44d7-a67f-49328cfa00b0"
+checksum = "6860ad730fa1c2cdd5b5918e41c09d1d6fd4ce050cfc4564551e9d7f817eff5d"
 
 [[package]]
 name = "quote"
@@ -2690,6 +2745,15 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "ec0be4795e2f6a28069bec0b5ff3e2ac9bafc99e6a9a7dc3547996c5c816922c"
 dependencies = [
  "getrandom",
+]
+
+[[package]]
+name = "rand_xorshift"
+version = "0.3.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d25bf25ec5ae4a3f1b92f929810509a2f53d7dca2f50b794ff57e3face536c8f"
+dependencies = [
+ "rand_core",
 ]
 
 [[package]]
@@ -3523,6 +3587,12 @@ name = "typenum"
 version = "1.17.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "42ff0bf0c66b8238c6f3b578df37d0b7848e55df8577b3f74f92a69acceeb825"
+
+[[package]]
+name = "unarray"
+version = "0.1.4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "eaea85b334db583fe3274d12b4cd1880032beab409c0d774be044d4480ab9a94"
 
 [[package]]
 name = "unicode-bidi"
