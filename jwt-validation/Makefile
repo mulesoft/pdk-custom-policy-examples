@@ -29,7 +29,7 @@ setup: registry-creds login install-cargo-anypoint ## Setup all required tools t
 .PHONY: build
 build: build-asset-files ## Build the policy definition and implementation
 	@cargo build --target $(TARGET) --release
-	@$(shell cp $(DEFINITION_GCL_PATH) $(TARGET_DIR)/$(CRATE_NAME)_definition.yaml)
+	@cp "$(DEFINITION_GCL_PATH)" "$(TARGET_DIR)/$(CRATE_NAME)_definition.yaml"
 	@cargo anypoint gcl-gen -d $(DEFINITION_NAME) -n $(DEFINITION_NAMESPACE) -w $(TARGET_DIR)/$(CRATE_NAME).wasm -o $(TARGET_DIR)/$(CRATE_NAME)_implementation.yaml
 	@echo $(POLICY_REF_NAME) > target/policy-ref-name.txt
 
@@ -43,8 +43,8 @@ ifeq ($(OS), Windows_NT)
 else
 	rm -f playground/config/custom-policies/*.yaml
 endif
-	$(shell cp $(TARGET_DIR)/$(CRATE_NAME)_implementation.yaml playground/config/custom-policies/$(CRATE_NAME)_implementation.yaml)
-	$(shell cp $(TARGET_DIR)/$(CRATE_NAME)_definition.yaml playground/config/custom-policies/$(CRATE_NAME)_definition.yaml)
+	cp "$(TARGET_DIR)/$(CRATE_NAME)_implementation.yaml" "playground/config/custom-policies/$(CRATE_NAME)_implementation.yaml"
+	cp "$(TARGET_DIR)/$(CRATE_NAME)_definition.yaml" "playground/config/custom-policies/$(CRATE_NAME)_definition.yaml"
 	-docker compose -f ./playground/docker-compose.yaml down
 	docker compose -f ./playground/docker-compose.yaml up
 
