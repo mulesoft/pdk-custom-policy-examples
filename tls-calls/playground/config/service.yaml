@@ -1,0 +1,55 @@
+# Copyright 2023 Salesforce, Inc. All rights reserved.
+---
+# Service that will be used by the policy.
+apiVersion: gateway.mulesoft.com/v1alpha1
+kind: Service
+metadata:
+  name: tls-calls
+  namespace: example
+spec:
+  address: https://proxy-https:443
+---
+# Tls configuration for the service used by the policy.
+apiVersion: gateway.mulesoft.com/v1alpha1
+kind: PolicyBinding
+metadata:
+  name: ingress-http-tls
+spec:
+  targetRef:
+    kind: Service
+    name: tls-calls
+    namespace: example
+  policyRef:
+    name: tls-outbound
+  config:
+    skipValidation: true # Disable mtls
+    trustedCA: | # Custom certificate for the outbound request
+      -----BEGIN CERTIFICATE-----
+      MIIFATCCAumgAwIBAgIUFGVulfwSHE5A3QbTfJDMayBtnCYwDQYJKoZIhvcNAQEL
+      BQAwEDEOMAwGA1UEAwwFcHJveHkwHhcNMjQwNjI0MTYxOTM0WhcNMzQwNjIyMTYx
+      OTM0WjAQMQ4wDAYDVQQDDAVwcm94eTCCAiIwDQYJKoZIhvcNAQEBBQADggIPADCC
+      AgoCggIBAJjA6cHYPAn0DK3PKQ0JufwR4Qg6OamL6/ICj5oLQCAJx8UgTNHO/SXn
+      Mbeg3Z3Unn0u2rBtpoxz7ASF7dVnaq0FNv6KF3dAXwrDjb32LeRTcqKX5b/6dc5Q
+      8T1Zxq4YiAbfVxRcbKfQqRigPLKePd/NpU6F7O6093tC8pvCKwM34cMg7x28XfEt
+      /a/qkRc0XvNSjVvTsy2wmILiLyHglSpLTHVefQ21K7DH5ozBn4FUf/B7Wt5ro2ua
+      TU1R/PgrOkhkZX12z9H7X4sWcs3MEy1f/EIG8Kjb1VVVXU/D3APR1VVEkS7lMw81
+      U3cbyRYgxriP/J37JCxJZww4QTqYRTEcQO4vBoFnq/H540PfkYwkD8ZsnP6uXRgX
+      TkTbWeJIobLq1GH0LLhbFklwsawTfRJPBre4arhaW7yNCk1AeH+gy7I9tz1fCBJ/
+      VAxGMHjseCsot8F5uTgFHIFYz5KV23PN7uR7ELSCzKA/LIdrbHU0hZPORx8jVGnF
+      IqniC+5fnxD7XnptkLaLEEQnnV0MavILdkjenNOrPq3Wx/742+r4wa8+yg4hYIWp
+      ORlZHBYgvG6NcUyxw9FBX8InDutabimMsO+ADj/M7kS8Mb0aSYTDZFQOFQnCUjtI
+      bpWEd7n6CHemTSQp7DAp8tqLU+I/yJiQx+CS7eWnrjdZlUweveUZAgMBAAGjUzBR
+      MB0GA1UdDgQWBBS2oM/04P7OP71IWfBpxuKx2gkEejAfBgNVHSMEGDAWgBS2oM/0
+      4P7OP71IWfBpxuKx2gkEejAPBgNVHRMBAf8EBTADAQH/MA0GCSqGSIb3DQEBCwUA
+      A4ICAQA79168FhimPfngw9cxOYMRcRVkfx9OoC4mxJueUObOS2BgTNxgpS/Gsne0
+      8qYXq31ipV1wmLuwEQz6BPp3ofuE4NfrrXjnboY71plSicQ+uvr/MDjxTVyxxEAj
+      wsioOQW3mYWlhO/gddEytsNuJeVSA2KiXaZXXOe1OySKazWUi9/JbWQJI1dNkxeo
+      1ZJEBoe5AkJYC1Ad8foI1uaz2nJGUyK1jzbk1f8vBEivbkJbPOAFWNMlUJijrocS
+      /SBVCakDxrViyW4kvxtxjMrDSjN9OKjRAFgu97WOYhGKv02ty4Yki3TxZeKU3H7g
+      yEw/UVWPJFCCKxNAjBaQPu49IGiArCn6DGXFZKRkZbSIG3QhS3q2YYuuxQtqhDd5
+      dwGP9eQBThrWf7U4waiGm/gs4tHe6nfe04vqtrFwuFtptPOceLcOUPzahcRuQ/p1
+      jN3hIV5Vfrc9C2IEkvhxmRGiN0b4OnI0/8j/6M6K1R9T5KldpeMrqhHeYk+WaLFo
+      eImWtT9FcImLHkNCc1bH2tv+wKRyoKIGYIzturMaLSig1jteMgwdz87ti/m+WFXA
+      T5QlXkuM69agSBVECE3/n0K6K5whoi35df7yXpqpMcsrQ80Q4uHFzfyNAJZoQQXl
+      6tDyyYdFAPThScoAllNOFvpxxZctzfzjTPt90Ct9GCEwI+DbCw==
+      -----END CERTIFICATE-----

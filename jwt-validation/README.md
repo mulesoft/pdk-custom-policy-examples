@@ -51,7 +51,7 @@ The API in `playground/config/api.yaml` file has a secret configured. If you don
 
 To use the policy in the playground:
 
-1. Add the `registration.yaml` in the `./payground/config` folder
+1. Add the `registration.yaml` in the `./playground/config` folder
 
 2. Execute the `run` command to begin testing:
 
