@@ -28,7 +28,7 @@ make test
 
 To use the policy in the playground:
 
-1. Add the `registration.yaml` in the `./payground/config` folder
+1. Add the `registration.yaml` in the `./playground/config` folder
 
 2. Execute the `run` command to begin testing:
 

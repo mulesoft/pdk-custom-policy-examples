@@ -1,0 +1,28 @@
+---
+apiVersion: gateway.mulesoft.com/v1alpha1
+kind: Extension
+metadata:
+  labels:
+    title: tls-calls
+    category: Custom
+    interfaceScope: api,resource
+spec:
+  extends:
+    - name: extension-definition
+      namespace: default
+  properties:
+    service:
+      type: object
+      properties:
+        name:
+          type: string
+        namespace:
+          type: string
+        url:
+          type: string
+      required:
+        - name
+        - namespace
+        - url
+  required:
+    - service
