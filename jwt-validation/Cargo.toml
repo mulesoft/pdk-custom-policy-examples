@@ -21,7 +21,7 @@ chrono = { version = "0.4.19" }
 
 [dev-dependencies]
 pdk-test = { version = "1.1.0", registry = "anypoint" }
-httpmock = "0.6"
+httpmock = "0.7"
 reqwest = "0.11"
 
 [lib]
