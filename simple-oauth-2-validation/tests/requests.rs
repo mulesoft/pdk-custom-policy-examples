@@ -2,7 +2,7 @@
 
 use httpmock::MockServer;
 use pdk_test::port::Port;
-use pdk_test::services::flex::{Flex, FlexConfig};
+use pdk_test::services::flex::{ApiConfig, Flex, FlexConfig, PolicyConfig};
 use pdk_test::services::httpmock::{HttpMock, HttpMockConfig};
 use pdk_test::{pdk_test, TestComposite, TestError};
 use reqwest::{Error, Response, StatusCode};
@@ -11,12 +11,6 @@ use serde_json::json;
 use common::*;
 
 mod common;
-
-// Directory with the configurations for the `hello` test.
-const AUTHORIZATION_CONFIG_DIR: &str =
-    concat!(env!("CARGO_MANIFEST_DIR"), "/tests/requests/authorization");
-const QUERY_PARAM_CONFIG_DIR: &str =
-    concat!(env!("CARGO_MANIFEST_DIR"), "/tests/requests/query_param");
 
 // Flex port for the internal test network
 const FLEX_PORT: Port = 8081;
@@ -28,11 +22,20 @@ const INVALID_TOKEN: &str = "not_valid";
 // with a MockServer backend
 #[pdk_test]
 async fn token_from_header() -> anyhow::Result<()> {
-    // Configure Flex Gateway
-    let flex_config = flex_config(AUTHORIZATION_CONFIG_DIR);
-
     // Configure the upstream service
     let upstream_config = HttpMockConfig::builder().port(80).hostname("mock").build();
+
+    // Configure a Flex service
+    let policy_config = PolicyConfig::builder()
+        .name(POLICY_NAME)
+        .configuration(serde_json::json!({
+                    "oauthService": "http://mock/auth",
+                    "authorization": "whatever"
+        }))
+        .build();
+
+    // Configure Flex Gateway
+    let flex_config = flex_config(&upstream_config, policy_config);
 
     // Compose the services
     let composite = setup_services(flex_config, upstream_config).await?;
@@ -65,11 +68,21 @@ async fn token_from_header() -> anyhow::Result<()> {
 
 #[pdk_test]
 async fn token_from_query_parameter() -> anyhow::Result<()> {
-    // Configure Flex Gateway
-    let flex_config = flex_config(QUERY_PARAM_CONFIG_DIR);
-
     // Configure the upstream service
     let upstream_config = HttpMockConfig::builder().port(80).hostname("mock").build();
+
+    // Configure a Flex service
+    let policy_config = PolicyConfig::builder()
+        .name(POLICY_NAME)
+        .configuration(serde_json::json!({
+                    "oauthService": "http://mock/auth",
+                    "authorization": "whatever",
+                    "tokenExtractor": "#[attributes.queryParams.token]"
+        }))
+        .build();
+
+    // Configure Flex Gateway
+    let flex_config = flex_config(&upstream_config, policy_config);
 
     // Compose the services
     let composite = setup_services(flex_config, upstream_config).await?;
@@ -132,16 +145,20 @@ async fn mock_backend_path(upstream: &MockServer) {
 }
 
 /// Configuring the Flex service
-fn flex_config(test_config_dir: &str) -> FlexConfig {
+fn flex_config(upstream_config: &HttpMockConfig, policy_config: PolicyConfig) -> FlexConfig {
+    let api_config = ApiConfig::builder()
+        .name("ingress-http")
+        .upstream(upstream_config)
+        .path("/anything/echo/")
+        .port(FLEX_PORT)
+        .policies([policy_config])
+        .build();
+
     FlexConfig::builder()
         .version("1.7.0")
         .hostname("local-flex")
-        .ports([FLEX_PORT])
-        .config_mounts([
-            (POLICY_DIR, "policy"),
-            (COMMON_CONFIG_DIR, "common"),
-            (test_config_dir, "test"),
-        ])
+        .with_api(api_config)
+        .config_mounts([(POLICY_DIR, "policy"), (COMMON_CONFIG_DIR, "common")])
         .build()
 }
 

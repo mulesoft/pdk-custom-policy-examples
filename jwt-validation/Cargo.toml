@@ -14,7 +14,7 @@ implementation_asset_id = "jwt-validation-flex-gateway"
 
 [dependencies]
 # pdk = { version = "1.2.0", registry = "anypoint" }
-pdk = { path = "/Users/jatadia/Documents/repositories/peregrine/mgw-policy-development-kit/pdk", package = "pdk" }
+pdk = { git = "https://github.com/mulesoft/mgw-policy-development-kit/", package = "pdk" }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = { version = "1.0", default-features = false, features = ["alloc"] }
 anyhow = "1.0"
@@ -22,7 +22,7 @@ chrono = { version = "0.4.19" }
 
 [dev-dependencies]
 # pdk-test = { version = "1.2.0", registry = "anypoint" }
-pdk-test = { path = "/Users/jatadia/Documents/repositories/peregrine/mgw-policy-development-kit/pdk-test", package = "pdk-test" }
+pdk-test = { git = "https://github.com/mulesoft/mgw-policy-development-kit/", package = "pdk-test" }
 httpmock = "0.6"
 reqwest = "0.11"
 
