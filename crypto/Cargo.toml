@@ -13,7 +13,8 @@ definition_asset_id = "crypto"
 implementation_asset_id = "crypto-flex"
 
 [dependencies]
-pdk = { version = "1.1.0", registry = "anypoint" }
+# pdk = { version = "1.2.0", registry = "anypoint" }
+pdk = { git = "https://github.com/mulesoft/mgw-policy-development-kit/", package = "pdk" }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = { version = "1.0", default-features = false, features = ["alloc"] }
 anyhow = "1.0"
@@ -22,7 +23,8 @@ rsa = "0.9.6"
 aes-gcm = "0.10.3"
 
 [dev-dependencies]
-pdk-test = { version = "1.1.0", registry = "anypoint" }
+# pdk-test = { version = "1.2.0", registry = "anypoint" }
+pdk-test = { git = "https://github.com/mulesoft/mgw-policy-development-kit/", package = "pdk-test" }
 httpmock = "0.6"
 reqwest = "0.11"
 rand = "0.8.5"
