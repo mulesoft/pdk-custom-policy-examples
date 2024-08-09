@@ -1,0 +1,22 @@
+# Copyright 2023 Salesforce, Inc. All rights reserved.
+version: "3.3"
+
+services:
+  local-flex:
+    image: mulesoft/flex-gateway:1.7.0
+    ports:
+      - 8081:8081
+    volumes:
+      - ./config:/usr/local/share/mulesoft/flex-gateway/conf.d/
+  backend:
+    image: kennethreitz/httpbin
+  gripmock:
+    image: tkpd/gripmock
+    ports:
+      - 4770:4770 
+      - 4771:4771
+    volumes:
+      - ../proto:/proto
+    build:
+      args:
+        - proto: /proto/auth.proto
