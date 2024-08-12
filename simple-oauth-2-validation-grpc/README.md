@@ -7,7 +7,7 @@ For more information about making gRPC calls, see [Performing a gRPC Call](https
 
 ## Policy use case
 
-This example is a `gRPC` based variation of the [Simple OAuth 2.0 Validation Policy Example](https://github.com/mulesoft/pdk-custom-policy-examples/simple-oauth-2-validation). 
+This example is a `gRPC` based variation of the [Simple OAuth 2.0 Validation Policy Example](https://github.com/mulesoft/pdk-custom-policy-examples/simple-oauth-2-validation) where an external authentication `gRPC` service defined in `./proto/auth.proto` is requested for each request to validate authentication token.
 Read its use [case section](https://github.com/mulesoft/pdk-custom-policy-examples/simple-oauth-2-validation#policy-use-case) for more context.
 
 ## Test the Policy
@@ -33,7 +33,7 @@ To begin testing:
 
 To manually test the policy:
 
-1. Add a gRPC `Service` resource defining your introspection service in the `playground/config` folder.
+1. Add a gRPC `Service` resource defining your introspection gRPC service in the `playground/config` folder.
 
 For example, the following resource defines the Ripley 2000 service from the use case:
 
@@ -44,7 +44,7 @@ kind: Service
 metadata:
     name: ripley2000
 spec:
-    address: h2://oauth-server:4770
+    address: h2://oauth-grpc-server:4770
 ```
 
 2. Run the `build` command to compile the policy:
@@ -53,7 +53,7 @@ spec:
 make build
 ```
 
-3. Configure the `playground/config/api.yaml` replacing the Ripley 2000 examples with your authentication service details:
+3. Configure the `playground/config/api.yaml` the default values with your authentication service details:
 
 ``` yaml
 # Copyright 2023 Salesforce, Inc. All rights reserved.
@@ -74,7 +74,7 @@ spec:
     - policyRef:
         name: awesome-oauth-2-validation-v1-0-impl
       config:
-        tokenExtractor: "#[dw::core::Strings::substringAfter(attributes.headers['Authorization'], 'Bearer ')]"
+        tokenExtractor: "#[attributes.queryParams.token]"
         # If you want to use the Oauth Service mock defined in docker-compose.
         # yaml, use `http://oauth-server:8080` for `oauthService` value. If
         # you created a local mock in your host, listening at port 5001, use

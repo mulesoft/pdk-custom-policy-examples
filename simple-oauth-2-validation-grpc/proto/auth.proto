@@ -1,8 +1,6 @@
 // Copyright 2023 Salesforce, Inc. All rights reserved.
 syntax = "proto3";
 
-package auth;
-
 service AuthService {
     rpc Check (AuthRequest) returns (AuthResponse);
 }

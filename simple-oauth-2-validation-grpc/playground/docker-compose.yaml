@@ -10,13 +10,12 @@ services:
       - ./config:/usr/local/share/mulesoft/flex-gateway/conf.d/
   backend:
     image: kennethreitz/httpbin
+
+  # A gripmock server is configured by default with predefined authentication stubs.
   gripmock:
-    image: tkpd/gripmock
-    ports:
-      - 4770:4770 
-      - 4771:4771
+    image: tkpd/gripmock:v1.13
     volumes:
       - ../proto:/proto
-    build:
-      args:
-        - proto: /proto/auth.proto
+      - ./stub:/stub
+    command: --stub=/stub /proto/auth.proto
+

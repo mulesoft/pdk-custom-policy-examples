@@ -25,10 +25,12 @@ impl AuthClient {
     }
 
     async fn check(&self, request: AuthRequest) -> Result<AuthResponse, GrpcClientError> {
+        logger::info!("Validating Authentication.");
+
         let response = self
             .client
             .request(&self.upstream)
-            .service("auth.AuthService")
+            .service("AuthService")
             .method("Check")
             .protobuf()
             .send(&request)
@@ -159,6 +161,8 @@ async fn configure(
     Configuration(bytes): Configuration,
     client: GrpcClient,
 ) -> Result<()> {
+    logger::info!("Initializing gRPC OAuth 2.0 policy");
+
     let config: Config = serde_json::from_slice(&bytes).map_err(|err| {
         anyhow!(
             "Failed to parse configuration '{}'. Cause: {}",
@@ -166,6 +170,8 @@ async fn configure(
             err
         )
     })?;
+
+    logger::info!("gRPC OAuth 2.0 policy configuration parsed");
 
     let client = AuthClient::new(config.oauth_service.clone(), client);
 
