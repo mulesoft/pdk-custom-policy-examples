@@ -72,30 +72,28 @@ spec:
           destinationPath: /anything/echo/
   policies:
     - policyRef:
-        name: awesome-oauth-2-validation-v1-0-impl
+        name: simple-oauth-2-validation-grpc-v1-0-impl
       config:
         tokenExtractor: "#[attributes.queryParams.token]"
-        # If you want to use the Oauth Service mock defined in docker-compose.
-        # yaml, use `http://oauth-server:8080` for `oauthService` value. If
-        # you created a local mock in your host, listening at port 5001, use
-        # `http://host.docker.internal:5001`
-        oauthService: http://host.docker.internal:5001
+        oauthService: h2://gripmock:4770
         authorization: Basic dXNlcjpwYXNz
 ```
 
-4. Configure a Flex Gateway instance to debug the policy by placing a registration.yaml file in `playground/config`.
+4. Configure a Flex Gateway instance to debug the policy by placing a `registration.yaml` file in `playground/config`.
 
+5. Modify `./playground/stub.auth.json` to change the auth stubs.
 
-5. Run the `run` command to start the Flex Gateway instance:
+6. Run the `run` command to start the Flex Gateway instance:
 
 ``` shell
 make run
 ```
 
-6. Send requests to Flex Gateway by using the following command as an example:
+8. Send requests to Flex Gateway by using the following command as an example:
 
 ``` shell
-curl http://127.0.0.1:8081 -H "Authorization: Bearer <your.oauth2.token>"
+curl curl -v "http://0.0.0.0:8081/hello?token=valid"
 ```
 
-7. Test both valid and invalid tokens.
+9. Test both `valid` and `not_valid` tokens.
+
