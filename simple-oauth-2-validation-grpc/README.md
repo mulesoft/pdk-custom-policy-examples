@@ -33,27 +33,13 @@ To begin testing:
 
 To manually test the policy:
 
-1. Add a gRPC `Service` resource defining your introspection gRPC service in the `playground/config` folder.
-
-For example, the following resource defines the Ripley 2000 service from the use case:
-
-``` yaml
----
-apiVersion: gateway.mulesoft.com/v1alpha1
-kind: Service
-metadata:
-    name: ripley2000
-spec:
-    address: h2://oauth-grpc-server:4770
-```
-
-2. Run the `build` command to compile the policy:
+1. Run the `build` command to compile the policy:
 
 ``` shell
 make build
 ```
 
-3. Configure the `playground/config/api.yaml` the default values with your authentication service details:
+2. Configure the `playground/config/api.yaml` the default values with your authentication service details:
 
 ``` yaml
 # Copyright 2023 Salesforce, Inc. All rights reserved.
@@ -79,21 +65,20 @@ spec:
         authorization: Basic dXNlcjpwYXNz
 ```
 
-4. Configure a Flex Gateway instance to debug the policy by placing a `registration.yaml` file in `playground/config`.
+5. Configure a Flex Gateway instance to debug the policy by placing a `registration.yaml` file in `playground/config`.
 
-5. Modify `./playground/stub.auth.json` to change the auth stubs.
+6. Modify `./playground/stub/auth.json` to change the auth stubs.
 
-6. Run the `run` command to start the Flex Gateway instance:
+7. Run the `run` command to start the Flex Gateway instance:
 
 ``` shell
 make run
 ```
 
-8. Send requests to Flex Gateway by using the following command as an example:
+8. Send requests to Flex Gateway by using the following command as an example, by placing the token in the URL query:
 
 ``` shell
 curl curl -v "http://0.0.0.0:8081/hello?token=valid"
 ```
 
 9. Test both `valid` and `not_valid` tokens.
-
