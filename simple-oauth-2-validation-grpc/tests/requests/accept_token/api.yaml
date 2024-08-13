@@ -12,22 +12,12 @@ spec:
       routes:
         - config:
             destinationPath: /anything/echo/
-    gripmock:
-      address: h2://gripmock:4770
   policies:
     - policyRef:
-
-        # Override the `simple-oauth-2-grpc-validation` placeholder with the actual policy name.
-        # Look for the actual policy name at the `metadata.name` property from the `gcl.yaml` file.
         name: simple-oauth-2-validation-grpc-v1-0-impl
         namespace: default
-        # Also, if the policy definition gcl.yaml specifies a namespace other than default, override it too
-
-      # Fill the config with a policy configuration that matches the schema specified in the policy
-      # definition gcl.yaml. Eg:
-      # config:
-      #   someProperty: desiredValue
       config:
+        # The gRPC OAuth 2.0 validation service mocked by a gripmock gRPC server.
         oauthService: h2://gripmock:4770
         authorization: whatever
         tokenExtractor: "#[attributes.queryParams.token]"

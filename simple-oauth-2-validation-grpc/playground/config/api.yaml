@@ -8,12 +8,10 @@ spec:
   address: http://0.0.0.0:8081
   services:
     upstream:
-      address: http://backend
+      address: http://mock
       routes:
         - config:
             destinationPath: /anything/echo/
-    gripmock:
-      address: h2://gripmock:4770
   policies:
     - policyRef:
         name: simple-oauth-2-validation-grpc-v1-0-impl

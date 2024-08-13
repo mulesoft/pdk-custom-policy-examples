@@ -25,7 +25,7 @@ impl AuthClient {
     }
 
     async fn check(&self, request: AuthRequest) -> Result<AuthResponse, GrpcClientError> {
-        logger::info!("Validating Authentication.");
+        logger::info!("Validating authorization.");
 
         let response = self
             .client
@@ -76,6 +76,8 @@ async fn do_filter(
         .check(request)
         .await
         .map_err(FilterError::ClientError)?;
+
+    logger::info!("Applying authorization response.");
 
     // Obtains the current time
     let now = SystemTime::now()
