@@ -665,7 +665,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "cors-validation"
+name = "cors_validation"
 version = "1.0.0"
 dependencies = [
  "anyhow",

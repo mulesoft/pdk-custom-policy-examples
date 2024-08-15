@@ -18,7 +18,7 @@ async fn correct_headers() -> Result<()> {
 
     // Policy configuration
     let config = json!({
-        "originGroups": {
+        "originGroups": [{
             "accessControlMaxAge": 30,
             "origins": [ "http://www.the-origin-of-time.com" ],
             "allowedMethods": [
@@ -37,7 +37,7 @@ async fn correct_headers() -> Result<()> {
                 "x-yet-another-valid-header"
             ],
             "exposedHeaders": [ "x-forwarded-for" ]
-        }
+        }]
     });
 
     let composite = compose(&config).await?;
@@ -64,9 +64,8 @@ async fn correct_headers() -> Result<()> {
     Ok(())
 }
 
-// Duplicated headers are allowed.
 #[pdk_test]
-async fn header_duplication() -> Result<()> {
+async fn check_origin_header() -> Result<()> {
 
     // Policy configuration
     let config = json!( {

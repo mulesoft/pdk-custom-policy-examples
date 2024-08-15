@@ -1,6 +1,6 @@
 # Copyright 2023 Salesforce, Inc. All rights reserved.
 [package]
-name = "cors-validation"
+name = "cors_validation"
 version = "1.0.0"
 rust-version = "1.74.0"
 edition = "2018"

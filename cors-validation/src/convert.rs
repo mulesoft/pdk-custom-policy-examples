@@ -38,6 +38,7 @@ impl OriginGroup {
         let origin_group = cors::OriginGroup::builder()
             .origin_group_name(self.name)
             .plain_origins(self.origins)
+            .regex_origins(Vec::new())
             .access_control_max_age(self.access_control_max_age as u32)
             .allowed_methods(allowed_methods?)
             .headers(self.headers)

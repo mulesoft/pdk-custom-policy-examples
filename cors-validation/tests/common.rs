@@ -19,7 +19,7 @@ pub const COMMON_CONFIG_DIR: &str = concat!(env!("CARGO_MANIFEST_DIR"), "/tests/
 // In case the project name changes, override this value with the actual policy name.
 // To obtain the current name, run the "make show-policy-ref-name" goal, or read it from
 // "target/policy-ref-name.txt" after building the project.
-pub const POLICY_NAME: &str = "spike-v1-0-impl";
+pub const POLICY_NAME: &str = "cors-validation-v1-0-impl";
 
 // Default Flex port.
 pub const FLEX_PORT: Port = 8081;
@@ -34,12 +34,14 @@ pub async fn compose<T: Serialize>(config: &T) -> Result<TestComposite> {
         .build();
 
     let api = ApiConfig::builder()
-        .name("my-api")
+        .name("myApi")
         .upstream(&httpbin_config)
         .path("/anything/echo/")
         .port(FLEX_PORT)
         .policies([policy_config])
         .build();
+
+    println!("API = {api:?}");
 
     let flex_config = FlexConfig::builder()
         .version("1.7.0")

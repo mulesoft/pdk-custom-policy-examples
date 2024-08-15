@@ -21,7 +21,7 @@ spec:
         supportCredentials: false
         originGroups:
           - accessControlMaxAge: 30
-            origins: 
+            origins:
               - "http://www.the-origin.com"
             allowedMethods:
               - methodName: GET

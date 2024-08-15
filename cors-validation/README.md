@@ -39,7 +39,7 @@ make run
 3. Make requests to the Flex Gateway by using the following CURL command:
 
 ```shell
-curl -H "Origin: http://www.the-origin.com"  "https://localhost:8081"
+curl -v -H "Origin: http://www.the-origin.com" "https://localhost:8081"
 ```
 
-4. Check the Flex Gateway logs to find how many retries each request took before being accepted or rejected.
+4. Check the headers returned by the endpoint.
