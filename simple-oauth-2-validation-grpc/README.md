@@ -78,7 +78,7 @@ make run
 8. Send requests to Flex Gateway by using the following command as an example, by placing the token in the URL query:
 
 ``` shell
-curl curl -v "http://0.0.0.0:8081/hello?token=valid"
+curl -v "http://0.0.0.0:8081/hello?token=valid"
 ```
 
 9. Test both `valid` and `not_valid` tokens.
