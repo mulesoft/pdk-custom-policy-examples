@@ -41,8 +41,6 @@ pub async fn compose<T: Serialize>(config: &T) -> Result<TestComposite> {
         .policies([policy_config])
         .build();
 
-    println!("API = {api:?}");
-
     let flex_config = FlexConfig::builder()
         .version("1.7.0")
         .with_api(api)

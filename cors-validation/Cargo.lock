@@ -295,15 +295,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "0c4b4d0bd25bd0b74681c0ad21497610ce1b7c91b1022cd21c80c6fbdd9476b0"
 
 [[package]]
-name = "autotools"
-version = "0.2.7"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ef941527c41b0fc0dd48511a8154cd5fc7e29200a0ff8b7203c5d777dbc795cf"
-dependencies = [
- "cc",
-]
-
-[[package]]
 name = "backtrace"
 version = "0.3.73"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -494,7 +485,8 @@ checksum = "8318a53db07bb3f8dca91a600466bdb3f2eaadeedfdbcf02e1accbad9271ba50"
 [[package]]
 name = "cache-lib"
 version = "1.2.0"
-source = "git+https://github.com/mulesoft/mgw-policy-development-kit/#7ff322f86df7d44056f2057b5d75890013debd55"
+source = "registry+https://anypoint.mulesoft.com/git/68ef9520-24e9-4cf2-b2f5-620025690913/19f9d123-5775-44d7-a67f-49328cfa00b0"
+checksum = "1a4756bfebed817aee375422bd36aac95f8228bf306ca6d5da55d17a8507bb40"
 dependencies = [
  "bincode",
  "cfg-if",
@@ -570,7 +562,8 @@ dependencies = [
 [[package]]
 name = "classy"
 version = "1.2.0"
-source = "git+https://github.com/mulesoft/mgw-policy-development-kit/#7ff322f86df7d44056f2057b5d75890013debd55"
+source = "registry+https://anypoint.mulesoft.com/git/68ef9520-24e9-4cf2-b2f5-620025690913/19f9d123-5775-44d7-a67f-49328cfa00b0"
+checksum = "9efaa85f45136e5a5ac7da26f81c599e176e97115d6434e379efb1c433cfa0ba"
 dependencies = [
  "bincode",
  "futures",
@@ -652,7 +645,8 @@ checksum = "773648b94d0e5d620f64f280777445740e61fe701025087ec8b57f45c791888b"
 [[package]]
 name = "cors-lib"
 version = "1.2.0"
-source = "git+https://github.com/mulesoft/mgw-policy-development-kit/#7ff322f86df7d44056f2057b5d75890013debd55"
+source = "registry+https://anypoint.mulesoft.com/git/68ef9520-24e9-4cf2-b2f5-620025690913/19f9d123-5775-44d7-a67f-49328cfa00b0"
+checksum = "a88d3e6a8e427d7eb8ca387a120230789958176f77ff63d2444855c2eeb63368"
 dependencies = [
  "derive_builder",
  "log",
@@ -1401,12 +1395,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "heck"
-version = "0.5.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2304e00983f87ffb38b55b444b5e3b60a884b5d30c0fca7d82fe33449bbe55ea"
-
-[[package]]
 name = "hermit-abi"
 version = "0.3.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1464,6 +1452,15 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e4ce1f4656bae589a3fab938f9f09bf58645b7ed01a2c5f8a3c238e01a4ef78a"
 dependencies = [
  "digest",
+]
+
+[[package]]
+name = "home"
+version = "0.5.9"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e3d1354bf6b7235cb4a0576c2619fd4ed18183f689b12b006a0ee7329eeff9a5"
+dependencies = [
+ "windows-sys 0.52.0",
 ]
 
 [[package]]
@@ -1799,15 +1796,6 @@ dependencies = [
 
 [[package]]
 name = "itertools"
-version = "0.12.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ba291022dbbd398a455acf126c1e341954079855bc60dfdda641363bd6922569"
-dependencies = [
- "either",
-]
-
-[[package]]
-name = "itertools"
 version = "0.13.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "413ee7dfc52ee1a4949ceeb7dbc8a33f2d6c088194d9f922fb8318faf1f01186"
@@ -1854,7 +1842,8 @@ dependencies = [
 [[package]]
 name = "jwt-lib"
 version = "1.2.0"
-source = "git+https://github.com/mulesoft/mgw-policy-development-kit/#7ff322f86df7d44056f2057b5d75890013debd55"
+source = "registry+https://anypoint.mulesoft.com/git/68ef9520-24e9-4cf2-b2f5-620025690913/19f9d123-5775-44d7-a67f-49328cfa00b0"
+checksum = "1d4cfd0330afe71e8751e6984641b1f048996b5cd4ada1d770263f73e8135fa5"
 dependencies = [
  "base64 0.13.1",
  "cfg-if",
@@ -2030,7 +2019,8 @@ checksum = "78b3ae25bc7c8c38cec158d1f2757ee79e9b3740fbc7ccf0e59e4b08d793fa89"
 [[package]]
 name = "lock-lib"
 version = "1.2.0"
-source = "git+https://github.com/mulesoft/mgw-policy-development-kit/#7ff322f86df7d44056f2057b5d75890013debd55"
+source = "registry+https://anypoint.mulesoft.com/git/68ef9520-24e9-4cf2-b2f5-620025690913/19f9d123-5775-44d7-a67f-49328cfa00b0"
+checksum = "ca0c2ae6427eb3d67336247b34d20936da8ca8d4544b63442a43c4626e422186"
 dependencies = [
  "bincode",
  "pdk-core",
@@ -2093,12 +2083,6 @@ dependencies = [
  "wasi",
  "windows-sys 0.52.0",
 ]
-
-[[package]]
-name = "multimap"
-version = "0.10.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "defc4c55412d89136f966bbb339008b474350e5e6e78d2714439c386b3137a03"
 
 [[package]]
 name = "native-tls"
@@ -2350,7 +2334,8 @@ checksum = "57c0d7b74b563b49d38dae00a0c37d4d6de9b432382b2892f0574ddcae73fd0a"
 [[package]]
 name = "pdk"
 version = "1.2.0"
-source = "git+https://github.com/mulesoft/mgw-policy-development-kit/#7ff322f86df7d44056f2057b5d75890013debd55"
+source = "registry+https://anypoint.mulesoft.com/git/68ef9520-24e9-4cf2-b2f5-620025690913/19f9d123-5775-44d7-a67f-49328cfa00b0"
+checksum = "9d555b19b5bf3cc69f194faf3b8dd65015c344a21bb5376330f9a787510850a5"
 dependencies = [
  "cache-lib",
  "classy",
@@ -2366,16 +2351,16 @@ dependencies = [
 [[package]]
 name = "pdk-core"
 version = "1.2.0"
-source = "git+https://github.com/mulesoft/mgw-policy-development-kit/#7ff322f86df7d44056f2057b5d75890013debd55"
+source = "registry+https://anypoint.mulesoft.com/git/68ef9520-24e9-4cf2-b2f5-620025690913/19f9d123-5775-44d7-a67f-49328cfa00b0"
+checksum = "fd1f8fa1fad469c6311a1beff7d39f0daa9b2be17ed8fd3311dc6c9b03272a34"
 dependencies = [
  "anyhow",
  "classy",
  "log",
  "pdk-macros",
  "pdk-script",
- "prost",
- "prost-build",
- "protobuf-src",
+ "protobuf",
+ "protobuf-codegen",
  "rmp-serde",
  "serde",
  "serde_derive",
@@ -2387,7 +2372,8 @@ dependencies = [
 [[package]]
 name = "pdk-flex-abi"
 version = "1.2.0"
-source = "git+https://github.com/mulesoft/mgw-policy-development-kit/#7ff322f86df7d44056f2057b5d75890013debd55"
+source = "registry+https://anypoint.mulesoft.com/git/68ef9520-24e9-4cf2-b2f5-620025690913/19f9d123-5775-44d7-a67f-49328cfa00b0"
+checksum = "b4e67d7c668953190f0761be30539e2ecceb3d7b0771d1d68458140260f3e42c"
 dependencies = [
  "anyhow",
  "pdk-core",
@@ -2399,7 +2385,8 @@ dependencies = [
 [[package]]
 name = "pdk-macros"
 version = "1.2.0"
-source = "git+https://github.com/mulesoft/mgw-policy-development-kit/#7ff322f86df7d44056f2057b5d75890013debd55"
+source = "registry+https://anypoint.mulesoft.com/git/68ef9520-24e9-4cf2-b2f5-620025690913/19f9d123-5775-44d7-a67f-49328cfa00b0"
+checksum = "dbe699cac86febcdb26e95438149ebff6becc3a20817ae6913ce7d71e7f620ab"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -2409,7 +2396,8 @@ dependencies = [
 [[package]]
 name = "pdk-script"
 version = "1.2.0"
-source = "git+https://github.com/mulesoft/mgw-policy-development-kit/#7ff322f86df7d44056f2057b5d75890013debd55"
+source = "registry+https://anypoint.mulesoft.com/git/68ef9520-24e9-4cf2-b2f5-620025690913/19f9d123-5775-44d7-a67f-49328cfa00b0"
+checksum = "8e3d4777af14f8821dce7a9c979bb815c310937bdd51121cb64c61be710ac744"
 dependencies = [
  "classy",
  "getrandom",
@@ -2425,7 +2413,8 @@ dependencies = [
 [[package]]
 name = "pdk-test"
 version = "1.2.0"
-source = "git+https://github.com/mulesoft/mgw-policy-development-kit/#7ff322f86df7d44056f2057b5d75890013debd55"
+source = "registry+https://anypoint.mulesoft.com/git/68ef9520-24e9-4cf2-b2f5-620025690913/19f9d123-5775-44d7-a67f-49328cfa00b0"
+checksum = "9ea3e0b3ef49301a9022d4fe6a5b8c012d88c2f21539083c20ce923bfeda27c2"
 dependencies = [
  "async-trait",
  "bollard",
@@ -2437,21 +2426,20 @@ dependencies = [
  "indoc",
  "log",
  "pdk-test-macros",
- "protobuf-src",
  "serde",
  "serde_json",
  "tar",
  "tempfile",
  "thiserror",
  "tokio",
- "tonic-build",
  "versions",
 ]
 
 [[package]]
 name = "pdk-test-macros"
 version = "1.2.0"
-source = "git+https://github.com/mulesoft/mgw-policy-development-kit/#7ff322f86df7d44056f2057b5d75890013debd55"
+source = "registry+https://anypoint.mulesoft.com/git/68ef9520-24e9-4cf2-b2f5-620025690913/19f9d123-5775-44d7-a67f-49328cfa00b0"
+checksum = "51e2bb933e68318558bf45877a68b4d854afe0770d363a39f1431911188a545b"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -2461,7 +2449,8 @@ dependencies = [
 [[package]]
 name = "pel"
 version = "1.2.0"
-source = "git+https://github.com/mulesoft/mgw-policy-development-kit/#7ff322f86df7d44056f2057b5d75890013debd55"
+source = "registry+https://anypoint.mulesoft.com/git/68ef9520-24e9-4cf2-b2f5-620025690913/19f9d123-5775-44d7-a67f-49328cfa00b0"
+checksum = "d25de44d20dd2ed9095314477a7f375ad7b0e8f8768566eec5a156bfe2f0a51f"
 dependencies = [
  "getrandom",
  "serde_json",
@@ -2673,16 +2662,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "925383efa346730478fb4838dbe9137d2a47675ad789c546d150a6e1dd4ab31c"
 
 [[package]]
-name = "prettyplease"
-version = "0.2.20"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5f12335488a2f3b0a83b14edad48dca9879ce89b2edd10e80237e4e852dd645e"
-dependencies = [
- "proc-macro2",
- "syn 2.0.74",
-]
-
-[[package]]
 name = "primeorder"
 version = "0.13.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2717,59 +2696,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "prost"
-version = "0.12.6"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "deb1435c188b76130da55f17a466d252ff7b1418b2ad3e037d127b94e3411f29"
-dependencies = [
- "bytes",
- "prost-derive",
-]
-
-[[package]]
-name = "prost-build"
-version = "0.12.6"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "22505a5c94da8e3b7c2996394d1c933236c4d743e81a410bcca4e6989fc066a4"
-dependencies = [
- "bytes",
- "heck",
- "itertools 0.12.1",
- "log",
- "multimap",
- "once_cell",
- "petgraph",
- "prettyplease",
- "prost",
- "prost-types",
- "regex",
- "syn 2.0.74",
- "tempfile",
-]
-
-[[package]]
-name = "prost-derive"
-version = "0.12.6"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "81bddcdb20abf9501610992b6759a4c888aef7d1a7247ef75e2404275ac24af1"
-dependencies = [
- "anyhow",
- "itertools 0.12.1",
- "proc-macro2",
- "quote",
- "syn 2.0.74",
-]
-
-[[package]]
-name = "prost-types"
-version = "0.12.6"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9091c90b0a32608e984ff2fa4091273cbdd755d54935c51d520887f4a1dbd5b0"
-dependencies = [
- "prost",
-]
-
-[[package]]
 name = "protobuf"
 version = "3.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2781,12 +2707,34 @@ dependencies = [
 ]
 
 [[package]]
-name = "protobuf-src"
-version = "1.1.0+21.5"
+name = "protobuf-codegen"
+version = "3.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c7ac8852baeb3cc6fb83b93646fb93c0ffe5d14bf138c945ceb4b9948ee0e3c1"
+checksum = "eab09155fad2d39333d3796f67845d43e29b266eea74f7bc93f153f707f126dc"
 dependencies = [
- "autotools",
+ "anyhow",
+ "once_cell",
+ "protobuf",
+ "protobuf-parse",
+ "regex",
+ "tempfile",
+ "thiserror",
+]
+
+[[package]]
+name = "protobuf-parse"
+version = "3.5.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "1a16027030d4ec33e423385f73bb559821827e9ec18c50e7874e4d6de5a4e96f"
+dependencies = [
+ "anyhow",
+ "indexmap 2.4.0",
+ "log",
+ "protobuf",
+ "protobuf-support",
+ "tempfile",
+ "thiserror",
+ "which",
 ]
 
 [[package]]
@@ -2811,7 +2759,8 @@ dependencies = [
 [[package]]
 name = "proxy-wasm-stub"
 version = "1.2.0"
-source = "git+https://github.com/mulesoft/mgw-policy-development-kit/#7ff322f86df7d44056f2057b5d75890013debd55"
+source = "registry+https://anypoint.mulesoft.com/git/68ef9520-24e9-4cf2-b2f5-620025690913/19f9d123-5775-44d7-a67f-49328cfa00b0"
+checksum = "927dd3d69f1dbc4a13129a5e0eb683166562675246aa66eb5d5e0a234dfb1c7e"
 
 [[package]]
 name = "quote"
@@ -3624,19 +3573,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "tonic-build"
-version = "0.11.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "be4ef6dd70a610078cb4e338a0f79d06bc759ff1b22d2120c2ff02ae264ba9c2"
-dependencies = [
- "prettyplease",
- "proc-macro2",
- "prost-build",
- "quote",
- "syn 2.0.74",
-]
-
-[[package]]
 name = "tower"
 version = "0.4.13"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3916,6 +3852,18 @@ checksum = "26fdeaafd9bd129f65e7c031593c24d62186301e0c72c8978fa1678be7d532c0"
 dependencies = [
  "js-sys",
  "wasm-bindgen",
+]
+
+[[package]]
+name = "which"
+version = "4.4.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "87ba24419a2078cd2b0f2ede2691b6c66d8e47836da3b6db8265ebad47afbfc7"
+dependencies = [
+ "either",
+ "home",
+ "once_cell",
+ "rustix 0.38.34",
 ]
 
 [[package]]
