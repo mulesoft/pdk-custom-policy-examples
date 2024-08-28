@@ -493,7 +493,7 @@ checksum = "8318a53db07bb3f8dca91a600466bdb3f2eaadeedfdbcf02e1accbad9271ba50"
 
 [[package]]
 name = "cache-lib"
-version = "1.2.0-rc.0"
+version = "1.2.0"
 source = "git+https://github.com/mulesoft/mgw-policy-development-kit/#7ff322f86df7d44056f2057b5d75890013debd55"
 dependencies = [
  "bincode",
@@ -569,7 +569,7 @@ dependencies = [
 
 [[package]]
 name = "classy"
-version = "1.2.0-rc.0"
+version = "1.2.0"
 source = "git+https://github.com/mulesoft/mgw-policy-development-kit/#7ff322f86df7d44056f2057b5d75890013debd55"
 dependencies = [
  "bincode",
@@ -651,7 +651,7 @@ checksum = "773648b94d0e5d620f64f280777445740e61fe701025087ec8b57f45c791888b"
 
 [[package]]
 name = "cors-lib"
-version = "1.2.0-rc.0"
+version = "1.2.0"
 source = "git+https://github.com/mulesoft/mgw-policy-development-kit/#7ff322f86df7d44056f2057b5d75890013debd55"
 dependencies = [
  "derive_builder",
@@ -1853,7 +1853,7 @@ dependencies = [
 
 [[package]]
 name = "jwt-lib"
-version = "1.2.0-rc.0"
+version = "1.2.0"
 source = "git+https://github.com/mulesoft/mgw-policy-development-kit/#7ff322f86df7d44056f2057b5d75890013debd55"
 dependencies = [
  "base64 0.13.1",
@@ -2029,7 +2029,7 @@ checksum = "78b3ae25bc7c8c38cec158d1f2757ee79e9b3740fbc7ccf0e59e4b08d793fa89"
 
 [[package]]
 name = "lock-lib"
-version = "1.2.0-rc.0"
+version = "1.2.0"
 source = "git+https://github.com/mulesoft/mgw-policy-development-kit/#7ff322f86df7d44056f2057b5d75890013debd55"
 dependencies = [
  "bincode",
@@ -2349,7 +2349,7 @@ checksum = "57c0d7b74b563b49d38dae00a0c37d4d6de9b432382b2892f0574ddcae73fd0a"
 
 [[package]]
 name = "pdk"
-version = "1.2.0-rc.0"
+version = "1.2.0"
 source = "git+https://github.com/mulesoft/mgw-policy-development-kit/#7ff322f86df7d44056f2057b5d75890013debd55"
 dependencies = [
  "cache-lib",
@@ -2365,7 +2365,7 @@ dependencies = [
 
 [[package]]
 name = "pdk-core"
-version = "1.2.0-rc.0"
+version = "1.2.0"
 source = "git+https://github.com/mulesoft/mgw-policy-development-kit/#7ff322f86df7d44056f2057b5d75890013debd55"
 dependencies = [
  "anyhow",
@@ -2386,7 +2386,7 @@ dependencies = [
 
 [[package]]
 name = "pdk-flex-abi"
-version = "1.2.0-rc.0"
+version = "1.2.0"
 source = "git+https://github.com/mulesoft/mgw-policy-development-kit/#7ff322f86df7d44056f2057b5d75890013debd55"
 dependencies = [
  "anyhow",
@@ -2398,7 +2398,7 @@ dependencies = [
 
 [[package]]
 name = "pdk-macros"
-version = "1.2.0-rc.0"
+version = "1.2.0"
 source = "git+https://github.com/mulesoft/mgw-policy-development-kit/#7ff322f86df7d44056f2057b5d75890013debd55"
 dependencies = [
  "proc-macro2",
@@ -2408,7 +2408,7 @@ dependencies = [
 
 [[package]]
 name = "pdk-script"
-version = "1.2.0-rc.0"
+version = "1.2.0"
 source = "git+https://github.com/mulesoft/mgw-policy-development-kit/#7ff322f86df7d44056f2057b5d75890013debd55"
 dependencies = [
  "classy",
@@ -2424,7 +2424,7 @@ dependencies = [
 
 [[package]]
 name = "pdk-test"
-version = "1.2.0-rc.0"
+version = "1.2.0"
 source = "git+https://github.com/mulesoft/mgw-policy-development-kit/#7ff322f86df7d44056f2057b5d75890013debd55"
 dependencies = [
  "async-trait",
@@ -2450,7 +2450,7 @@ dependencies = [
 
 [[package]]
 name = "pdk-test-macros"
-version = "1.2.0-rc.0"
+version = "1.2.0"
 source = "git+https://github.com/mulesoft/mgw-policy-development-kit/#7ff322f86df7d44056f2057b5d75890013debd55"
 dependencies = [
  "proc-macro2",
@@ -2460,7 +2460,7 @@ dependencies = [
 
 [[package]]
 name = "pel"
-version = "1.2.0-rc.0"
+version = "1.2.0"
 source = "git+https://github.com/mulesoft/mgw-policy-development-kit/#7ff322f86df7d44056f2057b5d75890013debd55"
 dependencies = [
  "getrandom",
@@ -2810,7 +2810,7 @@ dependencies = [
 
 [[package]]
 name = "proxy-wasm-stub"
-version = "1.2.0-rc.0"
+version = "1.2.0"
 source = "git+https://github.com/mulesoft/mgw-policy-development-kit/#7ff322f86df7d44056f2057b5d75890013debd55"
 
 [[package]]

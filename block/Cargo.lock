@@ -2478,7 +2478,7 @@ dependencies = [
 
 [[package]]
 name = "pdk-test-macros"
-version = "1.2.0-rc.0"
+version = "1.2.0"
 source = "git+https://github.com/mulesoft/mgw-policy-development-kit/#89026b5281ec85d157c184fb615cea181813abc4"
 dependencies = [
  "proc-macro2",
@@ -2488,7 +2488,7 @@ dependencies = [
 
 [[package]]
 name = "pel"
-version = "1.2.0-rc.0"
+version = "1.2.0"
 source = "git+https://github.com/mulesoft/mgw-policy-development-kit/#89026b5281ec85d157c184fb615cea181813abc4"
 dependencies = [
  "getrandom",
