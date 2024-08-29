@@ -1,0 +1,78 @@
+---
+apiVersion: gateway.mulesoft.com/v1alpha1
+kind: Extension
+metadata:
+  labels:
+    title: "CORS Validation Policy"
+    description: "Enables access to resources residing in external domains"
+    category: Security
+spec:
+  extends:
+    - name: extension-definition
+  properties:
+    publicResource:
+      type: boolean
+      default: true
+    supportCredentials:
+      type: boolean
+      default: false
+    originGroups:
+      type: array
+      default: []
+      items:
+        type: object
+        properties:
+          name:
+            type: string
+            default: "Default group"
+          origins:
+            type: array
+            default: []
+            items:
+              type: string
+          accessControlMaxAge:
+            type: number
+            default: 30
+          allowedMethods:
+            type: array
+            items:
+              type: object
+              properties:
+                methodName:
+                  type: string
+                allowed:
+                  type: boolean
+              required:
+                - methodName
+                - allowed
+            default: [
+              { "methodName": "CONNECT", "allowed": true },
+              { "methodName": "DELETE", "allowed": true },
+              { "methodName": "GET", "allowed": true },
+              { "methodName": "OPTIONS", "allowed": true },
+              { "methodName": "PATCH", "allowed": true },
+              { "methodName": "POST", "allowed": true },
+              { "methodName": "PUT", "allowed": true },
+              { "methodName": "TRACE", "allowed": true }
+            ]
+          headers:
+            type: array
+            default: []
+            items:
+              type: string
+          exposedHeaders:
+            type: array
+            default: []
+            items:
+              type: string
+        required:
+          - name
+          - origins
+          - accessControlMaxAge
+          - allowedMethods
+          - headers
+          - exposedHeaders
+  required:
+    - publicResource
+    - supportCredentials
+    - originGroups
