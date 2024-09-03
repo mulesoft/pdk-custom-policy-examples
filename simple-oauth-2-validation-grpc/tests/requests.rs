@@ -3,7 +3,7 @@
 use auth::{AuthRequest, AuthResponse};
 use httpmock::MockServer;
 use pdk_test::port::Port;
-use pdk_test::services::flex::{Flex, FlexConfig};
+use pdk_test::services::flex::{ApiConfig, Flex, FlexConfig, PolicyConfig};
 use pdk_test::services::gripmock::{GripMock, GripMockConfig};
 use pdk_test::services::httpmock::{HttpMock, HttpMockConfig};
 use pdk_test::{pdk_test, TestComposite};
@@ -23,10 +23,6 @@ const AUTH_TOKEN: &str = "my_token";
 // File containing the protobuf definitions.
 const PROTO_PATH: &str = concat!(env!("CARGO_MANIFEST_DIR"), "/proto/auth.proto");
 
-// Directory with the configurations for the `token_from_header` test.
-const ACCEPT_TOKEN_CONFIG_DIR: &str =
-    concat!(env!("CARGO_MANIFEST_DIR"), "/tests/requests/accept_token");
-
 // Import the protobuf generated files.
 include!(concat!(env!("OUT_DIR"), "/protos/mod.rs"));
 
@@ -42,17 +38,29 @@ async fn accept_token() -> anyhow::Result<()> {
         .proto(PROTO_PATH)
         .build();
 
+    let policy_config = PolicyConfig::builder()
+        .name(POLICY_NAME)
+        .configuration(serde_json::json!({
+                    "oauthService": "h2://gripmock:4770",
+                    "authorization": "whatever",
+                    "tokenExtractor": "#[attributes.queryParams.token]"
+        }))
+        .build();
+
+    let api_config = ApiConfig::builder()
+        .name("ingress-http")
+        .upstream(&upstream_config)
+        .path("/anything/echo/")
+        .port(FLEX_PORT)
+        .policies([policy_config])
+        .build();
+
     // Configure Flex Gateway
     let flex_config = FlexConfig::builder()
-      //  .version("1.7.0")
-        .version("1.6.1")
+        .version("1.7.0")
         .hostname("local-flex")
-        .ports([FLEX_PORT])
-        .config_mounts([
-            (POLICY_DIR, "policy"),
-            (COMMON_CONFIG_DIR, "common"),
-            (ACCEPT_TOKEN_CONFIG_DIR, "test"),
-        ])
+        .with_api(api_config)
+        .config_mounts([(POLICY_DIR, "policy"), (COMMON_CONFIG_DIR, "common")])
         .build();
 
     // Compose the services
