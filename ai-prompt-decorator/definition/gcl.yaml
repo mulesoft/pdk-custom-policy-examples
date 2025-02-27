@@ -1,0 +1,51 @@
+---
+apiVersion: gateway.mulesoft.com/v1alpha1
+kind: Extension
+metadata:
+  labels:
+    title: ai-prompt-decorator
+    category: Custom
+    metadata/interfaceScope: api,resource
+spec:
+  extends:
+    - name: extension-definition
+      namespace: default
+  properties:
+    prepend:
+      type: array
+      default: []
+      items:
+        type: object
+        properties:
+          role:
+            type: string
+            enum:
+              - system
+              - assistant
+              - user
+          content:
+            type: string
+        required:
+          - role
+          - content
+    append:
+      type: array
+      default: []
+      items:
+        type: object
+        properties:
+          role:
+            type: string
+            enum:
+              - system
+              - assistant
+              - user
+            default: system
+          content:
+            type: string
+        required:
+          - role
+          - content
+  required:
+    - prepend
+    - append
