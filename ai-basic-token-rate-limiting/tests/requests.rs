@@ -92,9 +92,7 @@ async fn rate_limit() -> anyhow::Result<()> {
     let client = reqwest::Client::new();
 
     // Create a chat request
-    let request = client
-        .post(format!("{flex_url}/chat"))
-        .json(&request_body);
+    let request = client.post(format!("{flex_url}/chat")).json(&request_body);
 
     // perform the first request with 2 tokens.
     let response = request.try_clone().unwrap().send().await?;

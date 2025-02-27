@@ -27,11 +27,11 @@ async fn request_filter(
         Ok(_) => Flow::Continue(()),
         Err(error) => {
             let response = match error {
+                RateLimitError::Exceeded => Response::new(403)
+                    .with_body(r#"{ "error": "Too many tokens. Rate Limit exceeded" }"#),
                 RateLimitError::BodyDeserialization(_) => {
                     Response::new(400).with_body(r#"{ "error": "Wrong body format" }"#)
                 }
-                RateLimitError::Exceeded => Response::new(403)
-                    .with_body(r#"{ "error": "Too many tokens. Rate Limit exceeded" }"#),
                 e => {
                     logger::error!("{e}");
                     Response::new(500).with_body(r#"{ "error": "Internal problem" }"#)
