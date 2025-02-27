@@ -4,7 +4,8 @@ apiVersion: gateway.mulesoft.com/v1alpha1
 kind: Extension
 metadata:
   labels:
-    title: ai-prompt-decorator
+    title: "AI Prompt Decorator Policy"
+    description: "Preppends and/or appends an array of messages to an `llm/v1/chat` consumer chat history"
     category: Custom
     metadata/interfaceScope: api,resource
 spec:

@@ -2,7 +2,7 @@
 Use the basic PDK body manipulation functionallities to implement an example of a message decorator policy for a `/llm/v1/chat` API.
 
 ## Policy use case
-The AI Prompt Decorator policy example preppends and/or appends an array of `llm/v1/chat` messages of an LLM consumer’s chat history. 
+The AI Prompt Decorator policy example preppends and/or appends an array of messages to an `llm/v1/chat` consumer chat history. 
 This allows for the advance crafting of intricate prompts or the guiding (and protecting) of prompts so that any changes made to the consumer’s message within the LLM remain entirely transparent.
 
 ## Test the Policy
