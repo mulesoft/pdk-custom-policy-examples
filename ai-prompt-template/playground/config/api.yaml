@@ -1,0 +1,26 @@
+# Copyright 2023 Salesforce, Inc. All rights reserved.
+---
+apiVersion: gateway.mulesoft.com/v1alpha1
+kind: ApiInstance
+metadata:
+  name: ingress-http
+spec:
+  address: http://0.0.0.0:8081
+  services:
+    upstream:
+      address: http://backend
+      routes:
+        - config:
+            destinationPath: /anything/echo/
+  policies:
+    - policyRef:
+        name: ai-prompt-template-v1-0-impl # This value will be overriden during 'make run' execution
+        namespace: default
+      # Fill the config with a policy configuration that matches the schema specified in the policy
+      # definition gcl.yaml. Eg:
+      # config:
+      #   someProperty: desiredValue
+      config:
+        templates:
+          - name: raw-template
+            template: Replacing {{foo}} and {{bar}} values
