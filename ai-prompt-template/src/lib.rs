@@ -53,20 +53,21 @@ async fn apply_template(
         error: "Unrecognized JSON structure.",
     })?;
 
-    // Prompt is requesting a template application
+    // Prompt if requesting a template application
     if let Some(template_name) = prompt.template_name() {
         match applicator.apply(template_name, &prompt.properties) {
             Some(application) => {
-                let new_body = application.to_bytes();
-                handler.set_body(&new_body).map_err(|e| {
+                handler.set_body(&application).map_err(|e| {
                     logger::error!("Unable to write body: {e:?}");
                     FilterError {
                         status_code: 500,
                         error: "internal error",
                     }
                 })?;
+                logger::info!("Template succefully applied");
             }
             None if !allow_untemplated => {
+                logger::info!("Untemplated request is disallowed.");
                 return Err(FilterError {
                     status_code: 400,
                     error: "Template not found",
@@ -106,6 +107,7 @@ async fn configure(launcher: Launcher, Configuration(bytes): Configuration) -> R
             err
         )
     })?;
+    
     let applicator = TemplateApplicator::from_config(&config);
     let filter =
         on_request(|rs| request_filter(rs, &applicator, config.allow_untemplated_requests));

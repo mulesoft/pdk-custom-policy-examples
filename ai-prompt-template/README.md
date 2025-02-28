@@ -1,6 +1,6 @@
 
 # AI Prompt Template Policy Example
-Applies a template over an OpenAI prompt request.
+Applies a predefined template over an OpenAI prompt request.
 
 ## Test the Policy
 Test the policy using either integration testing or the policy playground.
@@ -16,7 +16,7 @@ This example contains an [integration test](./tests/requests.rs) to simplify its
 
 To begin testing:
 
-1. Add the `registration.yaml` in the `./tests/config` folder.
+1. Add the `registration.yaml` in the [tests configuration folder](./tests/config).
 
 2. Execute the `test` command:
 
@@ -28,7 +28,7 @@ make test
 
 To use the policy in the playground:
 
-1. Add the `registration.yaml` in the `./playground/config` folder
+1. Add the `registration.yaml` in the [playground configuration folder](./playground/config).
 
 2. Execute the `run` command to begin testing:
 
@@ -36,14 +36,14 @@ To use the policy in the playground:
 make run
 ```
 
-3. Make requests to the Flex Gateway by using the following Curl command in order to see how the template is applied:
+3. Make requests to the Flex Gateway by using the following curl command in order to see how the template variables are applied:
 
 ```shell
 curl -X POST "http://127.0.0.1:8081" \
 -H "Content-Type: application/json" \
--d '{"prompt": "{template://raw-template}", "properties": {"foo": "a foo value", "bar": "a bar value"}}'
+-d '{"prompt": "{template://veterinarian-chat}", "properties": {"species": "falcon", "system": "respiratory"}}'
 ```
 
-4. Change the `templates` property in `./playground/config/api.yaml` to test several template configurations.
+4. Change the `templates` and `allowUntemplatedRequests` properties in the playground [api.yaml](./playground/config/api.yaml) file to test several template configurations.
 
-5. By default the playground is configured with an echo server as backend API. You can set an actual OpenAI API by editing the `backend` service at `./playground/docker-compose.yaml` file.
+5. By default the playground is configured with an echo server as backend API. You can set an actual OpenAI API by editing the `backend` service at playground [docker-compose.yaml](./playground/docker-compose.yaml) file.

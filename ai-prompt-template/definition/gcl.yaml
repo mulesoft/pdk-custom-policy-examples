@@ -12,6 +12,9 @@ spec:
     - name: extension-definition
       namespace: default
   properties:
+    allowUntemplatedRequests:
+      type: boolean
+      default: true
     templates:
       type: array
       items:
@@ -24,9 +27,6 @@ spec:
         required:
           - name
           - template   
-    allowUntemplatedRequests:
-      type: boolean
-      default: true
   required:
     - templates
     - allowUntemplatedRequests

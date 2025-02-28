@@ -16,11 +16,19 @@ spec:
     - policyRef:
         name: ai-prompt-template-v1-0-impl # This value will be overriden during 'make run' execution
         namespace: default
-      # Fill the config with a policy configuration that matches the schema specified in the policy
-      # definition gcl.yaml. Eg:
-      # config:
-      #   someProperty: desiredValue
       config:
         templates:
-          - name: raw-template
-            template: Replacing {{foo}} and {{bar}} values
+          - name: veterinarian-chat
+            template:  |-
+              {
+                "messages": [
+                  {
+                    "role": "system",
+                    "content": "You are a {{system}} expert, in {{species}} species."
+                  },
+                  {
+                    "role": "user",
+                    "content": "Describe me the {{system}} system."
+                  }
+                ]
+              }

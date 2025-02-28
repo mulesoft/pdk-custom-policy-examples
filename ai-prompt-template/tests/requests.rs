@@ -7,26 +7,56 @@ use pdk_test::port::Port;
 use pdk_test::services::flex::{ApiConfig, Flex, FlexConfig, PolicyConfig};
 use pdk_test::services::httpmock::{HttpMock, HttpMockConfig};
 use pdk_test::{pdk_test, TestComposite};
+use serde_json::json;
 
 use common::*;
 
 // Flex port for the internal test network
 const FLEX_PORT: Port = 8081;
 
-// This integration test shows how to build a test to compose a local-flex instance
-// with a MockServer backend
+// This integration test configures a template and hits Flex
+// many times to validate template applications.
 #[pdk_test]
-async fn hello() -> anyhow::Result<()> {
+async fn chat() -> anyhow::Result<()> {
     // Configure an HttpMock service
     let httpmock_config = HttpMockConfig::builder()
         .port(80)
-        .version("latest")
+        .version("0.6.8")
         .hostname("backend")
         .build();
 
+    let template = json!(
+        {
+            "messages": [
+              {
+                "role": "system",
+                "content": "You are a {{system}} expert, in {{species}} species."
+              },
+              {
+                "role": "user",
+                "content": "Describe me the {{system}} system."
+              }
+            ]
+        }
+    );
+
+    let template_string = template.to_string();
+
+    let json_config = json!(
+        {
+            "allowUntemplatedRequests": false,
+            "templates": [
+                {
+                    "name": "veterinarian-chat",
+                    "template": template_string
+                }
+            ]
+        }
+    );
+
     let policy_config = PolicyConfig::builder()
         .name(POLICY_NAME)
-        .configuration(serde_json::json!({"someProperty": "desiredValue"}))
+        .configuration(json_config)
         .build();
 
     let api_config = ApiConfig::builder()
@@ -64,19 +94,70 @@ async fn hello() -> anyhow::Result<()> {
     // Create a MockServer
     let mock_server = MockServer::connect_async(httpmock.socket()).await;
 
+    let expected_request_body = json!(
+        {
+            "messages": [
+              {
+                "role": "system",
+                "content": "You are a respiratory expert, in falcon species."
+              },
+              {
+                "role": "user",
+                "content": "Describe me the respiratory system."
+              }
+            ]
+        }
+    );
+
     // Mock a /hello request
-    mock_server
+    let chat_mock = mock_server
         .mock_async(|when, then| {
-            when.path_contains("/hello");
+            when.path_contains("/prompt")
+                .json_body(expected_request_body);
             then.status(202).body("World!");
         })
         .await;
 
-    // Perform an actual request
-    let response = reqwest::get(format!("{flex_url}/hello")).await?;
+    let client = reqwest::Client::new();
+
+    let request_body = json!(
+        {
+            "prompt": "{template://veterinarian-chat}",
+            "properties": {
+                "species": "falcon",
+                "system": "respiratory"
+            }
+        }
+    );
+
+    let response = client
+        .post(format!("{flex_url}/prompt"))
+        .json(&request_body)
+        .send()
+        .await?;
 
     // Assert on the response
     assert_eq!(response.status(), 202);
+    chat_mock.assert_async().await;
+
+    let unknown_template = json!(
+        {
+            "prompt": "{template://unknown}",
+            "properties": {
+                "species": "falcon",
+                "system": "respiratory"
+            }
+        }
+    );
+
+    let response = client
+        .post(format!("{flex_url}/prompt"))
+        .json(&unknown_template)
+        .send()
+        .await?;
+
+    // Template not found, must return bad request.
+    assert_eq!(response.status(), 400);
 
     Ok(())
 }

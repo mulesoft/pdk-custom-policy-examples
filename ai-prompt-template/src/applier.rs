@@ -1,5 +1,5 @@
 // Copyright 2023 Salesforce, Inc. All rights reserved.
-use std::{borrow::Cow, collections::HashMap, fmt::Display};
+use std::{borrow::Cow, collections::HashMap};
 
 use pdk::logger;
 
@@ -39,8 +39,8 @@ impl<'a> Template<'a> {
         Some(Template { prefix, needles })
     }
 
-    fn apply(&self, variables: &HashMap<&'a str, &'a str>) -> TemplateApplication<'a> {
-        let replacements = self
+    fn apply(&self, variables: &HashMap<&'a str, &'a str>) -> Cow<'a, [u8]> {
+        let mut iter = self
             .needles
             .iter()
             .map(|n| {
@@ -49,41 +49,24 @@ impl<'a> Template<'a> {
                     n.suffix,
                 )
             })
-            .flat_map(|(a, b)| iter::once(a).chain(iter::once(b)));
+            .flat_map(|(a, b)| iter::once(a).chain(iter::once(b)))
+            .peekable();
 
-        TemplateApplication {
-            parts: iter::once(self.prefix).chain(replacements).collect(),
+        match (self.prefix, iter.next()) {
+            (a, None) => Cow::Borrowed(a.as_bytes()),
+            ("", Some(a)) if iter.peek().is_none() => Cow::Borrowed(a.as_bytes()),
+            (a, Some(b)) => {
+                // ensure initial capacity
+                let mut buff = String::with_capacity(a.len() + b.len());
+
+                buff.push_str(a);
+                buff.push_str(b);
+
+                buff.extend(iter);
+
+                Cow::Owned(buff.into_bytes())
+            }
         }
-    }
-}
-
-#[derive(Debug)]
-
-pub struct TemplateApplication<'a> {
-    parts: Vec<&'a str>,
-}
-
-impl<'a> TemplateApplication<'a> {
-    pub fn to_bytes(&self) -> Cow<'a, [u8]> {
-        match self.parts.as_slice() {
-            [] => Cow::Borrowed(&[]),
-            [s] => Cow::Borrowed(s.as_bytes()),
-            parts => Cow::Owned(
-                parts
-                    .iter()
-                    .flat_map(|s| s.as_bytes().iter().cloned())
-                    .collect(),
-            ),
-        }
-    }
-}
-
-impl Display for TemplateApplication<'_> {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        for s in &self.parts {
-            write!(f, "{s}")?;
-        }
-        std::fmt::Result::Ok(())
     }
 }
 
@@ -93,7 +76,6 @@ pub struct TemplateApplicator<'a> {
 }
 
 impl<'a> TemplateApplicator<'a> {
-    
     pub fn from_config(config: &'a Config) -> Self {
         let templates = config
             .templates
@@ -117,7 +99,7 @@ impl<'a> TemplateApplicator<'a> {
         &self,
         name: &str,
         variables: &HashMap<&'a str, &'a str>,
-    ) -> Option<TemplateApplication<'a>> {
+    ) -> Option<Cow<'a, [u8]>> {
         self.templates.get(name).map(|t| t.apply(variables))
     }
 }
@@ -150,7 +132,7 @@ mod tests {
             .expect("application exists");
 
         assert_eq!(
-            application.to_string(),
+            String::from_utf8_lossy(&application),
             "replacing a foo-value with  and baz-value"
         );
     }
@@ -174,6 +156,6 @@ mod tests {
             )
             .expect("application exists");
 
-        assert_eq!(application.to_string(), "no variables here");
+        assert_eq!(String::from_utf8_lossy(&application), "no variables here");
     }
 }
