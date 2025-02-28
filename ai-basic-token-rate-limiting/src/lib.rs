@@ -1,5 +1,6 @@
 // Copyright 2023 Salesforce, Inc. All rights reserved.
 mod generated;
+mod openai;
 mod validator;
 
 use anyhow::{anyhow, Result};

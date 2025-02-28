@@ -1,8 +1,8 @@
 # AI Basic Token Rate Limiting Policy Example
-Validates the `llm/v1/chat` messages by counting tokens on a time limit basis.
+Validates the OpenAI API messages by counting tokens on a time limit basis.
 
 ## Policy use case
-An `llm/v1/chat` API wants to limit incoming tokens in order to prevent token flooding.
+An OpenAI API wants to limit incoming tokens in order to prevent token flooding.
 
 ## Test the Policy
 
@@ -52,4 +52,4 @@ In the third hit, it should inform the token rate limit validation by returning 
 
 4. Change the `maximumTokens` and `timePeriodInMilliseconds` in `./playground/config/api.yaml` to test several token rate limit configurations.
 
-5. By default the playground is configured with an echo server as backend API. You could set an actual `/llm/v1/chat` by editing the `backend` service at `./playground/docker-compose.yaml` file.
+5. By default the playground is configured with an echo server as backend API. You could set an actual OpenAI API by editing the `backend` service at `./playground/docker-compose.yaml` file.

@@ -2,29 +2,11 @@
 use anyhow::Result;
 use pdk::cache::{Cache, CacheError};
 
-use crate::generated::config::Config;
+use crate::{generated::config::Config, openai::Completion};
 
 use serde::{Deserialize, Serialize};
 use std::time::{SystemTime, UNIX_EPOCH};
 use tiktoken_rs::{p50k_base, CoreBPE};
-
-#[derive(Deserialize, Debug)]
-struct OpenAIChatRequestMessages<'a> {
-    #[allow(unused)]
-    role: &'a str,
-    content: &'a str,
-}
-
-#[derive(Deserialize, Debug)]
-struct OpenAIChatRequest<'a> {
-    #[allow(unused)]
-    model: &'a str,
-
-    messages: Vec<OpenAIChatRequestMessages<'a>>,
-
-    #[allow(unused)]
-    stream: Option<bool>,
-}
 
 const WINDOW_INFO_CACHE_KEY: &str = "window_info";
 
@@ -87,7 +69,7 @@ impl<C: Cache> RateLimitValidator<C> {
     /// Applies a token validation to a payload.
     pub fn validate_payload(&self, payload: &[u8]) -> Result<(), RateLimitError> {
         // get request content
-        let payload: OpenAIChatRequest =
+        let payload: Completion =
             serde_json::from_slice(payload).map_err(RateLimitError::BodyDeserialization)?;
         let messages = payload.messages;
 
