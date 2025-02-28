@@ -1,30 +1,17 @@
 // Copyright 2023 Salesforce, Inc. All rights reserved.
-use crate::generated::config::Config;
+use crate::{
+    generated::config::Config,
+    openai::{Completion, Message},
+};
 
-use serde::{Deserialize, Serialize};
-
-/// Represents an 'llm/v1/chat' request payload.
-#[derive(Debug, PartialEq, Eq, Serialize, Deserialize)]
-pub struct Payload<'a> {
-    #[serde(borrow)]
-    messages: Vec<Message<'a>>,
-}
-
-/// Represents an 'llm/v1/chat' request message.
-#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
-struct Message<'a> {
-    role: &'a str,
-    content: &'a str,
-}
-
-/// A context holder for decorating request [Payload]s.
-pub struct PayloadDecorator<'a> {
+/// A context holder for decorating [Completion]s.
+pub struct CompletionDecorator<'a> {
     prepend: Vec<Message<'a>>,
     append: Vec<Message<'a>>,
 }
 
-impl<'a> PayloadDecorator<'a> {
-    /// Creates a new [PayloadDecorator] from a [Config].
+impl<'a> CompletionDecorator<'a> {
+    /// Creates a new [CompletionDecorator] from a [Config].
     pub fn from_config(config: &'a Config) -> Self {
         Self {
             prepend: config
@@ -46,25 +33,28 @@ impl<'a> PayloadDecorator<'a> {
         }
     }
 
-    /// Creates a decorated [Payload].
-    pub fn decorate(&self, payload: &Payload<'a>) -> Payload<'a> {
-        Payload {
+    /// Creates a decorated [Completion].
+    pub fn decorate(&self, completion: Completion<'a>) -> Completion<'a> {
+        Completion {
             messages: self
                 .prepend
                 .iter()
-                .chain(payload.messages.iter())
-                .chain(self.append.iter())
                 .cloned()
+                .chain(completion.messages)
+                .chain(self.append.iter().cloned())
                 .collect(),
+            ..completion
         }
     }
 }
 
 #[cfg(test)]
 mod tests {
+    use std::collections::HashMap;
+
     use crate::generated::config::{Append0Config as Append, Config, Prepend0Config as Prepend};
 
-    use super::{Message, Payload, PayloadDecorator};
+    use super::{Completion, CompletionDecorator, Message};
 
     #[test]
     fn decorate() {
@@ -85,14 +75,17 @@ mod tests {
             }],
         };
 
-        let payload = Payload {
+        let payload = Completion {
+            model: "llama",
             messages: vec![Message {
                 role: "user",
                 content: "User content",
             }],
+            extra: HashMap::default(),
         };
 
-        let expected = Payload {
+        let expected = Completion {
+            model: "llama",
             messages: vec![
                 Message {
                     role: &config.prepend[0].role,
@@ -108,11 +101,12 @@ mod tests {
                     content: &config.append[0].content,
                 },
             ],
+            extra: HashMap::default(),
         };
 
-        let decorator = PayloadDecorator::from_config(&config);
+        let decorator = CompletionDecorator::from_config(&config);
 
-        let actual = decorator.decorate(&payload);
+        let actual = decorator.decorate(payload);
 
         assert_eq!(actual, expected);
     }

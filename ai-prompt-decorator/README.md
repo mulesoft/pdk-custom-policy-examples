@@ -1,8 +1,8 @@
 # AI Prompt Decorator Policy Example
-Use the basic PDK body manipulation functionallities to implement an example of a message decorator policy for a `/llm/v1/chat` API.
+Use the basic PDK body manipulation functionallities to implement an example of a message decorator policy for an OpenAI API.
 
 ## Policy use case
-The AI Prompt Decorator policy example preppends and/or appends an array of messages to an `llm/v1/chat` consumer chat history. 
+The AI Prompt Decorator policy example preppends and/or appends an array of messages to an OpenAI API consumer chat history. 
 This allows for the advance crafting of intricate prompts or the guiding (and protecting) of prompts so that any changes made to the consumer’s message within the LLM remain entirely transparent.
 
 ## Test the Policy
@@ -45,7 +45,7 @@ make run
 ```shell
 curl -X POST "http://127.0.0.1:8081" \
 -H "Content-Type: application/json" \
--d '{"messages": [{"role": "user", "content": "Give me an example of exo-planet"}]}'
+-d '{"model": "llama", "messages": [{"role": "user", "content": "Give me an example of exo-planet"}]}'
 ```
 
 Flex Gateway should return a response with the query parameters as headers:
@@ -53,7 +53,7 @@ Flex Gateway should return a response with the query parameters as headers:
 ```json
 {
   "args": {}, 
-  "data": "{\"messages\":[{\"role\":\"system\",\"content\":\"You are astronomer.\"},{\"role\":\"user\",\"content\":\"Focus on solar system.\"},{\"role\":\"user\",\"content\":\"Give me an example of exo-planet\"},{\"role\":\"user\",\"content\":\"Do not use speculative theories.\"}]}", 
+  "data": "{\"model\":\"llama\",\"messages\":[{\"role\":\"system\",\"content\":\"You are astronomer.\"},{\"role\":\"user\",\"content\":\"Focus on solar system.\"},{\"role\":\"user\",\"content\":\"Give me an example of exo-planet\"},{\"role\":\"user\",\"content\":\"Do not use speculative theories.\"}]}", 
   "files": {}, 
   "form": {}, 
   "headers": {
@@ -67,6 +67,7 @@ Flex Gateway should return a response with the query parameters as headers:
     "X-Envoy-Original-Path": "/"
   }, 
   "json": {
+    "model": "llama",
     "messages": [
       {
         "content": "You are astronomer.", 
@@ -95,4 +96,4 @@ Flex Gateway should return a response with the query parameters as headers:
 
 4. Change the `prepend` and `append` messages in `./playground/config/api.yaml` to test several chat history decorations.
 
-5. By default the playground is configured with an echo server as backend API. You could set an actual `/llm/v1/chat` by editing the `backend` service at `./playground/docker-compose.yaml` file.
+5. By default the playground is configured with an echo server as backend API. You could set an actual OpenAI API by editing the `backend` service at `./playground/docker-compose.yaml` file.

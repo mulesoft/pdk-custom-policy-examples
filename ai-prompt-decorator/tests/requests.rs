@@ -13,8 +13,8 @@ use common::*;
 // Flex port for the internal test network
 const FLEX_PORT: Port = 8081;
 
-// This integration test shows how to build a test to compose a local-flex instance
-// with a MockServer backend
+// This integration test configures prepend and append messages and tests if the 
+// request is actually decorated.
 #[pdk_test]
 async fn chat() -> anyhow::Result<()> {
     // Configure an HttpMock service
@@ -87,6 +87,7 @@ async fn chat() -> anyhow::Result<()> {
 
     let expected_request_body = serde_json::json!(
         {
+            "model": "llama",
             "messages": [
                 {
                     "role": "system",
@@ -122,6 +123,7 @@ async fn chat() -> anyhow::Result<()> {
 
     let request_body = serde_json::json!(
         {
+            "model": "llama",
             "messages": [
                 {
                     "role": "user",
