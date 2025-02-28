@@ -19,14 +19,14 @@ To find the prereqs for using either environment and to learn more about either 
 
 ### Integration tests
 
-This example contains an [integration test](./tests/requests.rs) to simplify its testing. 
+This example contains an integration test at [](./tests/requests.rs) to simplify its testing. 
 In the included integration tests demonstrate how to mock the upstream service by using an HTTP MockServer. 
 A simple chat request with an array of messages is sent, and the test asserts that it is decorated with 
 the configured prepend and append messages.
 
 To begin testing:
 
-1. Add the `registration.yaml` in the tests [config folder](./tests/config).
+1. Add the `registration.yaml` in the [](./tests/config) folder.
 
 2. Execute the `test` command:
 
@@ -38,7 +38,7 @@ make test
 
 To use the policy in the playground:
 
-1. Add the `registration.yaml` in the playground's [config folder](./playground/config).
+1. Add the `registration.yaml` in the [](./playground/config) folder.
 
 2. Execute the `run` command to begin testing:
 
@@ -98,7 +98,7 @@ Flex Gateway should return a response with the query parameters as headers:
 
 ```
 
-4. Change the `prepend` and `append` messages in (api.yaml)[./playground/config/api.yaml] to test several chat history decorations.
+4. Change the `prepend` and `append` messages in [](./playground/config/api.yaml) to test several chat history decorations.
 
 5. By default the playground is configured with an echo server as backend API. You could set an actual OpenAI API by editing the `backend` 
-service at the playground's [docker-compose.yaml](./playground/docker-compose.yaml) file.
+service at the [](./playground/docker-compose.yaml) file.
