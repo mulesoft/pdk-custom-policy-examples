@@ -15,11 +15,14 @@ To find the prereqs for using either environment and to learn more about either 
 
 ### Integration tests
 
-This example contains an [integration test](./tests/requests.rs) to simplify its testing. The included integration test demonstrates how to mock the upstream service by using an HTTP MockServer. A simple chat request with an array of messages is sent, and the test asserts that it validated by appliying regular expressions.
+This example contains an [integration test](./tests/requests.rs) to simplify its testing. 
+The included integration test demonstrates how to mock the upstream service by using an HTTP MockServer. 
+A simple chat request with an array of messages is sent, 
+and the test asserts that it validated by appliying regular expressions.
 
 To begin testing:
 
-1. Add the `registration.yaml` in the `./tests/config` folder.
+1. Add the `registration.yaml` in the tests [config folder](./tests/config).
 
 2. Execute the `test` command:
 
@@ -31,7 +34,7 @@ make test
 
 To use the policy in the playground:
 
-1. Add the `registration.yaml` in the `./playground/config` folder
+1. Add the `registration.yaml` in the playground's [config folder](./playground/config) folder.
 
 2. Execute the `run` command to begin testing:
 
@@ -54,6 +57,8 @@ curl -X POST "http://127.0.0.1:8081" \
 -d '{"model": "llama", "messages": [{"role": "user", "content": "My email es flexmaster@salesforce.com and my phone number is +1 9343 6126649"}]}'
 ```
 
-4. Change the `pattern` and `omitInsteadOfBlocking` properties in `./playground/config/api.yaml` to test several guards.
+4. Change the `pattern` and `omitInsteadOfBlocking` properties in playground's [api.yaml](./playground/config/api.yaml) to 
+test several guards.
 
-5. By default the playground is configured with an echo server as backend API. You can set an actual OpenAI API by editing the `backend` service at `./playground/docker-compose.yaml` file.
+5. By default the playground is configured with an echo server as backend API. You can set an actual OpenAI API by editing the 
+`backend` service at playground's [docker-compose.yaml](./playground/docker-compose.yaml) file.
