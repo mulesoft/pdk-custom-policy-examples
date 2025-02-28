@@ -61,7 +61,6 @@ Flex Gateway should return a response with the query parameters as headers:
     "Content-Type": "application/json", 
     "Host": "backend", 
     "Transfer-Encoding": "chunked", 
-    "User-Agent": "curl/8.7.1", 
     "X-Envoy-Expected-Rq-Timeout-Ms": "15000", 
     "X-Envoy-Internal": "true", 
     "X-Envoy-Original-Path": "/"
@@ -88,7 +87,6 @@ Flex Gateway should return a response with the query parameters as headers:
     ]
   }, 
   "method": "POST", 
-  "origin": "172.18.0.1", 
   "url": "http://backend/anything/echo/"
 }
 
