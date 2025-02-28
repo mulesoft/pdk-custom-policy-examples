@@ -1,2 +1,0 @@
-This directory contains the common configuration files for all the tests.
-`registration.yaml` file must be placed here.
