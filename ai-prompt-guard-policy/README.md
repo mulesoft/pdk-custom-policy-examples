@@ -6,7 +6,6 @@ Sanitizes an OpenAI chat request by refusing or deleting messages after appliyin
 An OpenAI API wants to delete or refuse incoming messages in order to prevent misuse.
 
 ## Test the Policy
-
 Test the policy using either integration testing or the policy playground.
 
 To find the prereqs for using either environment and to learn more about either environment, see:
