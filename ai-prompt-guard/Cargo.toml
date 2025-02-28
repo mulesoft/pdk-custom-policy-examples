@@ -9,8 +9,8 @@ edition = "2018"
 
 [package.metadata.anypoint]
 group_id = "edce8390-cbc6-4b53-af21-b1991d7a14bc"
-definition_asset_id = "ai-prompt-guard-policy"
-implementation_asset_id = "ai-prompt-guard-policy-flex"
+definition_asset_id = "ai-prompt-guard"
+implementation_asset_id = "ai-prompt-guard-flex"
 
 [dependencies]
 pdk = { version = "1.2.0", registry = "anypoint" }

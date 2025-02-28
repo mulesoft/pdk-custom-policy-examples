@@ -121,7 +121,7 @@ mod tests {
             extra: HashMap::default(),
         };
 
-        let actual = dbg!(sanitizer.sanitize(completion.clone()));
+        let actual = sanitizer.sanitize(completion);
 
         assert!(actual.is_none());
     }
