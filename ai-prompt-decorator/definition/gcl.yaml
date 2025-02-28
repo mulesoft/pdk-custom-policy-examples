@@ -1,0 +1,53 @@
+# Copyright 2023 Salesforce, Inc. All rights reserved.
+---
+apiVersion: gateway.mulesoft.com/v1alpha1
+kind: Extension
+metadata:
+  labels:
+    title: "AI Prompt Decorator Policy"
+    description: "Preppends and/or appends an array of messages to an `llm/v1/chat` consumer chat history"
+    category: Custom
+    metadata/interfaceScope: api,resource
+spec:
+  extends:
+    - name: extension-definition
+      namespace: default
+  properties:
+    prepend:
+      type: array
+      default: []
+      items:
+        type: object
+        properties:
+          role:
+            type: string
+            enum:
+              - system
+              - assistant
+              - user
+          content:
+            type: string
+        required:
+          - role
+          - content
+    append:
+      type: array
+      default: []
+      items:
+        type: object
+        properties:
+          role:
+            type: string
+            enum:
+              - system
+              - assistant
+              - user
+            default: system
+          content:
+            type: string
+        required:
+          - role
+          - content
+  required:
+    - prepend
+    - append
