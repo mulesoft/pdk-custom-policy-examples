@@ -1,9 +1,12 @@
 # AI Prompt Decorator Policy Example
-Use the basic PDK body manipulation functionallities to implement an example of a message decorator policy for an OpenAI API.
+Use the basic PDK body manipulation functionallities to implement an example of a message decorator policy 
+for an OpenAI API.
 
 ## Policy use case
-The AI Prompt Decorator policy example preppends and/or appends an array of messages to an OpenAI API consumer chat history. 
-This allows for the advance crafting of intricate prompts or the guiding (and protecting) of prompts so that any changes made to the consumer’s message within the LLM remain entirely transparent.
+The AI Prompt Decorator policy example preppends and/or appends an array of messages to an OpenAI API 
+consumer chat history. 
+This allows for the advance crafting of intricate prompts or the guiding (and protecting) of prompts so 
+that any changes made to the consumer’s message within the LLM remain entirely transparent.
 
 ## Test the Policy
 
@@ -16,7 +19,10 @@ To find the prereqs for using either environment and to learn more about either 
 
 ### Integration tests
 
-This example contains an [integration test](./tests/requests.rs) to simplify its testing. In the included integration tests demonstrate how to mock the upstream service by using an HTTP MockServer. A simple chat request with an array of messages is sent, and the test asserts that it is decorated with the configured prepend and append messages.
+This example contains an [integration test](./tests/requests.rs) to simplify its testing. 
+In the included integration tests demonstrate how to mock the upstream service by using an HTTP MockServer. 
+A simple chat request with an array of messages is sent, and the test asserts that it is decorated with 
+the configured prepend and append messages.
 
 To begin testing:
 
@@ -32,7 +38,7 @@ make test
 
 To use the policy in the playground:
 
-1. Add the `registration.yaml` in the `./playground/config` folder
+1. Add the `registration.yaml` in the playground's [config folder](./playground/config).
 
 2. Execute the `run` command to begin testing:
 
@@ -92,6 +98,7 @@ Flex Gateway should return a response with the query parameters as headers:
 
 ```
 
-4. Change the `prepend` and `append` messages in `./playground/config/api.yaml` to test several chat history decorations.
+4. Change the `prepend` and `append` messages in (api.yaml)[./playground/config/api.yaml] to test several chat history decorations.
 
-5. By default the playground is configured with an echo server as backend API. You could set an actual OpenAI API by editing the `backend` service at `./playground/docker-compose.yaml` file.
+5. By default the playground is configured with an echo server as backend API. You could set an actual OpenAI API by editing the `backend` 
+service at the playground's [docker-compose.yaml](./playground/docker-compose.yaml) file.
