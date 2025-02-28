@@ -19,7 +19,7 @@ This example contains an [integration test](./tests/requests.rs) to simplify its
 
 To begin testing:
 
-1. Add the `registration.yaml` in the `./tests/config` folder.
+1. Add the `registration.yaml` in the tests [config folder](./tests/config).
 
 2. Execute the `test` command:
 
@@ -31,7 +31,7 @@ make test
 
 To use the policy in the playground:
 
-1. Add the `registration.yaml` in the `./playground/config` folder
+1. Add the `registration.yaml` in the playground's [config folder](./playground/config).
 
 2. Execute the `run` command to begin testing:
 
@@ -50,6 +50,6 @@ curl -X POST "http://127.0.0.1:8081" \
 In the first hit, Flex Gateway should return a response with the echo from the backend. 
 In the third hit, it should inform the token rate limit validation by returning a 403 status.
 
-4. Change the `maximumTokens` and `timePeriodInMilliseconds` in `./playground/config/api.yaml` to test several token rate limit configurations.
+4. Change the `maximumTokens` and `timePeriodInMilliseconds` in playground's [api.yaml](./playground/config/api.yaml) configuration file to test several token rate limit configurations.
 
-5. By default the playground is configured with an echo server as backend API. You could set an actual OpenAI API by editing the `backend` service at `./playground/docker-compose.yaml` file.
+5. By default the playground is configured with an echo server as backend API. You could set an actual OpenAI API by editing the `backend` service at playground's [docker-compose.yaml](./playground/docker-compose.yaml) file.
