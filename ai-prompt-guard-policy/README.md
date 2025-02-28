@@ -1,9 +1,9 @@
 
 # AI Prompt Guard Policy Example
-Filters the `llm/v1/chat` messages by refusing or deleting messages by appliying regular expressions.
+Sanitizes an OpenAI chat request by refusing or deleting messages after appliying regular expression filters.
 
 ## Policy use case
-An `llm/v1/chat` API wants to delete or refuse incoming tokens in order to prevent misuse.
+An OpenAI API wants to delete or refuse incoming messages in order to prevent misuse.
 
 ## Test the Policy
 
@@ -45,16 +45,16 @@ make run
 ```shell
 curl -X POST "http://127.0.0.1:8081" \
 -H "Content-Type: application/json" \
--d '{"model": "Llama", "messages": [{"role": "user", "content": "My email es flexmaster@salesforce.com"}]}'
+-d '{"model": "llama", "messages": [{"role": "user", "content": "My email es flexmaster@salesforce.com"}]}'
 ```
 
 4. Make a new request to check that phone numbers are refused by returning a 403 status.
 ```shell
 curl -X POST "http://127.0.0.1:8081" \
 -H "Content-Type: application/json" \
--d '{"model": "Llama", "messages": [{"role": "user", "content": "My email es flexmaster@salesforce.com and my phone number is +1 9343 6126649"}]}'
+-d '{"model": "llama", "messages": [{"role": "user", "content": "My email es flexmaster@salesforce.com and my phone number is +1 9343 6126649"}]}'
 ```
 
 4. Change the `pattern` and `omitInsteadOfBlocking` properties in `./playground/config/api.yaml` to test several guards.
 
-5. By default the playground is configured with an echo server as backend API. You could set an actual `/llm/v1/chat` by editing the `backend` service at `./playground/docker-compose.yaml` file.
+5. By default the playground is configured with an echo server as backend API. You can set an actual OpenAI API by editing the `backend` service at `./playground/docker-compose.yaml` file.

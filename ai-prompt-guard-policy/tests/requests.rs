@@ -13,20 +13,37 @@ use common::*;
 // Flex port for the internal test network
 const FLEX_PORT: Port = 8081;
 
-// This integration test shows how to build a test to compose a local-flex instance
-// with a MockServer backend
+// This integration test validates that OpenAI API chat completion requests are
+// omitted or blocked by applying the configuration filters.
 #[pdk_test]
-async fn hello() -> anyhow::Result<()> {
+async fn chat() -> anyhow::Result<()> {
     // Configure an HttpMock service
     let httpmock_config = HttpMockConfig::builder()
         .port(80)
-        .version("latest")
+        .version("0.6.8")
         .hostname("backend")
         .build();
 
+    let filter_config = serde_json::json!(
+        {
+            "filters": [
+                {
+                    // email
+                    "pattern": r#"[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}"#,
+                    "omitInsteadOfBlocking": true
+                },
+                {
+                    // phone number
+                    "pattern": r#"(\+?\d{1,3})?[-.\s]?\(?\d{2,4}\)?[-.\s]?\d{3,4}[-.\s]?\d{4}"#,
+                    "omitInsteadOfBlocking": false
+                }
+            ]
+        }
+    );
+
     let policy_config = PolicyConfig::builder()
         .name(POLICY_NAME)
-        .configuration(serde_json::json!({"someProperty": "desiredValue"}))
+        .configuration(filter_config)
         .build();
 
     let api_config = ApiConfig::builder()
@@ -64,19 +81,88 @@ async fn hello() -> anyhow::Result<()> {
     // Create a MockServer
     let mock_server = MockServer::connect_async(httpmock.socket()).await;
 
-    // Mock a /hello request
-    mock_server
+    let omit_body = serde_json::json!(
+        {
+            "model": "llama",
+            "messages": [
+                {
+                    "role": "user",
+                    "content": "Their name is PDK"
+                }
+            ]
+        }
+    );
+
+    // Create an HTTP client.
+    let client = reqwest::Client::new();
+
+    // Mock a /chat request
+    let omit_mock = mock_server
         .mock_async(|when, then| {
-            when.path_contains("/hello");
+            when.path_contains("/chat").json_body(omit_body);
             then.status(202).body("World!");
         })
         .await;
 
-    // Perform an actual request
-    let response = reqwest::get(format!("{flex_url}/hello")).await?;
+    let omit_request_body = serde_json::json!(
+        {
+            "model": "llama",
+            "messages": [
+                {
+                    "role": "user",
+                    "content": "Their email is pdk@flex.com"
+                },
+                {
+                    "role": "user",
+                    "content": "Their name is PDK"
+                }
+            ]
+        }
+    );
 
-    // Assert on the response
+    // Create a chat request with messages to omit
+    let response = client
+        .post(format!("{flex_url}/chat"))
+        .json(&omit_request_body)
+        .send()
+        .await?;
+
+    // This request must pass
     assert_eq!(response.status(), 202);
+
+    // Assert that the API mock was reached only one time.
+    omit_mock.assert_async().await;
+
+    let block_request_body = serde_json::json!(
+        {
+            "model": "llama",
+            "messages": [
+                {
+                    "role": "user",
+                    "content": "Their email is pdk@flex.com and their phone number is +1-212-456-7890"
+                },
+                {
+                    "role": "user",
+                    "content": "Their name is PDK"
+                }
+            ]
+        }
+    );
+
+    // Create a chat request with messages to block
+    let response = client
+        .post(format!("{flex_url}/chat"))
+        .json(&block_request_body)
+        .send()
+        .await?;
+
+    // Must return an error
+    assert_eq!(response.status(), 403);
+
+    let actual_body: serde_json::Value = response.json().await?;
+    let expected_body = serde_json::json!({"error": "Forbidden tokens."});
+
+    assert_eq!(actual_body, expected_body);
 
     Ok(())
 }
