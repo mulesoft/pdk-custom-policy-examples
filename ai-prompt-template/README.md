@@ -1,6 +1,6 @@
 
 # AI Prompt Template Policy Example
-Applies a template on an OpenAI prompt request.
+Applies a template over an OpenAI prompt request.
 
 ## Test the Policy
 Test the policy using either integration testing or the policy playground.
