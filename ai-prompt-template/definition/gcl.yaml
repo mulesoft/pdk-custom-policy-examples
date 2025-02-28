@@ -1,0 +1,32 @@
+# Copyright 2023 Salesforce, Inc. All rights reserved.
+---
+apiVersion: gateway.mulesoft.com/v1alpha1
+kind: Extension
+metadata:
+  labels:
+    title: ai-prompt-template
+    category: Custom
+    metadata/interfaceScope: api,resource
+spec:
+  extends:
+    - name: extension-definition
+      namespace: default
+  properties:
+    templates:
+      type: array
+      items:
+        type: object
+        properties:
+          name: 
+            type: string
+          template:
+            type: string
+        required:
+          - name
+          - template   
+    allowUntemplatedRequests:
+      type: boolean
+      default: true
+  required:
+    - templates
+    - allowUntemplatedRequests
