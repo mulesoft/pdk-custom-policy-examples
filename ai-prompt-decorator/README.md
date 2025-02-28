@@ -26,7 +26,7 @@ the configured prepend and append messages.
 
 To begin testing:
 
-1. Add the `registration.yaml` in the `./tests/common` folder.
+1. Add the `registration.yaml` in the tests [config folder](./tests/config).
 
 2. Execute the `test` command:
 
