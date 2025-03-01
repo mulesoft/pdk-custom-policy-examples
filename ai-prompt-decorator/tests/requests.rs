@@ -13,7 +13,7 @@ use common::*;
 // Flex port for the internal test network
 const FLEX_PORT: Port = 8081;
 
-// This integration test configures prepend and append messages and tests if the 
+// This integration test configures prepend and append messages and tests if the
 // request is actually decorated.
 #[pdk_test]
 async fn chat() -> anyhow::Result<()> {
