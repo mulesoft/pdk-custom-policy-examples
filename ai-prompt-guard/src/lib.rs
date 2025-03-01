@@ -7,25 +7,16 @@ use anyhow::{anyhow, Result};
 
 use pdk::{hl::*, logger};
 use sanitizer::CompletionSanitizer;
-use serde::Serialize;
+use serde_json::json;
 
 use crate::generated::config::Config;
-
-/// Represents an error to be serialized and returned as early response.
-#[derive(Serialize)]
-struct FilterError {
-    #[serde(skip_serializing)]
-    status_code: u32,
-
-    error: &'static str,
-}
 
 /// Sanitizes an incoming request by omiting or blocking OpenAI chat messages based on configuration
 /// filters.
 async fn sanitize_request(
     request_state: RequestState,
     sanitizer: &CompletionSanitizer,
-) -> Result<(), FilterError> {
+) -> Result<(), (u32, &'static str)> {
     logger::info!("Sanitizing an incoming request.");
 
     let headers_state = request_state.into_headers_state().await;
@@ -46,33 +37,24 @@ async fn sanitize_request(
     let body = handler.body();
 
     // Deserialize completion from incoming body.
-    let completion = serde_json::from_slice(&body).map_err(|_| FilterError {
-        status_code: 400,
-        error: "Unrecognized JSON structure.",
-    })?;
+    let completion =
+        serde_json::from_slice(&body).map_err(|_| (400, "Unrecognized JSON structure."))?;
 
     // Sanitize completion or block request.
-    let sanitized_completion = sanitizer.sanitize(completion).ok_or(FilterError {
-        status_code: 403,
-        error: "Forbidden tokens.",
-    })?;
-    logger::info!("sanitized completion = {sanitized_completion:?}");
+    let sanitized_completion = sanitizer
+        .sanitize(completion)
+        .ok_or((403, "Forbidden tokens."))?;
+
     // Serialize sanitized completion
     let sanitized_body = serde_json::to_vec(&sanitized_completion).map_err(|e| {
         logger::error!("Unable to serialize completion: {e:?}");
-        FilterError {
-            status_code: 500,
-            error: "Internal problem.",
-        }
+        (500, "Internal problem.")
     })?;
 
     // Set the new body.
     handler.set_body(&sanitized_body).map_err(|e| {
         logger::error!("Unable to set body: {e:?}");
-        FilterError {
-            status_code: 500,
-            error: "Internal problem.",
-        }
+        (500, "Internal problem.")
     })?;
 
     logger::info!("Request sanitized");
@@ -86,11 +68,11 @@ async fn request_filter(request_state: RequestState, sanitizer: &CompletionSanit
         Ok(_) => Flow::Continue(()),
 
         // Errors must return an early response.
-        Err(e) => {
+        Err((status_code, error)) => {
             logger::info!("Early response reached.");
             Flow::Break(
-                Response::new(e.status_code)
-                    .with_body(serde_json::to_vec(&e).expect("Response body serialization"))
+                Response::new(status_code)
+                    .with_body(json!({ "error": error }).to_string())
                     .with_headers([("Content-Type".to_string(), "application/json".to_string())]),
             )
         }
