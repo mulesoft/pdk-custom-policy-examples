@@ -15,7 +15,7 @@ struct VariableReplacer<'a>(HashMap<&'a str, &'a str>);
 impl Replacer for VariableReplacer<'_> {
     fn replace_append(&mut self, caps: &Captures<'_>, dst: &mut String) {
         let name = &caps[1];
-        let replacement = self.0.get(name).cloned().unwrap_or(&caps[0]);
+        let replacement = self.0.get(name).cloned().unwrap_or_else(|| &caps[0]);
         dst.push_str(replacement);
     }
 }
