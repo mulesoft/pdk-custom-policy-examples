@@ -31,7 +31,7 @@ spec:
         namespace: default
       config:
 
-        # Refuse prompts asking for unknown templated
+        # Refuse prompts asking for unknown templates.
         allowUntemplatedRequests: false
 
         templates:
@@ -39,7 +39,7 @@ spec:
             # This name will be requested by client prompts.
           - name: veterinarian-chat
 
-            # This is the template body. Look at the {{system}} and {{species}} variables.
+            # This is the template body. Check the {{system}} and {{species}} variables.
             template:  |-
               {
                 "messages": [
