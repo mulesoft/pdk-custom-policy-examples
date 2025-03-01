@@ -46,10 +46,11 @@ async fn apply_template(
         
         logger::info!("Prompt without template tag.");
 
-        // Skip requests that do not ask for templates
+        // Skip prompts without template tags.
         return Ok(());
     };
 
+    // Try to apply the prompt properties on the selected template.
     let Some(application) = applicator.apply(template_name, prompt.properties) else {
 
         // Requested template not found.
@@ -68,7 +69,7 @@ async fn apply_template(
         };
     };
 
-    logger::info!("Template succefully applied");
+    logger::info!("Template succesfully applied");
 
     handler.set_body(application.as_bytes()).map_err(|e| {
         logger::error!("Unable to write body: {e:?}");

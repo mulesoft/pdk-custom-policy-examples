@@ -15,7 +15,7 @@ use common::*;
 const FLEX_PORT: Port = 8081;
 
 // This integration test configures a template and hits Flex
-// many times to validate template applications.
+// many times to validate template application.
 #[pdk_test]
 async fn chat() -> anyhow::Result<()> {
     // Configure an HttpMock service

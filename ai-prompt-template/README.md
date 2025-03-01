@@ -4,12 +4,12 @@ Applies a predefined template over an OpenAI prompt request.
 
 ## Description
 When an OpenAI prompt request contains the identifier `{template://<template-name>}` (where `<template-name>` is 
-a placeholder for selecting a template),
-this policies applies the prompt's `properties` as replacement values to a preconfigured template.
+a placeholder for selecting a template), this policy applies the prompt's `properties` object as replacement 
+value map for the variables in the template.
 
-## Example
-1. The policy is configured with a template named `veterinarian-chat`, where variable names are 
-delimited between "{{" and "}}".
+## Usage Example
+1. The policy is configured with a template named `veterinarian-chat`, where variable names are enclosed between 
+`{{` and `}}` tokens.
 
 ```yaml
 ---
@@ -55,7 +55,7 @@ spec:
               }
 ```
 
-2. An incoming prompt, asks for the `veterinarian-chat` template, and provides values for `system` and `species` variables:
+2. An incoming prompt asks for the `veterinarian-chat` template and provides values for `system` and `species` variables:
 
 ```json
 {
@@ -67,7 +67,7 @@ spec:
 }
 ```
 
-3. The policy then transforms the request payload by applying the provides values on the configured template:
+3. The policy then transforms the request payload by applying the provided values on the configured template:
 
 ```json
 {
@@ -97,7 +97,9 @@ To find the prereqs for using either environment and to learn more about either 
 
 ### Integration tests
 
-This example contains an [integration test](./tests/requests.rs) to simplify its testing. The included integration test demonstrates how to mock the upstream service by using an HTTP MockServer. A simple AI prompt request with an array of messages is sent, and the test asserts that it validated by appliying regular expressions.
+This example contains an [integration test](./tests/requests.rs) to simplify its testing. 
+The included integration test demonstrates how to mock the upstream service by using an HTTP MockServer. 
+A simple AI prompt request with an template tag is sent, and the test asserts that the template was properly applied.
 
 To begin testing:
 
@@ -129,6 +131,8 @@ curl -X POST "http://127.0.0.1:8081" \
 -d '{"prompt": "{template://veterinarian-chat}", "properties": {"species": "falcon", "system": "respiratory"}}'
 ```
 
-4. Change the `templates` and `allowUntemplatedRequests` properties in the playground [api.yaml](./playground/config/api.yaml) file to test several template configurations.
+4. Change the `templates` and `allowUntemplatedRequests` properties in the playground [api.yaml](./playground/config/api.yaml) 
+file to test several template configurations.
 
-5. By default the playground is configured with an echo server as backend API. You can set an actual OpenAI API by editing the `backend` service at playground [docker-compose.yaml](./playground/docker-compose.yaml) file.
+5. By default the playground is configured with an echo server as backend API. You can set an actual OpenAI API by editing the `backend` 
+service at playground [docker-compose.yaml](./playground/docker-compose.yaml) file.
