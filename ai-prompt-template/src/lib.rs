@@ -42,27 +42,38 @@ async fn apply_template(
     let prompt: Prompt =
         serde_json::from_slice(&body).map_err(|_| (400, "Unrecognized JSON structure"))?;
 
-    // Prompt if requesting a template application
-    if let Some(template_name) = prompt.template_name() {
-        match applicator.apply(template_name, prompt.properties) {
-            // Application success.
-            Some(application) => {
-                handler.set_body(application.as_bytes()).map_err(|e| {
-                    logger::error!("Unable to write body: {e:?}");
-                    (500, "Internal error")
-                })?;
-                logger::info!("Template succefully applied");
-            }
-            // Template not found.
-            None if !allow_untemplated => {
-                logger::info!("Untemplated request is disallowed.");
-                return Err((400, "Template not found"));
-            }
-            _ => {}
-        }
-    }
+    let Some(template_name) = prompt.template_name() else {
+        
+        logger::info!("Prompt without template tag.");
 
-    Ok(())
+        // Skip requests that do not ask for templates
+        return Ok(());
+    };
+
+    let Some(application) = applicator.apply(template_name, prompt.properties) else {
+
+        // Requested template not found.
+        logger::info!("Template with name '{template_name}' not found.");
+
+        return if allow_untemplated {
+            logger::info!("Request skipped.");
+
+            // Untemplated requests are allowed and skipped.
+            Ok(())
+        } else {
+            logger::info!("Request refused.");
+
+            // Untemplated requests are disallowed and refused.
+            Err((400, "Template not found"))
+        };
+    };
+
+    logger::info!("Template succefully applied");
+
+    handler.set_body(application.as_bytes()).map_err(|e| {
+        logger::error!("Unable to write body: {e:?}");
+        (500, "Internal error")
+    })
 }
 
 async fn request_filter(
