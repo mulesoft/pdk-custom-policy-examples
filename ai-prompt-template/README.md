@@ -39,7 +39,7 @@ spec:
             # This name will be requested by client prompts.
           - name: veterinarian-chat
 
-            # This is the template body. Check the {{system}} and {{species}} variables.
+            # This is the template body. Check the {{system}} and {{species}} placeholders.
             template:  |-
               {
                 "messages": [
