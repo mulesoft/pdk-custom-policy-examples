@@ -69,10 +69,11 @@ async fn apply_template(
 
     logger::info!("Template succesfully applied");
 
-    handler.set_body(application.as_bytes()).map_err(|e| {
-        logger::error!("Unable to write body: {e:?}");
-        (500, "Internal error")
-    })
+    handler
+        .set_body(application.as_bytes())
+        .map_err(|_| (400, "Payload too long"))?;
+
+    Ok(())
 }
 
 async fn request_filter(
