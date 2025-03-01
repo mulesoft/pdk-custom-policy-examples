@@ -1,11 +1,11 @@
 // Copyright 2023 Salesforce, Inc. All rights reserved.
-mod applier;
+mod applicator;
 mod generated;
 mod openai;
 
 use anyhow::{anyhow, Result};
 
-use applier::TemplateApplicator;
+use applicator::TemplateApplicator;
 use openai::Prompt;
 use pdk::hl::*;
 use pdk::logger;
@@ -43,7 +43,6 @@ async fn apply_template(
         serde_json::from_slice(&body).map_err(|_| (400, "Unrecognized JSON structure"))?;
 
     let Some(template_name) = prompt.template_name() else {
-        
         logger::info!("Prompt without template tag.");
 
         // Skip prompts without template tags.
@@ -52,7 +51,6 @@ async fn apply_template(
 
     // Try to apply the prompt properties on the selected template.
     let Some(application) = applicator.apply(template_name, prompt.properties) else {
-
         // Requested template not found.
         logger::info!("Template with name '{template_name}' not found.");
 
