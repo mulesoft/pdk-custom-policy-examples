@@ -7,6 +7,7 @@ use std::time::Duration;
 
 use anyhow::{anyhow, Result};
 use pdk::cache::{Cache, CacheBuilder};
+use serde_json::json;
 
 use pdk::hl::*;
 use pdk::logger;
@@ -14,39 +15,43 @@ use validator::{RateLimitError, RateLimitValidator};
 
 use crate::generated::config::Config;
 
+async fn validate_request(
+    body_state: RequestBodyState,
+    validator: &RateLimitValidator<impl Cache>,
+) -> Result<(), (u32, &'static str)> {
+    // Avoid validating empty bodies.
+    if !body_state.contains_body() {
+        return Ok(());
+    }
+
+    // Extract current body
+    let body = body_state.handler().body();
+
+    validator.validate_payload(&body).map_err(|e| match e {
+        RateLimitError::Exceeded => (403, "Too many tokens. Rate Limit exceeded"),
+        RateLimitError::BodyDeserialization(_) => (400, "Wrong body format"),
+        e => {
+            logger::error!("{e}");
+            (500, "Internal problem")
+        }
+    })
+}
+
 /// A filter that applies an LLM rate limit validation to the incoming request.
 async fn request_filter(
     body_state: RequestBodyState,
     validator: &RateLimitValidator<impl Cache>,
 ) -> Flow<()> {
-    // Avoid validating empty bodies.
-    if !body_state.contains_body() {
-        return Flow::Continue(());
-    }
-
-    let body = body_state.handler().body();
-    match validator.validate_payload(&body) {
-        // If validation is ok, the request flow continues.
+    match validate_request(body_state, validator).await {
+        // Succesful validation must continue request flow
         Ok(_) => Flow::Continue(()),
-        Err(error) => {
-            let response = match error {
-                RateLimitError::Exceeded => Response::new(403)
-                    .with_body(r#"{ "error": "Too many tokens. Rate Limit exceeded" }"#),
-                RateLimitError::BodyDeserialization(_) => {
-                    Response::new(400).with_body(r#"{ "error": "Wrong body format" }"#)
-                }
-                e => {
-                    logger::error!("{e}");
-                    Response::new(500).with_body(r#"{ "error": "Internal problem" }"#)
-                }
-            };
 
-            // All errors break the request.
-            Flow::Break(
-                response
-                    .with_headers([("Content-Type".to_string(), "application/json".to_string())]),
-            )
-        }
+        // Error must be blocked
+        Err((status_code, error)) => Flow::Break(
+            Response::new(status_code)
+                .with_body(json!({ "error": error}).to_string())
+                .with_headers([("Content-Type".to_string(), "application/json".to_string())]),
+        ),
     }
 }
 
@@ -62,9 +67,8 @@ async fn configure(
         .build();
     let config: Config = serde_json::from_slice(&bytes).map_err(|err| {
         anyhow!(
-            "Failed to parse configuration '{}'. Cause: {}",
+            "Failed to parse configuration '{}'. Cause: {err}",
             String::from_utf8_lossy(&bytes),
-            err
         )
     })?;
 
