@@ -8,6 +8,7 @@ use serde::{Deserialize, Serialize};
 use std::time::{Duration, SystemTime};
 use tiktoken_rs::{p50k_base, CoreBPE};
 
+/// Key name for sharing rate limit window between filters.
 const WINDOW_CACHE_KEY: &str = "token-rate-limit-window";
 
 /// Error raised during LLM rate limit validations.
@@ -21,9 +22,6 @@ pub enum RateLimitError {
 
     #[error("Cache serialization problem: {0}")]
     CacheSerialization(serde_json::Error),
-
-    #[error("Body deserialization problem")]
-    BodyDeserialization(serde_json::Error),
 
     #[error("Too many tokens. Rate Limit exceeded")]
     Exceeded,
@@ -58,7 +56,8 @@ impl<C: Cache> RateLimitValidator<C> {
             .map_err(RateLimitError::CacheStorage)
     }
 
-    fn validate_completion(&self, completion: Completion<'_>) -> Result<(), RateLimitError> {
+    /// Applies a token validation to a [Completion].
+    pub fn validate(&self, completion: Completion<'_>) -> Result<(), RateLimitError> {
         let messages = completion.messages;
 
         // count tokens with tiktoken
@@ -108,15 +107,6 @@ impl<C: Cache> RateLimitValidator<C> {
             maximum_tokens,
             cache,
         })
-    }
-
-    /// Applies a token validation to a payload.
-    pub fn validate_payload(&self, payload: &[u8]) -> Result<(), RateLimitError> {
-        // get request content
-        let completion =
-            serde_json::from_slice(payload).map_err(RateLimitError::BodyDeserialization)?;
-
-        self.validate_completion(completion)
     }
 }
 
@@ -194,7 +184,7 @@ mod tests {
             extra: HashMap::default(),
         };
 
-        let validation = validator.validate_completion(completion);
+        let validation = validator.validate(completion);
 
         assert!(validation.is_ok());
     }
@@ -216,7 +206,7 @@ mod tests {
         };
 
         let validation = validator
-            .validate_completion(completion)
+            .validate(completion)
             .expect_err("validation error");
 
         assert!(matches!(validation, RateLimitError::Exceeded));
@@ -238,14 +228,10 @@ mod tests {
             extra: HashMap::default(),
         };
 
-        let _ = validator
-            .validate_completion(completion.clone())
-            .expect("pass 1");
-        let _ = validator
-            .validate_completion(completion.clone())
-            .expect("pass 2");
+        let _ = validator.validate(completion.clone()).expect("pass 1");
+        let _ = validator.validate(completion.clone()).expect("pass 2");
         let validation = validator
-            .validate_completion(completion)
+            .validate(completion)
             .expect_err("validation error");
 
         assert!(matches!(validation, RateLimitError::Exceeded));
@@ -267,12 +253,12 @@ mod tests {
             extra: HashMap::default(),
         };
 
-        let success = validator.validate_completion(completion.clone());
+        let success = validator.validate(completion.clone());
 
         assert!(success.is_ok());
 
         let fail = validator
-            .validate_completion(completion.clone())
+            .validate(completion.clone())
             .expect_err("validation error");
 
         assert!(matches!(fail, RateLimitError::Exceeded));
@@ -280,7 +266,7 @@ mod tests {
         // move time forward to clean the window
         move_forward(period + Duration::from_millis(10));
 
-        let validation = validator.validate_completion(completion);
+        let validation = validator.validate(completion);
 
         assert!(validation.is_ok());
     }

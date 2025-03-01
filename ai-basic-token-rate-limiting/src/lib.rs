@@ -27,9 +27,10 @@ async fn validate_request(
     // Extract current body
     let body = body_state.handler().body();
 
-    validator.validate_payload(&body).map_err(|e| match e {
+    let completion = serde_json::from_slice(&body).map_err(|_| (400, "Invalid body structure"))?;
+
+    validator.validate(completion).map_err(|e| match e {
         RateLimitError::Exceeded => (403, "Too many tokens. Rate Limit exceeded"),
-        RateLimitError::BodyDeserialization(_) => (400, "Wrong body format"),
         e => {
             logger::error!("{e}");
             (500, "Internal problem")
@@ -49,7 +50,7 @@ async fn request_filter(
         // Error must be blocked
         Err((status_code, error)) => Flow::Break(
             Response::new(status_code)
-                .with_body(json!({ "error": error}).to_string())
+                .with_body(json!({ "error": error }).to_string())
                 .with_headers([("Content-Type".to_string(), "application/json".to_string())]),
         ),
     }
