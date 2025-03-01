@@ -30,9 +30,12 @@ spec:
         name: ai-prompt-template-v1-0-impl 
         namespace: default
       config:
+
         # Refuse prompts asking for unknown templated
         allowUntemplatedRequests: false
+
         templates:
+        
             # This name will be requested by client prompts.
           - name: veterinarian-chat
 
