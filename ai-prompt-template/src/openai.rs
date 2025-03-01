@@ -18,3 +18,30 @@ impl<'a> Prompt<'a> {
             .and_then(|s| s.strip_suffix("}"))
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use std::collections::HashMap;
+
+    use super::Prompt;
+
+    #[test]
+    fn extract_template_name() {
+        let prompt = Prompt {
+            prompt: "{template://my-template}",
+            properties: HashMap::default(),
+        };
+
+        assert_eq!(prompt.template_name(), Some("my-template"));
+    }
+
+    #[test]
+    fn missing_template_name() {
+        let prompt = Prompt {
+            prompt: "{foo://bar}",
+            properties: HashMap::default(),
+        };
+
+        assert_eq!(prompt.template_name(), None);
+    }
+}
