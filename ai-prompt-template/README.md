@@ -3,7 +3,7 @@
 Applies a predefined template over an OpenAI prompt request.
 
 ## Description
-When a OpenAI prompt request contains the identifier `{template://<template-name>}` (where `<template-name>` is 
+When an OpenAI prompt request contains the identifier `{template://<template-name>}` (where `<template-name>` is 
 a placeholder for selecting a template),
 this policies applies the prompt's `properties` as replacement values to a preconfigured template.
 
