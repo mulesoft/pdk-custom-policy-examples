@@ -71,7 +71,7 @@ async fn apply_template(
 
     handler
         .set_body(application.as_bytes())
-        .map_err(|_| (400, "Payload too long"))?;
+        .map_err(|_| (400, "Payload too long."))?;
 
     Ok(())
 }
