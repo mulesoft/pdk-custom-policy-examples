@@ -3,16 +3,40 @@
 Applies a predefined template over an OpenAI prompt request.
 
 ## Description
-When a OpenAI prompt request contains the identifier `{template://<template-name>}` (where `<template-name>` is a placeholder for selecting a template),
+When a OpenAI prompt request contains the identifier `{template://<template-name>}` (where `<template-name>` is 
+a placeholder for selecting a template),
 this policies applies the prompt's `properties` as replacement values to a preconfigured template.
 
 ## Example
-1. The policy is configured with a template named `veterinarian-chat`:
+1. The policy is configured with a template named `veterinarian-chat`, where variable names are 
+delimited between "{{" and "}}".
 
 ```yaml
+---
+apiVersion: gateway.mulesoft.com/v1alpha1
+kind: ApiInstance
+metadata:
+  name: ingress-http
+spec:
+  address: http://0.0.0.0:8081
+  services:
+    upstream:
+      address: http://backend
+      routes:
+        - config:
+            destinationPath: /anything/echo/
+  policies:
+    - policyRef:
+        name: ai-prompt-template-v1-0-impl 
+        namespace: default
       config:
+        # Refuse prompts asking for unknown templated
+        allowUntemplatedRequests: false
         templates:
+            # This name will be requested by client prompts.
           - name: veterinarian-chat
+
+            # This is the template body. Look at the {{system}} and {{species}} variables.
             template:  |-
               {
                 "messages": [
@@ -57,6 +81,8 @@ this policies applies the prompt's `properties` as replacement values to a preco
 }
 
 ```
+4. For the given configuration, if a prompt asks for an unknown template, the policy will return a `400` error.
+The configuration property `allowUntemplatedRequests` must be set to `true` to change this behaviour.
 
 ## Test the Policy
 Test the policy using either integration testing or the policy playground.
