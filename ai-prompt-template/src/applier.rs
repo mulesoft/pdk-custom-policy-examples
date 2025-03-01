@@ -1,106 +1,48 @@
 // Copyright 2023 Salesforce, Inc. All rights reserved.
-use std::{borrow::Cow, collections::HashMap};
+use std::{borrow::Cow, collections::HashMap, sync::LazyLock};
 
-use pdk::logger;
+use regex::{Captures, Regex, Replacer};
 
 use crate::generated::config::Config;
 
-use std::iter;
+/// Searches for a variable expressed as {{var-name}}.
+static REGEX: LazyLock<Regex> =
+    LazyLock::new(|| Regex::new(r"\{\{([a-zA-Z0-9_-]+)\}\}").expect("regex creation"));
 
-#[derive(Debug)]
-struct Template<'a> {
-    prefix: &'a str,
-    needles: Vec<Needle<'a>>,
-}
+/// Replaces variables with the input values.
+struct VariableReplacer<'a>(HashMap<&'a str, &'a str>);
 
-#[derive(Debug)]
-struct Needle<'a> {
-    variable: &'a str,
-    suffix: &'a str,
-}
-
-impl<'a> Template<'a> {
-    fn parse(input: &'a str) -> Option<Self> {
-        let mut parts = input.split("{{");
-
-        let prefix = parts.next()?;
-        let needles = parts
-            .map(|s| {
-                let mut parts = s.split("}}");
-                let variable = parts.next()?;
-                let suffix = parts.next()?;
-                parts
-                    .next()
-                    .is_none()
-                    .then_some(Needle { variable, suffix })
-            })
-            .collect::<Option<_>>()?;
-
-        Some(Template { prefix, needles })
-    }
-
-    fn apply(&self, variables: &HashMap<&'a str, &'a str>) -> Cow<'a, [u8]> {
-        let mut iter = self
-            .needles
-            .iter()
-            .map(|n| {
-                (
-                    variables.get(n.variable).copied().unwrap_or_default(),
-                    n.suffix,
-                )
-            })
-            .flat_map(|(a, b)| iter::once(a).chain(iter::once(b)))
-            .peekable();
-
-        match (self.prefix, iter.next()) {
-            (a, None) => Cow::Borrowed(a.as_bytes()),
-            ("", Some(a)) if iter.peek().is_none() => Cow::Borrowed(a.as_bytes()),
-            (a, Some(b)) => {
-                // ensure initial capacity
-                let mut buff = String::with_capacity(a.len() + b.len());
-
-                buff.push_str(a);
-                buff.push_str(b);
-
-                buff.extend(iter);
-
-                Cow::Owned(buff.into_bytes())
-            }
-        }
+impl Replacer for VariableReplacer<'_> {
+    fn replace_append(&mut self, caps: &Captures<'_>, dst: &mut String) {
+        let name = &caps[1];
+        let replacement = self.0.get(name).cloned().unwrap_or(&caps[0]);
+        dst.push_str(replacement);
     }
 }
 
-#[derive(Debug)]
+/// Stores templates indexed by name, and applies variables on them.
 pub struct TemplateApplicator<'a> {
-    templates: HashMap<&'a str, Template<'a>>,
+    templates: HashMap<&'a str, &'a str>,
 }
 
 impl<'a> TemplateApplicator<'a> {
+    /// Creates a new [TemplateApplicator] from [Config].
     pub fn from_config(config: &'a Config) -> Self {
         let templates = config
             .templates
             .iter()
-            .flat_map(|c| {
-                let name = c.name.as_str();
-                let template = Template::parse(&c.template).map(|t| (name, t));
-                if template.is_none() {
-                    logger::warn!(
-                        "Template with name '{name}' was skipped due to incorrect format."
-                    )
-                }
-                template
-            })
+            .map(|c| (c.name.as_str(), c.template.as_str()))
             .collect();
 
         Self { templates }
     }
 
-    pub fn apply(
-        &self,
-        name: &str,
-        variables: &HashMap<&'a str, &'a str>,
-    ) -> Option<Cow<'a, [u8]>> {
-        self.templates.get(name).map(|t| t.apply(variables))
+    /// Applies input variables on templates.
+    /// Retorns [None] if there is no template for the requested `name`.
+    pub fn apply(&self, name: &str, variables: HashMap<&'a str, &'a str>) -> Option<Cow<'a, str>> {
+        self.templates
+            .get(name)
+            .map(|template| REGEX.replace_all(template, VariableReplacer(variables)))
     }
 }
 
@@ -127,13 +69,14 @@ mod tests {
         let application = applicator
             .apply(
                 "default-template",
-                &HashMap::from([("foo", "foo-value"), ("baz", "baz-value")]),
+                HashMap::from([("foo", "foo-value"), ("baz", "baz-value")]),
             )
             .expect("application exists");
 
+        // bar is skipped since it is not present
         assert_eq!(
-            String::from_utf8_lossy(&application),
-            "replacing a foo-value with  and baz-value"
+            application,
+            "replacing a foo-value with {{bar}} and baz-value"
         );
     }
 
@@ -152,10 +95,10 @@ mod tests {
         let application = applicator
             .apply(
                 "default-template",
-                &HashMap::from([("foo", "foo-value"), ("baz", "baz-value")]),
+                HashMap::from([("foo", "foo-value"), ("baz", "baz-value")]),
             )
             .expect("application exists");
 
-        assert_eq!(String::from_utf8_lossy(&application), "no variables here");
+        assert_eq!(application, "no variables here");
     }
 }

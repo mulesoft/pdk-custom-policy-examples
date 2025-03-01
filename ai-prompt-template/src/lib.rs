@@ -9,25 +9,16 @@ use applier::TemplateApplicator;
 use openai::Prompt;
 use pdk::hl::*;
 use pdk::logger;
-use serde::Serialize;
+use serde_json::json;
 
 use crate::generated::config::Config;
-
-/// Represents an error to be serialized and returned as early response.
-#[derive(Serialize)]
-struct FilterError {
-    #[serde(skip_serializing)]
-    status_code: u32,
-
-    error: &'static str,
-}
 
 /// Applies a template over a request
 async fn apply_template(
     request_state: RequestState,
     applicator: &TemplateApplicator<'_>,
     allow_untemplated: bool,
-) -> Result<(), FilterError> {
+) -> Result<(), (u32, &'static str)> {
     logger::info!("Applying template on incoming request.");
 
     let headers_state = request_state.into_headers_state().await;
@@ -48,30 +39,24 @@ async fn apply_template(
     let body = handler.body();
 
     // Deserialize prompt from incoming body.
-    let prompt: Prompt = serde_json::from_slice(&body).map_err(|_| FilterError {
-        status_code: 400,
-        error: "Unrecognized JSON structure.",
-    })?;
+    let prompt: Prompt =
+        serde_json::from_slice(&body).map_err(|_| (400, "Unrecognized JSON structure"))?;
 
     // Prompt if requesting a template application
     if let Some(template_name) = prompt.template_name() {
-        match applicator.apply(template_name, &prompt.properties) {
+        match applicator.apply(template_name, prompt.properties) {
+            // Application success.
             Some(application) => {
-                handler.set_body(&application).map_err(|e| {
+                handler.set_body(application.as_bytes()).map_err(|e| {
                     logger::error!("Unable to write body: {e:?}");
-                    FilterError {
-                        status_code: 500,
-                        error: "internal error",
-                    }
+                    (500, "Internal error")
                 })?;
                 logger::info!("Template succefully applied");
             }
+            // Template not found.
             None if !allow_untemplated => {
                 logger::info!("Untemplated request is disallowed.");
-                return Err(FilterError {
-                    status_code: 400,
-                    error: "Template not found",
-                })
+                return Err((400, "Template not found"));
             }
             _ => {}
         }
@@ -90,9 +75,9 @@ async fn request_filter(
         Ok(_) => Flow::Continue(()),
 
         // Early response when error
-        Err(e) => Flow::Break(
-            Response::new(e.status_code)
-                .with_body(serde_json::to_vec(&e).expect("serialized error"))
+        Err((status_code, error)) => Flow::Break(
+            Response::new(status_code)
+                .with_body(json!({"error": error}).to_string())
                 .with_headers([("Content-Type".to_string(), "application/json".to_string())]),
         ),
     }
@@ -107,10 +92,11 @@ async fn configure(launcher: Launcher, Configuration(bytes): Configuration) -> R
             err
         )
     })?;
-    
+
     let applicator = TemplateApplicator::from_config(&config);
     let filter =
         on_request(|rs| request_filter(rs, &applicator, config.allow_untemplated_requests));
     launcher.launch(filter).await?;
+
     Ok(())
 }

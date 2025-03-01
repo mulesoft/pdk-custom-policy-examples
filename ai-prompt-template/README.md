@@ -2,6 +2,62 @@
 # AI Prompt Template Policy Example
 Applies a predefined template over an OpenAI prompt request.
 
+## Description
+When a OpenAI prompt request contains the identifier `{template://<template-name>}` (where `<template-name>` is a placeholder for selecting a template),
+this policies applies the prompt's `properties` as replacement values to a preconfigured template.
+
+## Example
+1. The policy is configured with a template named `veterinarian-chat`:
+
+```yaml
+      config:
+        templates:
+          - name: veterinarian-chat
+            template:  |-
+              {
+                "messages": [
+                  {
+                    "role": "system",
+                    "content": "You are a {{system}} expert, in {{species}} species."
+                  },
+                  {
+                    "role": "user",
+                    "content": "Describe me the {{system}} system."
+                  }
+                ]
+              }
+```
+
+2. An incoming prompt, asks for the `veterinarian-chat` template, and provides values for `system` and `species` variables:
+
+```json
+{
+    "prompt": "{template://veterinarian-chat}", 
+    "properties": {
+        "species": "falcon", 
+        "system": "respiratory"
+    }
+}
+```
+
+3. The policy then transforms the request payload by applying the provides values on the configured template:
+
+```json
+{
+    "messages": [
+        {
+            "role": "system",
+            "content": "You are a respiratory expert, in falcon species."
+        },
+        {
+            "role": "user",
+            "content": "Describe me the respiratory system."
+        }
+    ]
+}
+
+```
+
 ## Test the Policy
 Test the policy using either integration testing or the policy playground.
 
