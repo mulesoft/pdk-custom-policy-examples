@@ -2,13 +2,13 @@
 use anyhow::Result;
 use pdk::cache::{Cache, CacheError};
 
-use crate::{generated::config::Config, openai::Completion};
+use crate::openai::Completion;
 
 use serde::{Deserialize, Serialize};
-use std::time::{SystemTime, UNIX_EPOCH};
+use std::time::{Duration, SystemTime};
 use tiktoken_rs::{p50k_base, CoreBPE};
 
-const WINDOW_INFO_CACHE_KEY: &str = "window_info";
+const WINDOW_CACHE_KEY: &str = "token-rate-limit-window";
 
 /// Error raised during LLM rate limit validations.
 #[derive(Debug, thiserror::Error)]
@@ -30,48 +30,36 @@ pub enum RateLimitError {
 }
 
 #[derive(Deserialize, Serialize, Debug)]
-struct CacheData {
-    window_start: u128,
-    window_tokens: usize,
+struct Window {
+    expiration: SystemTime,
+    token_count: usize,
 }
 
 /// Validates LLM token rate limits.
 pub struct RateLimitValidator<C> {
-    pub config: Config,
-    pub cache: C,
-    pub bpe: CoreBPE,
+    maximum_tokens: usize,
+    window_period: Duration,
+    cache: C,
+    bpe: CoreBPE,
 }
 
 impl<C: Cache> RateLimitValidator<C> {
-    fn get_cache(&self) -> Result<Option<CacheData>, RateLimitError> {
+    fn get_window(&self) -> Result<Option<Window>, RateLimitError> {
         self.cache
-            .get(WINDOW_INFO_CACHE_KEY)
+            .get(WINDOW_CACHE_KEY)
             .map(|bytes| serde_json::from_slice(&bytes).map_err(RateLimitError::CacheSerialization))
             .transpose()
     }
 
-    fn save_cache(&self, value: CacheData) -> Result<(), RateLimitError> {
-        let serialized = serde_json::to_vec(&value).map_err(RateLimitError::CacheSerialization)?;
+    fn save_window(&self, window: Window) -> Result<(), RateLimitError> {
+        let serialized = serde_json::to_vec(&window).map_err(RateLimitError::CacheSerialization)?;
         self.cache
-            .save(WINDOW_INFO_CACHE_KEY, serialized)
+            .save(WINDOW_CACHE_KEY, serialized)
             .map_err(RateLimitError::CacheStorage)
     }
 
-    /// Creates a new [RateLimitValidator].
-    pub fn new(config: Config, cache: C) -> Result<Self, RateLimitError> {
-        Ok(Self {
-            bpe: p50k_base().map_err(RateLimitError::P50kInitialization)?,
-            config,
-            cache,
-        })
-    }
-
-    /// Applies a token validation to a payload.
-    pub fn validate_payload(&self, payload: &[u8]) -> Result<(), RateLimitError> {
-        // get request content
-        let payload: Completion =
-            serde_json::from_slice(payload).map_err(RateLimitError::BodyDeserialization)?;
-        let messages = payload.messages;
+    fn validate_completion(&self, completion: Completion<'_>) -> Result<(), RateLimitError> {
+        let messages = completion.messages;
 
         // count tokens with tiktoken
         let tokens: usize = messages
@@ -79,39 +67,221 @@ impl<C: Cache> RateLimitValidator<C> {
             .map(|m| self.bpe.encode_with_special_tokens(m.content).len())
             .sum();
 
-        let now = SystemTime::now()
-            .duration_since(UNIX_EPOCH)
-            .unwrap()
-            .as_millis();
+        let now = now();
 
         // Get window start from cache
-        if let Some(cache_data) = self.get_cache()? {
-            let window_start = cache_data.window_start;
-            let window_tokens = cache_data.window_tokens;
+        let mut window = self
+            .get_window()?
+            // Check if the existent window is not expired.
+            .filter(|w| now < w.expiration)
+            // Return a fresh window if the previous one was expired or it was not cached.
+            .unwrap_or(Window {
+                expiration: now + self.window_period,
+                token_count: 0,
+            });
 
-            // check if we're still in the window
-            let window_length = self.config.time_period_in_milliseconds as u128;
+        // Increase the token count
+        window.token_count += tokens;
 
-            if now < window_start + window_length {
-                // we are in the window
-                let new_window_tokens = window_tokens + tokens;
-                if new_window_tokens > self.config.maximum_tokens as usize {
-                    return Err(RateLimitError::Exceeded);
-                }
-                self.save_cache(CacheData {
-                    window_start,
-                    window_tokens: new_window_tokens,
-                })?;
+        let token_count = window.token_count;
 
-                return Ok(());
-            }
+        // Save the window with the updated values
+        self.save_window(window)?;
+
+        // If token count exceeds maxium, return an error
+        if token_count > self.maximum_tokens {
+            return Err(RateLimitError::Exceeded);
         }
-        // save current time to window start
-        self.save_cache(CacheData {
-            window_start: now,
-            window_tokens: tokens,
-        })?;
 
         Ok(())
+    }
+
+    /// Creates a new [RateLimitValidator].
+    pub fn new(
+        window_period: Duration,
+        maximum_tokens: usize,
+        cache: C,
+    ) -> Result<Self, RateLimitError> {
+        Ok(Self {
+            bpe: p50k_base().map_err(RateLimitError::P50kInitialization)?,
+            window_period,
+            maximum_tokens,
+            cache,
+        })
+    }
+
+    /// Applies a token validation to a payload.
+    pub fn validate_payload(&self, payload: &[u8]) -> Result<(), RateLimitError> {
+        // get request content
+        let completion =
+            serde_json::from_slice(payload).map_err(RateLimitError::BodyDeserialization)?;
+
+        self.validate_completion(completion)
+    }
+}
+
+#[cfg(not(test))]
+fn now() -> SystemTime {
+    SystemTime::now()
+}
+
+#[cfg(test)]
+use tests::now;
+
+#[cfg(test)]
+mod tests {
+    use std::{
+        cell::{Cell, RefCell},
+        collections::HashMap,
+        time::{Duration, SystemTime},
+    };
+
+    use pdk::cache::Cache;
+
+    use crate::openai::{Completion, Message};
+
+    use super::{RateLimitError, RateLimitValidator};
+
+    thread_local! {
+        static NOW: Cell<SystemTime> = Cell::new(SystemTime::now());
+    }
+
+    pub fn now() -> SystemTime {
+        NOW.get()
+    }
+
+    pub fn move_forward(duration: Duration) {
+        NOW.set(NOW.get() + duration);
+    }
+
+    #[derive(Default)]
+    struct CacheMock {
+        values: RefCell<HashMap<String, Vec<u8>>>,
+    }
+
+    impl Cache for CacheMock {
+        fn save(&self, key: &str, value: Vec<u8>) -> Result<(), pdk::cache::CacheError> {
+            self.values.borrow_mut().insert(key.to_string(), value);
+            Ok(())
+        }
+
+        fn get(&self, key: &str) -> Option<Vec<u8>> {
+            self.values.borrow().get(key).cloned()
+        }
+
+        fn delete(&self, _key: &str) -> Option<Vec<u8>> {
+            unimplemented!()
+        }
+
+        fn purge(&self) {
+            unimplemented!()
+        }
+    }
+
+    #[test]
+    fn pass_at_first() {
+        let cache = CacheMock::default();
+        let period = Duration::from_millis(2000);
+
+        let validator = RateLimitValidator::new(period, 5, cache).expect("validator created");
+
+        let completion = Completion {
+            model: "llama",
+            messages: vec![Message {
+                role: "user",
+                content: "this has four tokens",
+            }],
+            extra: HashMap::default(),
+        };
+
+        let validation = validator.validate_completion(completion);
+
+        assert!(validation.is_ok());
+    }
+
+    #[test]
+    fn reach_limit_at_first() {
+        let cache = CacheMock::default();
+        let period = Duration::from_millis(2000);
+
+        let validator = RateLimitValidator::new(period, 5, cache).expect("validator created");
+
+        let completion = Completion {
+            model: "llama",
+            messages: vec![Message {
+                role: "user",
+                content: "this has more than five tokens",
+            }],
+            extra: HashMap::default(),
+        };
+
+        let validation = validator
+            .validate_completion(completion)
+            .expect_err("validation error");
+
+        assert!(matches!(validation, RateLimitError::Exceeded));
+    }
+
+    #[test]
+    fn reach_limit_at_third() {
+        let cache = CacheMock::default();
+        let period = Duration::from_millis(2000);
+
+        let validator = RateLimitValidator::new(period, 8, cache).expect("validator created");
+
+        let completion = Completion {
+            model: "llama",
+            messages: vec![Message {
+                role: "user",
+                content: "these are four tokens",
+            }],
+            extra: HashMap::default(),
+        };
+
+        let _ = validator
+            .validate_completion(completion.clone())
+            .expect("pass 1");
+        let _ = validator
+            .validate_completion(completion.clone())
+            .expect("pass 2");
+        let validation = validator
+            .validate_completion(completion)
+            .expect_err("validation error");
+
+        assert!(matches!(validation, RateLimitError::Exceeded));
+    }
+
+    #[test]
+    fn clean_window() {
+        let cache = CacheMock::default();
+        let period = Duration::from_millis(2000);
+
+        let validator = RateLimitValidator::new(period, 4, cache).expect("validator created");
+
+        let completion = Completion {
+            model: "llama",
+            messages: vec![Message {
+                role: "user",
+                content: "these are four tokens",
+            }],
+            extra: HashMap::default(),
+        };
+
+        let success = validator.validate_completion(completion.clone());
+
+        assert!(success.is_ok());
+
+        let fail = validator
+            .validate_completion(completion.clone())
+            .expect_err("validation error");
+
+        assert!(matches!(fail, RateLimitError::Exceeded));
+
+        // move time forward to clean the window
+        move_forward(period + Duration::from_millis(10));
+
+        let validation = validator.validate_completion(completion);
+
+        assert!(validation.is_ok());
     }
 }

@@ -4,14 +4,14 @@ use std::collections::HashMap;
 use serde::Deserialize;
 use serde_json::Value;
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Debug, Clone)]
 pub struct Message<'a> {
     #[allow(unused)]
     pub role: &'a str,
     pub content: &'a str,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Debug, Clone)]
 pub struct Completion<'a> {
     pub messages: Vec<Message<'a>>,
 

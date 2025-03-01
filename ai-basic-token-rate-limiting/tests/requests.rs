@@ -24,7 +24,7 @@ async fn rate_limit() -> anyhow::Result<()> {
 
     let config = serde_json::json!(
         {
-            "maximumTokens": 3,
+            "maximumTokens": 5,
             "timePeriodInMilliseconds": 600000,
         }
     );
@@ -83,7 +83,7 @@ async fn rate_limit() -> anyhow::Result<()> {
             "messages": [
                 {
                     "role": "user",
-                    "content": "2 tokens"
+                    "content": "These are five tokens "
                 }
             ]
         }

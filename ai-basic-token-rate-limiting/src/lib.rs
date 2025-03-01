@@ -3,6 +3,8 @@ mod generated;
 mod openai;
 mod validator;
 
+use std::time::Duration;
+
 use anyhow::{anyhow, Result};
 use pdk::cache::{Cache, CacheBuilder};
 
@@ -66,7 +68,11 @@ async fn configure(
         )
     })?;
 
-    let validator = RateLimitValidator::new(config, cache)?;
+    let validator = RateLimitValidator::new(
+        Duration::from_millis(config.time_period_in_milliseconds as u64),
+        config.maximum_tokens as usize,
+        cache,
+    )?;
 
     let filter = on_request(|rs| request_filter(rs, &validator));
 
