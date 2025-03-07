@@ -1,0 +1,30 @@
+# Copyright 2023 Salesforce, Inc. All rights reserved.
+---
+apiVersion: gateway.mulesoft.com/v1alpha1
+kind: Extension
+metadata:
+  labels:
+    title: AI Prompt Guard Policy
+    description: Allows checking the prompt against regex to either omit them or reject the prompt.
+    category: Custom
+spec:
+  extends:
+    - name: extension-definition
+      namespace: default
+  properties:
+    filters:
+      type: array
+      items:
+        type: object
+        properties:
+          pattern: 
+            type: string
+          omitInsteadOfBlocking:
+            type: boolean
+            default: false
+        required:
+          - pattern
+          - omitInsteadOfBlocking   
+      default: []
+  required:
+    - filters
