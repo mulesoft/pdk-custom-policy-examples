@@ -4,6 +4,6 @@ apiVersion: gateway.mulesoft.com/v1alpha1
 kind: Service
 metadata:
   namespace: default
-  name: my-api-context-anypoint
+  name: anypoint-mock
 spec:
-  address: http://anypoint-mock
+  address: http://backend/anypoint

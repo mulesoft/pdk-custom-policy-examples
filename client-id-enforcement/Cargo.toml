@@ -13,14 +13,14 @@ definition_asset_id = "client-id-enforcement"
 implementation_asset_id = "client-id-enforcement-flex"
 
 [dependencies]
-pdk = {path = "../../mgw-policy-development-kit/pdk", package = "pdk"} # { version = "1.3.0", registry = "anypoint" }
+pdk = { version = "1.3.0", registry = "anypoint" }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = { version = "1.0", default-features = false, features = ["alloc"] }
 futures = { version = "0.3" }
 anyhow = "1.0"
 
 [dev-dependencies]
-pdk-test = { path = "../../mgw-policy-development-kit/pdk-test", package = "pdk-test", features = ["experimental"]}
+pdk-test = { version = "1.3.0", registry = "anypoint" }
 httpmock = "0.6"
 reqwest = { version = "0.11", features = ["json"]}
 tokio = "1.0"

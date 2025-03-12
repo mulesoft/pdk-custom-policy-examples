@@ -1,12 +1,11 @@
 // Copyright 2023 Salesforce, Inc. All rights reserved.
-
 mod common;
 
 use std::time::Duration;
 
 use httpmock::MockServer;
 use pdk_test::port::Port;
-use pdk_test::services::flex::{ApiConfig, Flex, FlexConfig, PolicyConfig, UpstreamServiceConfig};
+use pdk_test::services::flex::{ApiConfig, Flex, FlexConfig, PolicyConfig};
 use pdk_test::services::httpmock::{HttpMock, HttpMockConfig};
 use pdk_test::{pdk_test, TestComposite};
 
@@ -16,18 +15,27 @@ use serde_json::{json, Value};
 // Flex port for the internal test network
 const FLEX_PORT: Port = 8081;
 
+const ORG_ID: &str = "126bae0e-ead6-4f5d-8c49-4df7f32f5a33";
+const ENV_ID: &str = "2b988881-5f9f-4961-8a2d-8b74f11bcd23";
+const API_ID: &str = "123";
+
+fn contracts_path() -> String {
+    format!("/apigateway/ccs/v3/organizations/{ORG_ID}/environments/{ENV_ID}/apis/{API_ID}/contracts")
+}
+
 fn contract_mock() -> Value {
+    let contracts_path = contracts_path();
     json!(
         {
             "links": {
               "self": "self-link",
-              "next": "next-link"
+              "next": contracts_path
             },
             "data": [
               {
-                "organizationId": "organization",
+                "organizationId": ORG_ID,
                 "contractId": "cid",
-                "apiId": "apid",
+                "apiId": API_ID,
                 "versionId": "",
                 "slaTierId": "none",
                 "clientId": "pdk",
@@ -46,19 +54,18 @@ fn contract_mock() -> Value {
     )
 }
 
-// This integration test shows how to build a test to compose a local-flex instance
-// with a MockServer backend
+/// This integration test performs an authentication request.
 #[pdk_test]
-async fn hello() -> anyhow::Result<()> {
+async fn authentication() -> anyhow::Result<()> {
     // Configure an HttpMock service
     let httpmock_config = HttpMockConfig::builder()
         .port(80)
         .version("0.6.8")
-        .hostname("anypoint-mock")
+        .hostname("backend")
         .build();
 
     let json_config = json!({
-        "strategy": "authentication"
+        "mode": "authentication"
     });
 
     let policy_config = PolicyConfig::builder()
@@ -99,11 +106,11 @@ async fn hello() -> anyhow::Result<()> {
     let httpmock: HttpMock = composite.service()?;
 
     // Create a MockServer
-    let contracts_service = MockServer::connect_async(httpmock.socket()).await;
+    let backend = MockServer::connect_async(httpmock.socket()).await;
 
-    let login_mock = contracts_service
+    // Mock the login API
+    let login_mock = backend
         .mock_async(|when, then| {
-            
             when.path_contains("/accounts/oauth2/token");
 
             then.status(200).json_body(json!(
@@ -116,7 +123,7 @@ async fn hello() -> anyhow::Result<()> {
         .await;
 
     // Mock the contracts API
-    let contracts_mock = contracts_service
+    let contracts_mock = backend
         .mock_async(|when, then| {
             when.path_contains("/contracts");
             then.status(200).json_body(contract_mock());
@@ -124,13 +131,14 @@ async fn hello() -> anyhow::Result<()> {
         .await;
 
     // Mock a /hello request
-    contracts_service
+    backend
         .mock_async(|when, then| {
             when.path_contains("/hello");
             then.status(202).json_body(json!("world!"));
         })
         .await;
 
+    // Waits until the contracts database is up to date
     tokio::time::sleep(Duration::from_millis(3000)).await;
 
     // Perform an actual request
@@ -143,6 +151,7 @@ async fn hello() -> anyhow::Result<()> {
         .await?;
 
     login_mock.assert_async().await;
+    contracts_mock.assert_async().await;
 
     //let response = reqwest::get()).await?;
 
@@ -150,7 +159,7 @@ async fn hello() -> anyhow::Result<()> {
 
     // Assert on the response
     let status = response.status();
-    println!("body = {}", response.text().await?);
+
     assert_eq!(status, 202);
 
     Ok(())

@@ -20,7 +20,7 @@ spec:
     name: api-context
   config:
     api:
-      id: "678"
+      id: "123"
       legacyApiId: "v1"
       name: "ingress-http-api-instance API"
       version: "1.0.0"
@@ -32,4 +32,6 @@ spec:
       anypoint:
         clientId: "cc_client"
         clientSecret: "zFederate"
+        serviceName: "anypoint-mock"
+        url: http://backend/anypoint
 

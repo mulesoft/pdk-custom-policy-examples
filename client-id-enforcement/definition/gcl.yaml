@@ -11,10 +11,10 @@ spec:
     - name: extension-definition
       namespace: default
   properties:
-    strategy:
+    mode:
       type: string 
       enum:
         - authentication
         - authorization
   required:
-    - strategy
+    - mode

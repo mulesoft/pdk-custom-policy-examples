@@ -37,11 +37,14 @@ fn unauthorized_response(message: &str, status_code: u32) -> Response {
         .with_body(json!({ "error": message }).to_string())
 }
 
+/// Validates user authentication from Basic Auth credentials backed by the [ContractValidator]. 
 async fn authentication_filter(
     state: RequestHeadersState,
     authentication: Authentication,
     validator: &ContractValidator,
 ) -> Flow<()> {
+
+    // Extract Basic Auth credentials from request
     let (client_id, client_secret) = match basic_auth_credentials(&state) {
         Ok(credentials) => credentials,
         Err(e) => {
@@ -50,6 +53,7 @@ async fn authentication_filter(
         }
     };
 
+    // Validate authentication for the current user
     let validation = validator.authenticate(&client_id, &client_secret);
 
     let client_data = match validation {
@@ -60,6 +64,7 @@ async fn authentication_filter(
         }
     };
 
+    // Update the current authentication data
     if let Some(auth) = authentication.authentication() {
         authentication.set_authentication(Some(&AuthenticationData {
             client_id: Some(client_data.client_id),
@@ -71,12 +76,13 @@ async fn authentication_filter(
     Flow::Continue(())
 }
 
+/// Validates user authorization from Basic Auth credentials backed by the [ContractValidator]. 
 async fn authorization_filter(
     state: RequestHeadersState,
     authentication: Authentication,
     validator: &ContractValidator,
 ) -> Flow<()> {
-    // Dismiss client secret
+    // Extract Basic Auth credentials from request and dismiss client secret
     let (id, _) = match basic_auth_credentials(&state) {
         Ok(credentials) => credentials,
         Err(e) => {
@@ -85,6 +91,7 @@ async fn authorization_filter(
         }
     };
 
+    // Validate authorization for the current user
     let validation = validator.authorize(&id);
 
     let client_data = match validation {
@@ -95,6 +102,7 @@ async fn authorization_filter(
         }
     };
 
+    // Update the current authentication data
     if let Some(auth) = authentication.authentication() {
         authentication.set_authentication(Some(&AuthenticationData {
             client_id: Some(client_data.client_id),
@@ -106,9 +114,11 @@ async fn authorization_filter(
     Flow::Continue(())
 }
 
+/// Polls the [ContractValidator] to keep the contracts database up to date.
 async fn update_task(validator: &ContractValidator, clock: Clock) {
     let initialization_timer = clock.period(ContractValidator::INITIALIZATION_PERIOD);
 
+    // Contracts database is polled at [ContractValidator::INITIALIZATION_PERIOD] rate.
     loop {
         if validator.update_contracts().await.is_ok() {
             logger::info!("Contracts storage initialized.");
@@ -127,6 +137,7 @@ async fn update_task(validator: &ContractValidator, clock: Clock) {
         .release()
         .period(ContractValidator::UPDATE_PERIOD);
 
+    // Contracts database is polled at [ContractValidator::UPDATE_PERIOD] rate.
     loop {
         let _ = validator.update_contracts().await;
 
@@ -149,13 +160,15 @@ async fn configure(
     let conf: Config = serde_json::from_slice(conf)?;
 
     let launch_task = async {
-        match conf.strategy.as_ref() {
+        match conf.mode.as_ref() {
+            // Authorization mode
             "authorization" => {
                 launcher
                     .launch(on_request(|rs, a| authorization_filter(rs, a, &validator)))
                     .await
             }
             _ => {
+                // Authentication mode applied by default
                 launcher
                     .launch(on_request(|rs, a| authentication_filter(rs, a, &validator)))
                     .await
@@ -163,6 +176,7 @@ async fn configure(
         }
     };
 
+    // Run `update_task()` and `launch_task` concurrently.
     join! {
         update_task(&validator, clock),
         launch_task,

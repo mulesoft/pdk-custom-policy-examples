@@ -15,8 +15,6 @@ spec:
   policies:
     - policyRef:
         name: client-id-enforcement-v1-0-impl # This value will be overriden during 'make run' execution
-      # Fill the config with a policy configuration that matches the schema specified in the policy
-      # definition gcl.yaml. Eg:
-      # config:
-      #   someProperty: desiredValue
-      config: {}
+      # Fill with your selected authentication mode
+      config:
+        mode: authentication
