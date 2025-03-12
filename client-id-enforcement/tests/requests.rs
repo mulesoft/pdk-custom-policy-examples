@@ -20,7 +20,9 @@ const ENV_ID: &str = "2b988881-5f9f-4961-8a2d-8b74f11bcd23";
 const API_ID: &str = "123";
 
 fn contracts_path() -> String {
-    format!("/apigateway/ccs/v3/organizations/{ORG_ID}/environments/{ENV_ID}/apis/{API_ID}/contracts")
+    format!(
+        "/apigateway/ccs/v3/organizations/{ORG_ID}/environments/{ENV_ID}/apis/{API_ID}/contracts"
+    )
 }
 
 fn contract_mock() -> Value {

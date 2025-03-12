@@ -37,13 +37,12 @@ fn unauthorized_response(message: &str, status_code: u32) -> Response {
         .with_body(json!({ "error": message }).to_string())
 }
 
-/// Validates user authentication from Basic Auth credentials backed by the [ContractValidator]. 
+/// Validates user authentication from Basic Auth credentials backed by the [ContractValidator].
 async fn authentication_filter(
     state: RequestHeadersState,
     authentication: Authentication,
     validator: &ContractValidator,
 ) -> Flow<()> {
-
     // Extract Basic Auth credentials from request
     let (client_id, client_secret) = match basic_auth_credentials(&state) {
         Ok(credentials) => credentials,
@@ -76,7 +75,7 @@ async fn authentication_filter(
     Flow::Continue(())
 }
 
-/// Validates user authorization from Basic Auth credentials backed by the [ContractValidator]. 
+/// Validates user authorization from Basic Auth credentials backed by the [ContractValidator].
 async fn authorization_filter(
     state: RequestHeadersState,
     authentication: Authentication,
