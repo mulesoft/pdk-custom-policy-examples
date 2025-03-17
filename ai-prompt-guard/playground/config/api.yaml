@@ -1,0 +1,29 @@
+# Copyright 2023 Salesforce, Inc. All rights reserved.
+---
+apiVersion: gateway.mulesoft.com/v1alpha1
+kind: ApiInstance
+metadata:
+  name: ingress-http
+spec:
+  address: http://0.0.0.0:8081
+  services:
+    upstream:
+      address: http://backend
+      routes:
+        - config:
+            destinationPath: /anything/echo/
+  policies:
+    - policyRef:
+        name: ai-prompt-guard-v1-0-impl # This value will be overriden during 'make run' execution
+        namespace: default
+      # Fill the config with a policy configuration that matches the schema specified in the policy
+      # definition gcl.yaml. Eg:
+      # config:
+      #   someProperty: desiredValue
+      config:
+        filters:
+          # email pattern
+          - pattern: '[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}'
+            omitInsteadOfBlocking: true
+          # phone number
+          - pattern: '(\+?\d{1,3})?[-.\s]?\(?\d{2,4}\)?[-.\s]?\d{3,4}[-.\s]?\d{4}'
