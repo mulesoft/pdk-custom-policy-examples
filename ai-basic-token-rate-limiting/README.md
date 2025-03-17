@@ -53,3 +53,7 @@ In the third hit, it should inform the token rate limit validation by returning 
 4. Change the `maximumTokens` and `timePeriodInMilliseconds` in playground's [api.yaml](./playground/config/api.yaml) configuration file to test several token rate limit configurations.
 
 5. By default the playground is configured with an echo server as backend API. You could set an actual OpenAI API by editing the `backend` service at playground's [docker-compose.yaml](./playground/docker-compose.yaml) file.
+
+
+## Limitations
+Single Worker Constraint: The policy is designed with the assumption of a single Envoy worker. Behavior in multi-worker environments is undefined and may lead to inconsistent or incorrect enforcement. This policy is provided solely as an example and is not intended for use in production environments without significant adaptation and testing.
