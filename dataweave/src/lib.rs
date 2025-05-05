@@ -26,9 +26,17 @@ async fn request_filter(
     {
         Ok(val) => {
             let json: serde_json::Value = val.into();
-            Flow::Break(Response::new(200).with_body(format!(r#"{{"result":{json}}}"#)))
+            Flow::Break(
+                Response::new(200)
+                    .with_headers([("Content-Type".to_string(), "application/json".to_string())])
+                    .with_body(format!(r#"{{"result":{json}}}"#)),
+            )
         }
-        Err(err) => Flow::Break(Response::new(400).with_body(format!(r#"{{"error":"{err:?}}}""#))),
+        Err(err) => Flow::Break(
+            Response::new(400)
+                .with_headers([("Content-Type".to_string(), "application/json".to_string())])
+                .with_body(format!(r#"{{"error":"{err}}}""#)),
+        ),
     }
 }
 
