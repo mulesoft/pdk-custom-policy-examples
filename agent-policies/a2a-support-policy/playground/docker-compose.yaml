@@ -1,0 +1,12 @@
+# Copyright 2023 Salesforce, Inc. All rights reserved.
+version: "3.3"
+
+services:
+  local-flex:
+    image: mulesoft/flex-gateway:1.9.0
+    ports:
+      - 8185:8185
+    volumes:
+      - ./config:/usr/local/share/mulesoft/flex-gateway/conf.d/
+  backend:
+    image: kennethreitz/httpbin

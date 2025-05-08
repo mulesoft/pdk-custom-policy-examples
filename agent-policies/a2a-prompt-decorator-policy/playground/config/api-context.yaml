@@ -1,0 +1,40 @@
+# Copyright 2023 Salesforce, Inc. All rights reserved.
+---
+apiVersion: gateway.mulesoft.com/v1alpha1
+kind: PolicyBinding
+metadata:
+  name: ingress-http-api-context
+spec:
+  targetRef:
+    kind: ApiInstance
+    name: ingress-http
+  policyRef:
+    name: api-context
+  config:
+    api:
+      id: "20315619"
+      legacyApiId: ""
+      name: "mcp-api"
+      version: "1.0.0"
+      basePath: "/"
+    environment:
+      clusterId: 'anypoint.default.svc'
+      organizationId: '86794f0d-b74b-4724-b0eb-a6adae5539e0'
+      environmentId: 'bdf8dd24-a578-4a34-bb85-ede77962360b'
+      masterOrganizationId: '86794f0d-b74b-4724-b0eb-a6adae5539e0'
+      anypoint:
+        clientId: ""
+        clientSecret: ""
+        serviceName: 'anypoint'
+        url: 'https://anypoint.mulesoft.com'
+      tiers:
+        - id: '2175980'
+          #name:          Admin
+          limits:
+            - maximumRequests: 20000
+              timePeriodInMilliseconds: 30000
+        - id: '2175981'
+          #name:          Employee
+          limits:
+            - maximumRequests: 100000
+              timePeriodInMilliseconds: 30000
