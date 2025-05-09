@@ -15,19 +15,10 @@ The policy can be configured in 2 modes:
 
 ## Test the Policy
 
-Test the policy using either integration testing or the policy playground.
+Test the policy using the playground.
+Fill your API credentials in the placeholders (`<*-placeholder>` strings) from [api-context.yaml](./playground/config/api-context.yaml). You can obtain those credentials from [Anypoint Access Management](https://docs.mulesoft.com/access-management/).
+Run the playground with `make run` command.
 
 To find the prereqs for using either environment and to learn more about either environment, see:
 
-* [Writing Integration Tests](https://docs.mulesoft.com/pdk/latest/policies-pdk-integration-tests).
 * [Debug Policies With the PDK Playground](https://docs.mulesoft.com/pdk/latest/policies-pdk-debug-local).
-
-### Integration tests
-
-This example contains an [integration test](./tests/requests.rs) to simplify its testing. In the included integration tests demonstrate how to mock the upstream service, the login service and the contracts service by using an HTTP MockServer. 
-
-To begin testing:
-
-1. Add the `registration.yaml` in the `./tests/common` folder.
-
-2. Execute the `test` command:

@@ -1,0 +1,29 @@
+# Copyright 2023 Salesforce, Inc. All rights reserved.
+---
+apiVersion: gateway.mulesoft.com/v1alpha1
+kind: PolicyBinding
+metadata:
+  name: ingress-http-api-context
+spec:
+  targetRef:
+    kind: ApiInstance
+    name: ingress-http
+  policyRef:
+    name: api-context
+  config:
+    api:
+      id: <api-id-placeholder>
+      legacyApiId: ""
+      name: <api-name-placeholder>
+      version: "1.0.0"
+      basePath: "/"
+    environment:
+      clusterId: anypoint.default.svc
+      organizationId: <organization-id-placeholder>
+      environmentId: <environment-id-placeholder>
+      masterOrganizationId: <master-organization-id-placeholder>
+      anypoint:
+        clientId: <client-id-placeholder>
+        clientSecret: <client-secret-placeholder>
+        serviceName: anypoint
+        url: https://anypoint.mulesoft.com

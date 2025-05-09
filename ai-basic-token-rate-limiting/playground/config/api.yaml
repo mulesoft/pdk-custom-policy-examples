@@ -14,8 +14,8 @@ spec:
             destinationPath: /anything/echo/
   policies:
     - policyRef:
-        name: client-id-enforcement-v1-0-impl # This value will be overriden during 'make run' execution
+        name: ai-basic-token-rate-limiting-v1-0-impl # This value will be overriden during 'make run' execution
         namespace: default
-      # Fill with your selected authentication mode
       config:
-        mode: authentication
+        maximumTokens: 15
+        timePeriodInMilliseconds: 10000
