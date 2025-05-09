@@ -14,9 +14,6 @@ The policy can be configured in 2 modes:
 2. authorization: Validates Client ID authorization extracted from Basic Auth credentials.
 
 ## Test the Policy
-
-Test the policy using the playground.
-Fill your API credentials in the placeholders (`<*-placeholder>` strings) from [api-context.yaml](./playground/config/api-context.yaml). You can obtain those credentials from [Anypoint Access Management](https://docs.mulesoft.com/access-management/).
 Run the playground with `make run` command.
 
 To find the prereqs for using either environment and to learn more about either environment, see:
