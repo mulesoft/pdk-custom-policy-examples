@@ -1,0 +1,28 @@
+[workspace]
+members = [
+    "mcp-support-policy",
+    "a2a-support-policy",
+    "a2a-prompt-decorator-policy",
+    "a2a-pii-detector-policy",
+    "agent-core",
+]
+resolver = "2"
+
+[workspace.package]
+edition = "2021"
+
+[workspace.dependencies]
+agent-core = { path = "./agent-core" }
+pdk = { version = "1.3.0", registry = "anypoint" }
+log = "0.4"
+serde =  { version = "1.0", features = ["derive"] }
+serde_json = { version = "1.0", default-features = false }
+anyhow = "1.0"
+thiserror = "1.0"
+mime = "0.3"
+
+[profile.release]
+lto = true
+opt-level = 'z'
+strip = "debuginfo"
+panic = "abort"

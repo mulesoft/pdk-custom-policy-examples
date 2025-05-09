@@ -1,0 +1,24 @@
+---
+apiVersion: gateway.mulesoft.com/v1alpha1
+kind: Extension
+metadata:
+  labels:
+    title: A2A PII Detector
+    description: Detects sensitive data that is being sent through the agents
+    category: A2A
+    metadata/interfaceScope: api,resource
+spec:
+  extends:
+    - name: extension-definition
+      namespace: default
+  properties:
+    action:
+      title: Action
+      type: string
+      description: The action to do in case the request is consider it has sensitive data. In both cases a policy violation is going to be reported
+      default: Reject
+      enum:
+        - Reject
+        - Log
+  required:
+    - action

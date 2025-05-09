@@ -1,0 +1,8 @@
+[registry]
+global-credential-providers = ["cargo:token"]
+
+[registries]
+anypoint = { index = "https://anypoint.mulesoft.com/git/68ef9520-24e9-4cf2-b2f5-620025690913/19f9d123-5775-44d7-a67f-49328cfa00b0" }
+
+[net]
+git-fetch-with-cli = true

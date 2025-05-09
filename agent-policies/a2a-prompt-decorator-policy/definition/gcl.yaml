@@ -1,0 +1,99 @@
+---
+apiVersion: gateway.mulesoft.com/v1alpha1
+kind: Extension
+metadata:
+  labels:
+    title: A2A Prompt Decorator
+    description: Decorates the prompts with context information
+    category: A2A
+    metadata/interfaceScope: api,resource
+spec:
+  extends:
+    - name: extension-definition
+      namespace: default
+  properties:
+    textDecorators:
+      title: Text Decorators
+      description: List of text decorations to be added to the prompts
+      type: array
+      items:
+        type: object
+        properties:
+          text:
+            title: Prompt Text
+            description: The prompt text to be injected in the request
+            type: string
+            format: dataweave
+            bindings:
+              attributes: true
+              authentication: true
+              vars:
+                - params
+          condition:
+            title: Condition
+            description: When the condition returns true decoration will be added
+            type: string
+            format: dataweave
+            bindings:
+              attributes: true
+              authentication: true
+              vars:
+                - params
+        required:
+          - text
+    fileDecorators:
+      title: File Decorators
+      type: array
+      description: List of file type decorations to be added to the prompts
+      items:
+        type: object
+        properties:
+          condition:
+            title: Condition
+            description: When the condition returns true decoration will be added
+            type: string
+            format: dataweave
+            bindings:
+              attributes: true
+              authentication: true
+              vars:
+                - params
+          fileName:
+            title: File Name
+            description: The file name to put
+            type: string
+            format: dataweave
+            bindings:
+              attributes: true
+              authentication: true
+              vars:
+                - params
+          fileMimeType:
+            title: File Mime Type
+            description: The Mime Type of the file to inject
+            type: string
+            format: dataweave
+            bindings:
+              attributes: true
+              authentication: true
+              vars:
+                - params
+          fileType:
+            title: Base64 Bytes
+            type: string
+            enum:
+              - Base64
+              - Uri
+            default: Base64
+          file:
+            title: File Uri
+            type: string
+            format: dataweave
+            bindings:
+              attributes: true
+              authentication: true
+              vars:
+                - params
+        required:
+          - file
+          - fileType
