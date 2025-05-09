@@ -49,10 +49,6 @@ endif
 	-docker compose -f ./playground/docker-compose.yaml down
 	docker compose -f ./playground/docker-compose.yaml up
 
-.PHONY: test
-test: build ## Run integration tests
-	@cargo test -- --nocapture
-
 .PHONY: publish
 publish: build ## Publish a development version of the policy
 	anypoint-cli-v4 pdk policy-project publish --binary-path $(TARGET_DIR)/$(CRATE_NAME).wasm --implementation-gcl-path $(TARGET_DIR)/$(CRATE_NAME)_implementation.yaml
