@@ -4,7 +4,7 @@ use thiserror::Error;
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub enum PiiType {
-    SSN,
+    Ssn,
     Email,
     CreditCard,
     PhoneNumber,
@@ -22,10 +22,6 @@ pub struct PiiMatch {
 pub enum PiiError {
     #[error("Invalid regex pattern: {0}")]
     InvalidRegex(String),
-    #[error("Invalid input text")]
-    InvalidInput,
-    #[error("NER model error: {0}")]
-    NerError(String),
 }
 
 pub trait PiiDetector {
@@ -38,35 +34,32 @@ pub struct RegexPiiDetector {
 
 impl RegexPiiDetector {
     pub fn new() -> Result<Self, PiiError> {
-        let mut patterns: Vec<(PiiType, Regex)> = vec![];
-
-        // SSN pattern (XXX-XX-XXXX)
-        patterns.push((
-            PiiType::SSN,
-            Regex::new(r"\b\d{3}-\d{2}-\d{4}\b")
-                .map_err(|e| PiiError::InvalidRegex(e.to_string()))?,
-        ));
-
-        // Email pattern
-        patterns.push((
-            PiiType::Email,
-            Regex::new(r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b")
-                .map_err(|e| PiiError::InvalidRegex(e.to_string()))?,
-        ));
-
-        // Credit Card pattern (supports major card types)
-        patterns.push((
-            PiiType::CreditCard,
-            Regex::new(r"\b(?:\d{4}[-\s]?){3}\d{4}\b")
-                .map_err(|e| PiiError::InvalidRegex(e.to_string()))?,
-        ));
-
-        // US Phone Number pattern
-        patterns.push((
-            PiiType::PhoneNumber,
-            Regex::new(r"\b(?:\+?1[-.\s]?)?\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}\b")
-                .map_err(|e| PiiError::InvalidRegex(e.to_string()))?,
-        ));
+        let patterns: Vec<(PiiType, Regex)> = vec![
+            (
+                // SSN pattern (XXX-XX-XXXX)
+                PiiType::Ssn,
+                Regex::new(r"\b\d{3}-\d{2}-\d{4}\b")
+                    .map_err(|e| PiiError::InvalidRegex(e.to_string()))?,
+            ),
+            (
+                // Email pattern
+                PiiType::Email,
+                Regex::new(r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b")
+                    .map_err(|e| PiiError::InvalidRegex(e.to_string()))?,
+            ),
+            (
+                // Credit Card pattern (supports major card types)
+                PiiType::CreditCard,
+                Regex::new(r"\b(?:\d{4}[-\s]?){3}\d{4}\b")
+                    .map_err(|e| PiiError::InvalidRegex(e.to_string()))?,
+            ),
+            (
+                // US Phone Number pattern
+                PiiType::PhoneNumber,
+                Regex::new(r"\b(?:\+?1[-.\s]?)?\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}\b")
+                    .map_err(|e| PiiError::InvalidRegex(e.to_string()))?,
+            )
+        ];
 
         Ok(Self { patterns })
     }
@@ -103,7 +96,7 @@ mod tests {
         let matches = detector.detect(text).unwrap();
         assert_eq!(matches.len(), 2);
 
-        let ssn_match = matches.iter().find(|m| m.pii_type == PiiType::SSN).unwrap();
+        let ssn_match = matches.iter().find(|m| m.pii_type == PiiType::Ssn).unwrap();
         assert_eq!(ssn_match.value, "123-45-6789");
 
         let email_match = matches

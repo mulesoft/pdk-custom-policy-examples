@@ -22,11 +22,11 @@ impl<'a> HeadersAttributes<'a> {
     }
 }
 
-impl<'a> AttributesBinding for HeadersAttributes<'a> {
+impl AttributesBinding for HeadersAttributes<'_> {
     fn extract_headers(&self) -> HashMap<String, String> {
         let vec: &Vec<(String, String)> = &self.headers;
-        let iter: Iter<(String, String)> = vec.into_iter();
-        let x: HashMap<String, String> = iter.map(|p| p.clone()).collect();
+        let iter: Iter<(String, String)> = vec.iter();
+        let x: HashMap<String, String> = iter.cloned().collect();
         x.clone()
     }
 

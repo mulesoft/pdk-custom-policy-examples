@@ -17,8 +17,7 @@ use pdk::metadata::Metadata;
 use pdk::script::PayloadBinding;
 use serde_json::{from_slice, Error, Value};
 
-// This filter shows how to log a specific request header.
-// You can extend the function and use the configurations exposed in config.rs file
+
 async fn request_filter(request_state: RequestState, config: &Config) -> Flow<AgentCard> {
     let header_state = request_state.into_headers_state().await;
     let path = header_state.path();
@@ -87,7 +86,7 @@ fn create_rpc_error_response(error_message: &RpcError) -> Flow<AgentCard> {
 
 async fn response_filter(
     response_state: ResponseState,
-    consumer_url: &String,
+    consumer_url: &str,
     request_data: RequestData<AgentCard>,
 ) {
     match request_data {
@@ -106,24 +105,21 @@ async fn response_filter(
                             let body_state = state.into_body_state().await;
                             let json_bytes = body_state.as_bytes();
                             let result: Result<Value, Error> = from_slice(&json_bytes);
-                            match result {
-                                Ok(mut json_value) => {
-                                    if let Value::Object(ref mut map) = json_value {
-                                        map.insert(
-                                            "url".to_string(),
-                                            Value::String(consumer_url.clone()),
-                                        );
-                                    }
-                                    // Convert back to Vec<u8>
-                                    let updated_json = serde_json::to_vec(&json_value)
-                                        .expect("failed to serialize json");
-
-                                    body_state
-                                        .handler()
-                                        .set_body(updated_json.as_slice())
-                                        .expect("failed to set body");
+                            if let Ok(mut json_value) = result {
+                                if let Value::Object(ref mut map) = json_value {
+                                    map.insert(
+                                        "url".to_string(),
+                                        Value::String(consumer_url.to_string()),
+                                    );
                                 }
-                                _ => {}
+                                // Convert back to Vec<u8>
+                                let updated_json = serde_json::to_vec(&json_value)
+                                    .expect("failed to serialize json");
+
+                                body_state
+                                    .handler()
+                                    .set_body(updated_json.as_slice())
+                                    .expect("failed to set body");
                             }
                         }
                     }
@@ -179,7 +175,7 @@ async fn configure(
 }
 
 async fn resolve_consumer_url(client: &HttpClient, metadata: &Metadata) -> Result<String> {
-    let anypoint_client = HttpPlatformClient::new(&client, &metadata);
+    let anypoint_client = HttpPlatformClient::new(client, metadata);
     let login_response = anypoint_client.login().await?;
     let token = login_response.get_token();
     let apim_login_response = anypoint_client.login_apim(token).await?;

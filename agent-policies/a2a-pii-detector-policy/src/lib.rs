@@ -17,8 +17,8 @@ use agent_core::json_rpc::JsonRpcRequest;
 use pdk::script::PayloadBinding;
 use serde_json::{Error, Value};
 
-// This filter shows how to log a specific request header.
-// You can extend the function and use the configurations exposed in config.rs file
+const TEXT_FIELD: &str = "text";
+
 async fn request_filter(
     request_state: RequestState,
     config: &Config,
@@ -26,8 +26,10 @@ async fn request_filter(
 ) -> Flow<()> {
     let header_state = request_state.into_headers_state().await;
     let handler = header_state.handler();
+    
     // Remove the timeout
     with_no_timeout(handler);
+    
     match header_state.method().as_str() {
         POST_METHOD => {
             let content_type_maybe = handler.header(CONTENT_TYPE_HEADER);
@@ -46,7 +48,7 @@ async fn request_filter(
                             && request.params.is_some()
                         {
                             let params = request.params.unwrap();
-                            let result: Result<Value, Error> = serde_json::from_str(&params.get());
+                            let result: Result<Value, Error> = serde_json::from_str(params.get());
                             match result {
                                 Ok(json_value) => {
                                     if let Some(Value::Array(parts_values)) =
@@ -73,11 +75,9 @@ async fn request_filter(
     }
 }
 
-const TEXT_FIELD: &'static str = "text";
-
 fn report_pii_if_detected(
     config: &Config,
-    parts_values: &Vec<Value>,
+    parts_values: &[Value],
     regex_pii_detector: &dyn PiiDetector,
 ) -> Flow<()> {
     for value in parts_values {

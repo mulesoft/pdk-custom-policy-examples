@@ -17,9 +17,6 @@ use pdk::authentication::{Authentication, AuthenticationHandler};
 use agent_core::attributes::HeadersAttributes;
 use agent_core::json_rpc::JsonRpcRequest;
 
-
-// This filter shows how to log a specific request header.
-// You can extend the function and use the configurations exposed in config.rs file
 async fn request_filter(
     request_state: RequestState,
     config: &Config,
@@ -28,8 +25,10 @@ async fn request_filter(
 ) -> Flow<()> {
     let header_state = request_state.into_headers_state().await;
     let handler = header_state.handler();
+    
     // Remove the timeout
     with_no_timeout(handler);
+    
     match header_state.method().as_str() {
         POST_METHOD => {
             let content_type_maybe = handler.header(CONTENT_TYPE_HEADER);
@@ -51,7 +50,7 @@ async fn request_filter(
 
                         if request.method == SEND_TASK_FUNCTION_NAME && request.params.is_some() {
                             let params = request.params.unwrap();
-                            let result: Result<Value, Error> = serde_json::from_str(&params.get());
+                            let result: Result<Value, Error> = serde_json::from_str(params.get());
                             match result {
                                 Ok(mut json_value) => {
                                     let original_value = &json_value.clone();
@@ -62,7 +61,7 @@ async fn request_filter(
                                         decorate_prompts(
                                             &original_value,
                                             parts,
-                                            &config,
+                                            config,
                                             &attributes,
                                             &auth,
                                         );
@@ -91,7 +90,7 @@ async fn request_filter(
 fn write_json_value_body(request_body_state: RequestBodyState, request: &mut JsonRpcRequest) {
     match serde_json::to_string_pretty(&request) {
         Ok(encoded) => {
-            let set_body_result = request_body_state.handler().set_body(&encoded.as_bytes());
+            let set_body_result = request_body_state.handler().set_body(encoded.as_bytes());
             match set_body_result {
                 Ok(_) => {}
                 Err(e) => {
@@ -116,16 +115,16 @@ fn decorate_prompts(
         text_decorators.iter().for_each(|decorator| {
             let condition = match &decorator.condition {
                 None => true,
-                Some(c) => evaluate_to_bool(&attributes, &original_value, &c, &auth),
+                Some(c) => evaluate_to_bool(attributes, original_value, c, auth),
             };
             if condition {
                 let mut part_properties: Map<String, Value> = serde_json::Map::new();
                 part_properties.insert("type".to_string(), Value::from("text".to_string()));
                 let value = evaluate_to_json_string_value(
-                    &attributes,
-                    &original_value,
+                    attributes,
+                    original_value,
                     &decorator.text,
-                    &auth,
+                    auth,
                 );
                 part_properties.insert("text".to_string(), value);
                 parts.insert(0, Value::Object(part_properties));
@@ -137,7 +136,7 @@ fn decorate_prompts(
         file_decorators.iter().for_each(|decorator| {
             let condition = match &decorator.condition {
                 None => true,
-                Some(c) => evaluate_to_bool(&attributes, &original_value, &c, &auth),
+                Some(c) => evaluate_to_bool(attributes, original_value, c, auth),
             };
             if condition {
                 let mut part_properties: Map<String, Value> = serde_json::Map::new();
@@ -145,29 +144,29 @@ fn decorate_prompts(
                 let mut file_properties = serde_json::Map::new();
                 if let Some(file_script) = &decorator.file_name {
                     let value = evaluate_to_json_string_value(
-                        &attributes,
-                        &original_value,
-                        &file_script,
-                        &auth,
+                        attributes,
+                        original_value,
+                        file_script,
+                        auth,
                     );
                     file_properties.insert("name".to_string(), value);
                 }
 
                 if let Some(file_script) = &decorator.file_mime_type {
                     let value = evaluate_to_json_string_value(
-                        &attributes,
-                        &original_value,
-                        &file_script,
-                        &auth,
+                        attributes,
+                        original_value,
+                        file_script,
+                        auth,
                     );
                     file_properties.insert("file_mime_type".to_string(), value);
                 }
 
                 let value = evaluate_to_json_string_value(
-                    &attributes,
-                    &original_value,
+                    attributes,
+                    original_value,
                     &decorator.file,
-                    &auth,
+                    auth,
                 );
                 match decorator.file_type.as_str() {
                     "Uri" => {
@@ -198,14 +197,14 @@ fn evaluate_to_json_string_value(
     evaluator.bind_authentication(&auth.authentication());
     let x: Value = json_value.clone();
     evaluator.bind_vars("params", x);
-    let value = match evaluator.eval() {
+    
+    match evaluator.eval() {
         Ok(value) => as_serde_string_value(&value),
         Err(e) => {
             logger::warn!("Error evaluating text script: {}", e);
             Value::Null
         }
-    };
-    value
+    }
 }
 
 fn evaluate_to_bool(
@@ -219,7 +218,8 @@ fn evaluate_to_bool(
     evaluator.bind_authentication(&auth.authentication());
     let x: Value = json_value.clone();
     evaluator.bind_vars("params", x);
-    let value = match evaluator.eval() {
+    
+    match evaluator.eval() {
         Ok(pdk::script::Value::Bool(b)) => b,
         Ok(e) => {
             logger::warn!("Script didn't return a boolean value instead `{:?}`", e);
@@ -229,8 +229,7 @@ fn evaluate_to_bool(
             logger::warn!("Error evaluating text script: {}", e);
             false
         }
-    };
-    value
+    }
 }
 
 fn as_serde_string_value(value: &pdk::script::Value) -> Value {

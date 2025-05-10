@@ -34,21 +34,6 @@ build: build-asset-files ## Build the policy definition and implementation
 	@cargo anypoint gcl-gen -d $(DEFINITION_NAME) -n $(DEFINITION_NAMESPACE) -w $(TARGET_DIR)/$(CRATE_NAME).wasm -o $(TARGET_DIR)/$(CRATE_NAME)_implementation.yaml
 	@echo $(POLICY_REF_NAME) > target/policy-ref-name.txt
 
-.PHONY: run
-run: build ## Run the policy in local flex
-	@anypoint-cli-v4 pdk log -t "warn" -m "Remember to update the config values in playground/config/api.yaml file for the policy configuration"
-	@anypoint-cli-v4 pdk patch-gcl -f playground/config/api.yaml -p "spec.policies[0].policyRef.name" -v "$(POLICY_REF_NAME)"
-	@anypoint-cli-v4 pdk patch-gcl -f playground/config/api.yaml -p "spec.policies[0].policyRef.namespace" -v "$(DEFINITION_NAMESPACE)"
-ifeq ($(OS), Windows_NT)
-	rm -Force playground/config/custom-policies/*.yaml
-else
-	rm -f playground/config/custom-policies/*.yaml
-endif
-	cp "$(TARGET_DIR)/$(CRATE_NAME)_implementation.yaml" "playground/config/custom-policies/$(CRATE_NAME)_implementation.yaml"
-	cp "$(TARGET_DIR)/$(CRATE_NAME)_definition.yaml" "playground/config/custom-policies/$(CRATE_NAME)_definition.yaml"
-	-docker compose -f ./playground/docker-compose.yaml down
-	docker  compose -f ./playground/docker-compose.yaml up
-
 .PHONY: test
 test: build ## Run integration tests
 	@cargo test -- --nocapture

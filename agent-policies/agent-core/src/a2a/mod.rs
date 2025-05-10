@@ -3,12 +3,12 @@ use crate::json_rpc::JsonRpcRequest;
 
 pub mod schemas;
 
-pub const SEND_TASK_FUNCTION_NAME: &'static str = "tasks/send";
-pub const GET_TASK_FUNCTION_NAME: &'static str = "tasks/get";
-pub const CANCEL_TASK_FUNCTION_NAME: &'static str = "tasks/cancel";
-pub const SET_PUSH_NOTIFICATION_TASK_FUNCTION_NAME: &'static str = "tasks/pushNotification/set";
-pub const GET_PUSH_NOTIFICATION_TASK_FUNCTION_NAME: &'static str = "tasks/pushNotification/get";
-pub const SEND_SUBSCRIBE_TASK_FUNCTION_NAME: &'static str = "tasks/sendSubscribe";
+pub const SEND_TASK_FUNCTION_NAME: &str = "tasks/send";
+pub const GET_TASK_FUNCTION_NAME: &str = "tasks/get";
+pub const CANCEL_TASK_FUNCTION_NAME: &str = "tasks/cancel";
+pub const SET_PUSH_NOTIFICATION_TASK_FUNCTION_NAME: &str = "tasks/pushNotification/set";
+pub const GET_PUSH_NOTIFICATION_TASK_FUNCTION_NAME: &str = "tasks/pushNotification/get";
+pub const SEND_SUBSCRIBE_TASK_FUNCTION_NAME: &str = "tasks/sendSubscribe";
 
 pub fn is_valid_method(name: &str) -> bool {
     valid_methods().contains(&name)
@@ -34,7 +34,7 @@ pub fn valid_request(request: JsonRpcRequest<'_>) -> Result<(), anyhow::Error> {
             ))),
             Some(p) => {
                 serde_json::from_str::<TaskSendParams>(p.get())
-                    .map_err(|e| anyhow::Error::from(e))?;
+                    .map_err(anyhow::Error::from)?;
                 Ok(())
             }
         },
@@ -45,7 +45,7 @@ pub fn valid_request(request: JsonRpcRequest<'_>) -> Result<(), anyhow::Error> {
             ))),
             Some(p) => {
                 serde_json::from_str::<TaskQueryParams>(p.get())
-                    .map_err(|e| anyhow::Error::from(e))?;
+                    .map_err(anyhow::Error::from)?;
                 Ok(())
             }
         },
@@ -56,7 +56,7 @@ pub fn valid_request(request: JsonRpcRequest<'_>) -> Result<(), anyhow::Error> {
             ))),
             Some(p) => {
                 serde_json::from_str::<TaskIdParams>(p.get())
-                    .map_err(|e| anyhow::Error::from(e))?;
+                    .map_err(anyhow::Error::from)?;
                 Ok(())
             }
         },
@@ -67,7 +67,7 @@ pub fn valid_request(request: JsonRpcRequest<'_>) -> Result<(), anyhow::Error> {
             ))),
             Some(p) => {
                 serde_json::from_str::<TaskPushNotificationConfig>(p.get())
-                    .map_err(|e| anyhow::Error::from(e))?;
+                    .map_err(anyhow::Error::from)?;
                 Ok(())
             }
         },
@@ -78,7 +78,7 @@ pub fn valid_request(request: JsonRpcRequest<'_>) -> Result<(), anyhow::Error> {
             ))),
             Some(p) => {
                 serde_json::from_str::<TaskIdParams>(p.get())
-                    .map_err(|e| anyhow::Error::from(e))?;
+                    .map_err(anyhow::Error::from)?;
                 Ok(())
             }
         },
@@ -89,7 +89,7 @@ pub fn valid_request(request: JsonRpcRequest<'_>) -> Result<(), anyhow::Error> {
             ))),
             Some(p) => {
                 serde_json::from_str::<TaskQueryParams>(p.get())
-                    .map_err(|e| anyhow::Error::from(e))?;
+                    .map_err(anyhow::Error::from)?;
                 Ok(())
             }
         },
