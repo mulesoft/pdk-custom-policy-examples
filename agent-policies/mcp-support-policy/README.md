@@ -1,6 +1,6 @@
 # MCP Support Policy Example
 
-Enables MCP support by allowing Server-Side Events (SSE) to function.
+This policy enables MCP support by allowing Server-Sent Events (SSE).
 
 ## Testing the Policy
 
@@ -16,4 +16,4 @@ See [Uploading Custom Policies to Exchange](https://docs.mulesoft.com/pdk/latest
 
 ### Applying the Custom Policy to an API
 
-See [Applying Custom Policies](https://docs.mulesoft.com/pdk/latest/policies-pdk-apply-policies)
+See [Applying Custom Policies](https://docs.mulesoft.com/pdk/latest/policies-pdk-apply-policies).

@@ -1,6 +1,6 @@
 # A2A Support Policy Example
 
-This policy enables A2A support by allowing Server-Sent Events, and by performing schema validation of the A2A messages.
+This policy enables A2A support by allowing Server-Sent Events (SSE), and by performing schema validation of the A2A messages.
 
 ## Test the Policy
 
