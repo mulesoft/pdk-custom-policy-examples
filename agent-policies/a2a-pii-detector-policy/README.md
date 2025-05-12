@@ -1,6 +1,6 @@
 # A2A PII Detector Policy Example
 
-Enables sensitive information detection in the prompts that are sent to and from an Agent. Incoming prompt will either be rejected or logged if sensitive information is detected.
+This policy detects sensitive information in prompts sent to and from an agent. If sensitive information is found, the prompt can be rejected or logged.
 
 ## Test the Policy
 
