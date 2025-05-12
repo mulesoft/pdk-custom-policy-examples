@@ -6,7 +6,7 @@ This policy enables MCP support by allowing Server-Sent Events (SSE).
 
 Test this policy by publishing it to Exchange.
 
-### Example Setup
+### Setting Up the Example Policy
 
 Follow the instructions in [Example Policy Project Setup](https://docs.mulesoft.com/pdk/latest/policies-pdk-policy-templates#set-up-an-example-policy-project).
 
