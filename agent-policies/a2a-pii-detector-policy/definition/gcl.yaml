@@ -4,7 +4,7 @@ kind: Extension
 metadata:
   labels:
     title: A2A PII Detector
-    description: Detects sensitive data that is being sent through the agents
+    description: Detects sensitive data sent to or from an agent.
     category: A2A
     metadata/interfaceScope: api,resource
 spec:
@@ -15,7 +15,7 @@ spec:
     action:
       title: Action
       type: string
-      description: The action to do in case the request is consider it has sensitive data. In both cases a policy violation is going to be reported
+      description: Action to take if sensitive data is found. A policy violation is always reported.
       default: Reject
       enum:
         - Reject

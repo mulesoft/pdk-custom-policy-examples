@@ -4,7 +4,7 @@ kind: Extension
 metadata:
   labels:
     title: A2A Support
-    description: Updates the card url to match the one in the proxy.
+    description: Updates the card url to match the proxy url.
     category: A2A
     metadata/interfaceScope: api,resource
 spec:
@@ -15,20 +15,18 @@ spec:
     verifySchema:
       type: boolean
       title: Verify the schema
-      description: If set to true it will verify that the schemas of all request are according to the A2A spec
+      description: If true, all incoming request data is validated for conformance to the A2A schema specification.
+      
       default: false
     consumerUrl:
       type: string
       title: Consumer URL
-      description: The consumer agent url. If not set it will get the one in the API
+      description: The consumer agent url. If not set, the API url is used.
     cardPath:
       type: string
       title: Card Path
-      description: The path where the card will be presented
+      description: The path where the card is presented.
       default: "/.well-known/agent.json"
   required:
     - cardPath
     - verifySchema
-
-
-
