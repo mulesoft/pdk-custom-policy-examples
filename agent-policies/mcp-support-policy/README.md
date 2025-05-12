@@ -1,6 +1,6 @@
 # MCP Support Policy Example
 
-Enables MCO support by allowing Server-Side-Events to work.
+Enables MCP support by allowing Server-Side-Events to work.
 
 ## Test the Policy
 
