@@ -245,25 +245,6 @@ fn as_serde_string_value(value: &pdk::script::Value) -> Value {
     }
 }
 
-// fn as_serde_value(value: &pdk::script::Value) -> Value {
-//     match value {
-//         pdk::script::Value::Null => Value::Null,
-//         pdk::script::Value::Bool(b) => Value::Bool(b.clone()),
-//         pdk::script::Value::Number(n) => Value::Number(serde_json::Number::from_f64(*n).unwrap()),
-//         pdk::script::Value::String(s) => Value::String(s.clone()),
-//         pdk::script::Value::Array(a) => {
-//             Value::Array(a.into_iter().map(|v| as_serde_value(v)).collect())
-//         }
-//         pdk::script::Value::Object(kvp) => {
-//             let mut map = serde_json::Map::new();
-//             kvp.into_iter().for_each(|(k, v)| {
-//                 map.insert(k.clone(), as_serde_value(v));
-//             });
-//             Value::Object(map)
-//         }
-//     }
-// }
-
 #[entrypoint]
 async fn configure(launcher: Launcher, Configuration(bytes): Configuration) -> Result<()> {
     let config: Config = serde_json::from_slice(&bytes).map_err(|err| {
