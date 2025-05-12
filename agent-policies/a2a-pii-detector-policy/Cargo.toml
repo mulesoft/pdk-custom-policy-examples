@@ -1,0 +1,25 @@
+# Copyright 2023 Salesforce, Inc. All rights reserved.
+[package]
+name = "a2a_pii_detector_policy"
+version = "1.0.20"
+rust-version = "1.83.0"
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[lib]
+crate-type = ["cdylib"]
+
+[package.metadata.anypoint]
+group_id = "02eb9b5f-bfb9-4da5-85e2-51dc1747d7a8"
+definition_asset_id = "a-two-a-pii-detector-policy"
+implementation_asset_id = "a-two-a-pii-detector-wasm"
+
+[dependencies]
+agent-core = {workspace = true}
+pdk = { workspace = true }
+serde = { workspace = true, features = ["derive"] }
+serde_json = { workspace = true, features = ["alloc","raw_value"] }
+anyhow = { workspace = true }
+mime = { workspace = true }
+regex = "1.11.1"
+thiserror = "1.0"

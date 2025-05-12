@@ -1,0 +1,8 @@
+playground/config/custom-policies/*
+!playground/config/custom-policies/note.txt
+.pdk
+registration.yaml
+certificate.yaml
+target
+.DS_Store/
+.idea

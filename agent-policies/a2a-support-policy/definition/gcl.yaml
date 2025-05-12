@@ -1,0 +1,34 @@
+---
+apiVersion: gateway.mulesoft.com/v1alpha1
+kind: Extension
+metadata:
+  labels:
+    title: A2A Support
+    description: Updates the card url to match the one in the proxy.
+    category: A2A
+    metadata/interfaceScope: api,resource
+spec:
+  extends:
+    - name: extension-definition
+      namespace: default
+  properties:
+    verifySchema:
+      type: boolean
+      title: Verify the schema
+      description: If set to true it will verify that the schemas of all request are according to the A2A spec
+      default: false
+    consumerUrl:
+      type: string
+      title: Consumer URL
+      description: The consumer agent url. If not set it will get the one in the API
+    cardPath:
+      type: string
+      title: Card Path
+      description: The path where the card will be presented
+      default: "/.well-known/agent.json"
+  required:
+    - cardPath
+    - verifySchema
+
+
+
