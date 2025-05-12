@@ -2,11 +2,11 @@
 
 This policy detects sensitive information in prompts sent to and from an agent. If sensitive information is found, the prompt can be rejected or logged.
 
-## Test the Policy
+## Testing the Policy
 
 Test the policy by publishing it to Exchange.
 
-### Setting up the example 
+### Setting Up the Example Policy
 
 Follow [Set Up an Example Policy Project](https://docs.mulesoft.com/pdk/latest/policies-pdk-policy-templates#set-up-an-example-policy-project).
 

@@ -2,11 +2,11 @@
 
 This policy enables A2A support by allowing Server-Sent Events (SSE), and by performing schema validation of the A2A messages.
 
-## Test the Policy
+## Testing the Policy
 
 Test the policy by publishing it to Exchange.
 
-### Setting up the example 
+### Setting Up the Example Policy 
 
 Follow [Set Up an Example Policy Project](https://docs.mulesoft.com/pdk/latest/policies-pdk-policy-templates#set-up-an-example-policy-project).
 
