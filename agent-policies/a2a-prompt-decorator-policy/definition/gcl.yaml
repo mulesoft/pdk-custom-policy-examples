@@ -4,7 +4,7 @@ kind: Extension
 metadata:
   labels:
     title: A2A Prompt Decorator
-    description: Decorates the prompts with context information
+    description: Decorates the prompts with context information.
     category: A2A
     metadata/interfaceScope: api,resource
 spec:
@@ -14,14 +14,14 @@ spec:
   properties:
     textDecorators:
       title: Text Decorators
-      description: List of text decorations to be added to the prompts
+      description: List of text decorations to add to the prompts.
       type: array
       items:
         type: object
         properties:
           text:
             title: Prompt Text
-            description: The prompt text to be injected in the request
+            description: Prompt text to inject.
             type: string
             format: dataweave
             bindings:
@@ -31,7 +31,7 @@ spec:
                 - params
           condition:
             title: Condition
-            description: When the condition returns true decoration will be added
+            description: Prompt text is injected if this condition evaluates to true.
             type: string
             format: dataweave
             bindings:
@@ -44,13 +44,13 @@ spec:
     fileDecorators:
       title: File Decorators
       type: array
-      description: List of file type decorations to be added to the prompts
+      description: List of file type decorations to add to the prompts.
       items:
         type: object
         properties:
           condition:
             title: Condition
-            description: When the condition returns true decoration will be added
+            description: File type decoration is added to the prompt if this condition evaluates to true.
             type: string
             format: dataweave
             bindings:
@@ -60,7 +60,7 @@ spec:
                 - params
           fileName:
             title: File Name
-            description: The file name to put
+            description: The file name.
             type: string
             format: dataweave
             bindings:
@@ -69,8 +69,8 @@ spec:
               vars:
                 - params
           fileMimeType:
-            title: File Mime Type
-            description: The Mime Type of the file to inject
+            title: File MIME Type
+            description: The file MIME type.
             type: string
             format: dataweave
             bindings:
