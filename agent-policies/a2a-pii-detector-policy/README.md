@@ -1,6 +1,6 @@
 # A2A PII Detector Policy Example
 
-This policy detects sensitive information in prompts sent to and from an agent. If sensitive information is found, the prompt can be rejected or logged.
+This policy detects sensitive information in prompts sent to and from an agent. The policy checks for US Social Security numbers, email addresses, credit card numbers, and US phone numbers. If sensitive information is found, the prompt is either rejected or logged, depending on the selected action.
 
 ## Testing the Policy
 
