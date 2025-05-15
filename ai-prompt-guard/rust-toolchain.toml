@@ -1,6 +1,6 @@
 # Copyright 2023 Salesforce, Inc. All rights reserved.
 [toolchain]
 channel = "1.83.0"
-targets = [ "wasm32-wasi" ]
+targets = [ "wasm32-wasip1" ]
 components = [ "rustfmt", "clippy" ]
 profile = "minimal"
