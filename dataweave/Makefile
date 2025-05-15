@@ -1,4 +1,4 @@
-TARGET                	:= wasm32-wasi
+TARGET                	:= wasm32-wasip1
 TARGET_DIR            	:= target/$(TARGET)/release
 CARGO_ANYPOINT        	:= cargo-anypoint
 POLICY_REF_NAME_SUFFIX 	:= -impl
