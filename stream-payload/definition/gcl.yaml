@@ -1,0 +1,26 @@
+---
+apiVersion: gateway.mulesoft.com/v1alpha1
+kind: Extension
+metadata:
+  labels:
+    title: stream-payload
+    category: Custom
+    metadata/interfaceScope: api,resource
+spec:
+  extends:
+    - name: extension-definition
+      namespace: default
+  properties:
+    searchMode:
+      type: string
+      enum:
+        - streamed
+        - buffered
+      default: streamed
+    forbiddenStrings:
+      type: array
+      items:
+        type: string
+  required:
+    - forbiddenStrings
+    - searchMode

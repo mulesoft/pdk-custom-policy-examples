@@ -16,7 +16,7 @@ To find the prereqs for using either environment and to learn more about either 
 
 This example contains an [integration test](./tests/requests.rs) to simplify its testing. To begin testing:
 
-1. Add the `registration.yaml` in the `./tests/common` folder.
+1. Add the `registration.yaml` in the `./tests/config` folder.
 
 2. Execute the `test` command:
 
@@ -39,7 +39,7 @@ make run
 3. Make requests to the Flex Gateway by using the following CURL command:
 
 ```shell
-curl -v -H "Origin: http://www.the-origin.com" "https://localhost:8081"
+curl -v -H "Origin: http://www.the-origin.com" "http://localhost:8081"
 ```
 
 4. Check the headers returned by the endpoint.

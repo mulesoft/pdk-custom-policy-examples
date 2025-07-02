@@ -39,7 +39,7 @@ make run
 3. Make requests to the Flex Gateway by using the following Curl command:
 
 ```shell
-curl "https://localhost:8081" --cacert ./tests/resources/server.crt --cert ./tests/resources/client.pem --key ./tests/resources/client.key  -v
+curl "https://localhost:8081" --cacert tests/resources/server.crt --cert tests/resources/client.pem --key tests/resources/client.key  -v
 ```
 Flex Gateway should return a response with the email and name as headers:
 

@@ -1,4 +1,4 @@
-TARGET                	:= wasm32-wasi
+TARGET                	:= wasm32-wasip1
 TARGET_DIR            	:= target/$(TARGET)/release
 CARGO_ANYPOINT        	:= cargo-anypoint
 POLICY_REF_NAME_SUFFIX 	:= -impl
@@ -85,7 +85,7 @@ endif
 
 .PHONY: install-cargo-anypoint
 install-cargo-anypoint:
-	cargo install cargo-anypoint@1.2.0 --registry anypoint --config .cargo/config.toml
+	cargo install cargo-anypoint@1.4.0 --registry anypoint --config .cargo/config.toml
 
 .PHONY: show-policy-ref-name
 show-policy-ref-name:

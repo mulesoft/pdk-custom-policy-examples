@@ -19,7 +19,7 @@ To find the prereqs for using either environment and to learn more about either 
 
 This example contains an [integration test](./tests/requests.rs) to simplify its testing. To begin testing:
 
-1. Add the `registration.yaml` in the `./tests/common` folder.
+1. Add the `registration.yaml` in the `./tests/config` folder.
 
 2. Execute the `test` command:
 
@@ -46,3 +46,12 @@ curl "http://127.0.0.1:8081" -H "nonce:5c6cd51364cd25a4a25853e085ad682c899861e24
 ```
 
 Flex Gateway returns the encrypted response in the payload.
+
+## macOS Build Issues?
+
+If you encounter build errors related to `libz-sys` or missing pkg-config, run:
+```bash
+brew install pkg-config
+```
+
+This is a macOS-specific issue where the `libz-sys` crate fails to compile due to macro conflicts with system headers. `pkg-config` helps resolve this by using the system's version of libraries instead of building incompatible versions from source.
