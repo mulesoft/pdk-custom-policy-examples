@@ -54,4 +54,4 @@ If you encounter build errors related to `libz-sys` or missing pkg-config, run:
 brew install pkg-config
 ```
 
-This is a macOS-specific issue where `pkg-config` helps resolve transitive dependency conflicts by using the system's version of libraries instead of building incompatible versions from source.
+This is a macOS-specific issue where the `libz-sys` crate fails to compile due to macro conflicts with system headers. `pkg-config` helps resolve this by using the system's version of libraries instead of building incompatible versions from source.
