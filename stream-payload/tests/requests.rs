@@ -28,7 +28,7 @@ async fn reject_forbidden() -> anyhow::Result<()> {
     let policy_config = PolicyConfig::builder()
         .name(POLICY_NAME)
         .configuration(
-            serde_json::json!({"searchMode": "collect", "forbiddenStrings": [FORBIDDEN_STRING]}),
+            serde_json::json!({"searchMode": "buffered", "forbiddenStrings": [FORBIDDEN_STRING]}),
         )
         .build();
 

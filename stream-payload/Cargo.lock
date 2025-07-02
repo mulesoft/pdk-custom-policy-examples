@@ -18,18 +18,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "512761e0bb2578dd7380c6baaa0f4ce03e84f95e960231d1dec8bf4d7d6e2627"
 
 [[package]]
-name = "ahash"
-version = "0.8.11"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e89da841a80418a9b391ebaea17f5c112ffaaa96f621d2c285b5174da76b9011"
-dependencies = [
- "cfg-if",
- "once_cell",
- "version_check",
- "zerocopy 0.7.35",
-]
-
-[[package]]
 name = "aho-corasick"
 version = "1.1.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -468,8 +456,9 @@ checksum = "d71b6127be86fdcfddb610f7182ac57211d4b18a3e9c82eb2d17662f2227ad6a"
 
 [[package]]
 name = "cache-lib"
-version = "1.4.0-rc.0"
-source = "git+ssh://git@github.com/mulesoft-emu/mgw-policy-development-kit.git?rev=213d221fefa2b6775505f831ef144a38f63f7c3d#213d221fefa2b6775505f831ef144a38f63f7c3d"
+version = "1.4.0"
+source = "registry+https://anypoint.mulesoft.com/git/68ef9520-24e9-4cf2-b2f5-620025690913/19f9d123-5775-44d7-a67f-49328cfa00b0"
+checksum = "711353dc30c615b0e6c8abcb6f01522ac61f5b64318c8b6081ffdc6b753a8dd6"
 dependencies = [
  "bincode",
  "cfg-if",
@@ -544,8 +533,9 @@ dependencies = [
 
 [[package]]
 name = "classy"
-version = "1.4.0-rc.0"
-source = "git+ssh://git@github.com/mulesoft-emu/mgw-policy-development-kit.git?rev=213d221fefa2b6775505f831ef144a38f63f7c3d#213d221fefa2b6775505f831ef144a38f63f7c3d"
+version = "1.4.0"
+source = "registry+https://anypoint.mulesoft.com/git/68ef9520-24e9-4cf2-b2f5-620025690913/19f9d123-5775-44d7-a67f-49328cfa00b0"
+checksum = "8cab0efa9e9d4e2fa48546492cc6952ad57e27293f048bc1fdb96e1a921aa62d"
 dependencies = [
  "bincode",
  "futures",
@@ -621,8 +611,9 @@ dependencies = [
 
 [[package]]
 name = "contracts-lib"
-version = "1.4.0-rc.0"
-source = "git+ssh://git@github.com/mulesoft-emu/mgw-policy-development-kit.git?rev=213d221fefa2b6775505f831ef144a38f63f7c3d#213d221fefa2b6775505f831ef144a38f63f7c3d"
+version = "1.4.0"
+source = "registry+https://anypoint.mulesoft.com/git/68ef9520-24e9-4cf2-b2f5-620025690913/19f9d123-5775-44d7-a67f-49328cfa00b0"
+checksum = "d23ae42bed8ba09a2b9b678b387def6a17a20d482a5a7f2ddeed637f33f8ed5f"
 dependencies = [
  "async-recursion",
  "async-trait",
@@ -667,8 +658,9 @@ checksum = "773648b94d0e5d620f64f280777445740e61fe701025087ec8b57f45c791888b"
 
 [[package]]
 name = "cors-lib"
-version = "1.4.0-rc.0"
-source = "git+ssh://git@github.com/mulesoft-emu/mgw-policy-development-kit.git?rev=213d221fefa2b6775505f831ef144a38f63f7c3d#213d221fefa2b6775505f831ef144a38f63f7c3d"
+version = "1.4.0"
+source = "registry+https://anypoint.mulesoft.com/git/68ef9520-24e9-4cf2-b2f5-620025690913/19f9d123-5775-44d7-a67f-49328cfa00b0"
+checksum = "f7f2422f343bee4c1774588ea9092e078dd8cced08b02230595c83744372ff4e"
 dependencies = [
  "derive_builder",
  "log",
@@ -1153,6 +1145,12 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "3f9eec918d3f24069decb9af1554cad7c880e2da24a9afd88aca000531ab82c1"
 
 [[package]]
+name = "foldhash"
+version = "0.1.5"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d9c4f5dac5e15c24eb999c26181a6ca40b39fe946cbe4c263c7209467bc83af2"
+
+[[package]]
 name = "foreign-types"
 version = "0.3.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1406,19 +1404,14 @@ checksum = "8a9ee70c43aaf417c914396645a0fa852624801b24ebb7ae78fe8272889ac888"
 
 [[package]]
 name = "hashbrown"
-version = "0.14.5"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e5274423e17b7c9fc20b6e7e208532f9b19825d82dfd615708b70edd83df41f1"
-dependencies = [
- "ahash",
- "allocator-api2",
-]
-
-[[package]]
-name = "hashbrown"
 version = "0.15.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "bf151400ff0baff5465007dd2f3e717f3fe502074ca563069ce3a6629d07b289"
+dependencies = [
+ "allocator-api2",
+ "equivalent",
+ "foldhash",
+]
 
 [[package]]
 name = "hermit-abi"
@@ -1988,8 +1981,9 @@ dependencies = [
 
 [[package]]
 name = "jwt-lib"
-version = "1.4.0-rc.0"
-source = "git+ssh://git@github.com/mulesoft-emu/mgw-policy-development-kit.git?rev=213d221fefa2b6775505f831ef144a38f63f7c3d#213d221fefa2b6775505f831ef144a38f63f7c3d"
+version = "1.4.0"
+source = "registry+https://anypoint.mulesoft.com/git/68ef9520-24e9-4cf2-b2f5-620025690913/19f9d123-5775-44d7-a67f-49328cfa00b0"
+checksum = "93442a1a8bc4d60dd85626950a64b97f6adf146cc9ace0698d0e242e4701b3ef"
 dependencies = [
  "base64 0.13.1",
  "cfg-if",
@@ -2170,8 +2164,9 @@ checksum = "23fb14cb19457329c82206317a5663005a4d404783dc74f4252769b0d5f42856"
 
 [[package]]
 name = "lock-lib"
-version = "1.4.0-rc.0"
-source = "git+ssh://git@github.com/mulesoft-emu/mgw-policy-development-kit.git?rev=213d221fefa2b6775505f831ef144a38f63f7c3d#213d221fefa2b6775505f831ef144a38f63f7c3d"
+version = "1.4.0"
+source = "registry+https://anypoint.mulesoft.com/git/68ef9520-24e9-4cf2-b2f5-620025690913/19f9d123-5775-44d7-a67f-49328cfa00b0"
+checksum = "c00908dba0617cc5262caeaf2597365361579dd941b7099766d25b713e20242b"
 dependencies = [
  "bincode",
  "pdk-core",
@@ -2483,8 +2478,9 @@ checksum = "57c0d7b74b563b49d38dae00a0c37d4d6de9b432382b2892f0574ddcae73fd0a"
 
 [[package]]
 name = "pdk"
-version = "1.4.0-rc.0"
-source = "git+ssh://git@github.com/mulesoft-emu/mgw-policy-development-kit.git?rev=213d221fefa2b6775505f831ef144a38f63f7c3d#213d221fefa2b6775505f831ef144a38f63f7c3d"
+version = "1.4.0"
+source = "registry+https://anypoint.mulesoft.com/git/68ef9520-24e9-4cf2-b2f5-620025690913/19f9d123-5775-44d7-a67f-49328cfa00b0"
+checksum = "e3ceba6838764db3a6bce8648fd79d1e2353fa49fe38fd22f31167349ed474bd"
 dependencies = [
  "cache-lib",
  "classy",
@@ -2500,8 +2496,9 @@ dependencies = [
 
 [[package]]
 name = "pdk-core"
-version = "1.4.0-rc.0"
-source = "git+ssh://git@github.com/mulesoft-emu/mgw-policy-development-kit.git?rev=213d221fefa2b6775505f831ef144a38f63f7c3d#213d221fefa2b6775505f831ef144a38f63f7c3d"
+version = "1.4.0"
+source = "registry+https://anypoint.mulesoft.com/git/68ef9520-24e9-4cf2-b2f5-620025690913/19f9d123-5775-44d7-a67f-49328cfa00b0"
+checksum = "d6596419378f4cbf7a5b9f464a59952bfe2be60e8e389acb30dd3fbd102c5b91"
 dependencies = [
  "anyhow",
  "classy",
@@ -2520,8 +2517,9 @@ dependencies = [
 
 [[package]]
 name = "pdk-flex-abi"
-version = "1.4.0-rc.0"
-source = "git+ssh://git@github.com/mulesoft-emu/mgw-policy-development-kit.git?rev=213d221fefa2b6775505f831ef144a38f63f7c3d#213d221fefa2b6775505f831ef144a38f63f7c3d"
+version = "1.4.0"
+source = "registry+https://anypoint.mulesoft.com/git/68ef9520-24e9-4cf2-b2f5-620025690913/19f9d123-5775-44d7-a67f-49328cfa00b0"
+checksum = "5cf5aaf61b546bf281a249573fffe6ec0223630117d2ffc73fecb3c9a06c1321"
 dependencies = [
  "anyhow",
  "pdk-core",
@@ -2532,8 +2530,9 @@ dependencies = [
 
 [[package]]
 name = "pdk-macros"
-version = "1.4.0-rc.0"
-source = "git+ssh://git@github.com/mulesoft-emu/mgw-policy-development-kit.git?rev=213d221fefa2b6775505f831ef144a38f63f7c3d#213d221fefa2b6775505f831ef144a38f63f7c3d"
+version = "1.4.0"
+source = "registry+https://anypoint.mulesoft.com/git/68ef9520-24e9-4cf2-b2f5-620025690913/19f9d123-5775-44d7-a67f-49328cfa00b0"
+checksum = "960472d9c536d06e39ce09707ad066c1789802864fbc9dc42f0462390fa87feb"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -2542,8 +2541,9 @@ dependencies = [
 
 [[package]]
 name = "pdk-script"
-version = "1.4.0-rc.0"
-source = "git+ssh://git@github.com/mulesoft-emu/mgw-policy-development-kit.git?rev=213d221fefa2b6775505f831ef144a38f63f7c3d#213d221fefa2b6775505f831ef144a38f63f7c3d"
+version = "1.4.0"
+source = "registry+https://anypoint.mulesoft.com/git/68ef9520-24e9-4cf2-b2f5-620025690913/19f9d123-5775-44d7-a67f-49328cfa00b0"
+checksum = "0f8148db604b889a001d4f14c6a8239d05a9ed1ddaa3f9a8c40798b4a38241a0"
 dependencies = [
  "classy",
  "log",
@@ -2559,8 +2559,9 @@ dependencies = [
 
 [[package]]
 name = "pdk-test"
-version = "1.4.0-rc.0"
-source = "git+ssh://git@github.com/mulesoft-emu/mgw-policy-development-kit.git?rev=213d221fefa2b6775505f831ef144a38f63f7c3d#213d221fefa2b6775505f831ef144a38f63f7c3d"
+version = "1.4.0"
+source = "registry+https://anypoint.mulesoft.com/git/68ef9520-24e9-4cf2-b2f5-620025690913/19f9d123-5775-44d7-a67f-49328cfa00b0"
+checksum = "373750694da80d00209b8f9ecb1f7d46c01b761e60de8b0083d796ac9d8fb52f"
 dependencies = [
  "async-trait",
  "bollard",
@@ -2583,8 +2584,9 @@ dependencies = [
 
 [[package]]
 name = "pdk-test-macros"
-version = "1.4.0-rc.0"
-source = "git+ssh://git@github.com/mulesoft-emu/mgw-policy-development-kit.git?rev=213d221fefa2b6775505f831ef144a38f63f7c3d#213d221fefa2b6775505f831ef144a38f63f7c3d"
+version = "1.4.0"
+source = "registry+https://anypoint.mulesoft.com/git/68ef9520-24e9-4cf2-b2f5-620025690913/19f9d123-5775-44d7-a67f-49328cfa00b0"
+checksum = "b3a8b52a5d38c2bd82b767ea39f7256a0d3d11364bd90cebd5c382c10264ab3b"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -2593,8 +2595,9 @@ dependencies = [
 
 [[package]]
 name = "pel"
-version = "1.4.0-rc.0"
-source = "git+ssh://git@github.com/mulesoft-emu/mgw-policy-development-kit.git?rev=213d221fefa2b6775505f831ef144a38f63f7c3d#213d221fefa2b6775505f831ef144a38f63f7c3d"
+version = "1.4.0"
+source = "registry+https://anypoint.mulesoft.com/git/68ef9520-24e9-4cf2-b2f5-620025690913/19f9d123-5775-44d7-a67f-49328cfa00b0"
+checksum = "c7d06c03589945141cb0aa9fe5cdc03780c138c2e0b40ea590e48ac8e7b70ce6"
 dependencies = [
  "base64 0.22.1",
  "getrandom 0.2.16",
@@ -2797,7 +2800,7 @@ version = "0.2.21"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "85eae3c4ed2f50dcfe72643da4befc30deadb458a9b590d720cde2f2b1e97da9"
 dependencies = [
- "zerocopy 0.8.24",
+ "zerocopy",
 ]
 
 [[package]]
@@ -2893,18 +2896,19 @@ dependencies = [
 
 [[package]]
 name = "proxy-wasm"
-version = "0.2.2"
+version = "0.2.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "14a5a4df5a1ab77235e36a0a0f638687ee1586d21ee9774037693001e94d4e11"
+checksum = "b1091bf0c55673146a93a310b28375282b64e2681acfd501684135ee85cdc4ad"
 dependencies = [
- "hashbrown 0.14.5",
+ "hashbrown 0.15.2",
  "log",
 ]
 
 [[package]]
 name = "proxy-wasm-stub"
-version = "1.4.0-rc.0"
-source = "git+ssh://git@github.com/mulesoft-emu/mgw-policy-development-kit.git?rev=213d221fefa2b6775505f831ef144a38f63f7c3d#213d221fefa2b6775505f831ef144a38f63f7c3d"
+version = "1.4.0"
+source = "registry+https://anypoint.mulesoft.com/git/68ef9520-24e9-4cf2-b2f5-620025690913/19f9d123-5775-44d7-a67f-49328cfa00b0"
+checksum = "fc8b78dea3abf8e8941da448c196807d2c49d1e9fcd850ccdf3cc210e7490721"
 
 [[package]]
 name = "quote"
@@ -4358,31 +4362,11 @@ dependencies = [
 
 [[package]]
 name = "zerocopy"
-version = "0.7.35"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1b9b4fd18abc82b8136838da5d50bae7bdea537c574d8dc1a34ed098d6c166f0"
-dependencies = [
- "zerocopy-derive 0.7.35",
-]
-
-[[package]]
-name = "zerocopy"
 version = "0.8.24"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "2586fea28e186957ef732a5f8b3be2da217d65c5969d4b1e17f973ebbe876879"
 dependencies = [
- "zerocopy-derive 0.8.24",
-]
-
-[[package]]
-name = "zerocopy-derive"
-version = "0.7.35"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "fa4f8080344d4671fb4e831a13ad1e68092748387dfc4f55e356242fae12ce3e"
-dependencies = [
- "proc-macro2",
- "quote",
- "syn 2.0.100",
+ "zerocopy-derive",
 ]
 
 [[package]]

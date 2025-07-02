@@ -14,7 +14,8 @@ spec:
             destinationPath: /anything/echo/
   policies:
     - policyRef:
-        name: data-caching
+        name: data-caching-v1-0-impl
+        namespace: default
       config:
         max_cached_values: 10
         start_hour: 18

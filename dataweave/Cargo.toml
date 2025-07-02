@@ -13,13 +13,13 @@ definition_asset_id = "dataweave"
 implementation_asset_id = "dataweave-flex"
 
 [dependencies]
-pdk = { git = "ssh://git@github.com/mulesoft-emu/mgw-policy-development-kit.git", rev = "213d221fefa2b6775505f831ef144a38f63f7c3d" } # TODO revert .cargo/config.toml git-fetch-with-cli to true on point to release
+pdk = { version = "1.4.0", registry = "anypoint" }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = { version = "1.0", default-features = false, features = ["alloc"] }
 anyhow = "1.0"
 
 [dev-dependencies]
-pdk-test = { git = "ssh://git@github.com/mulesoft-emu/mgw-policy-development-kit.git", rev = "213d221fefa2b6775505f831ef144a38f63f7c3d" } # TODO revert .cargo/config.toml git-fetch-with-cli to true on point to release
+pdk-test = { version = "1.4.0", registry = "anypoint" }
 httpmock = "0.6"
 reqwest = "0.11"
 
