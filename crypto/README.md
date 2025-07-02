@@ -46,3 +46,12 @@ curl "http://127.0.0.1:8081" -H "nonce:5c6cd51364cd25a4a25853e085ad682c899861e24
 ```
 
 Flex Gateway returns the encrypted response in the payload.
+
+## macOS Build Issues?
+
+If you encounter build errors related to `libz-sys` or missing pkg-config, run:
+```bash
+brew install pkg-config
+```
+
+This is a macOS-specific issue where `pkg-config` helps resolve transitive dependency conflicts by using the system's version of libraries instead of building incompatible versions from source.
