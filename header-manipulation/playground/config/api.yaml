@@ -14,7 +14,7 @@ spec:
             destinationPath: /anything/echo/
   policies:
     - policyRef:
-        name: header_manipulation-flex-v1-0 # This value will be overriden during 'make run' execution
+        name: header-manipulation-flex-v1-0 # This value will be overriden during 'make run' execution
       # Fill the config with a policy configuration that matches the schema specified in the policy
       # definition gcl.yaml. Eg:
       # config:

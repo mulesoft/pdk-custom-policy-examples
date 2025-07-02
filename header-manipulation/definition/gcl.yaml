@@ -3,7 +3,7 @@ apiVersion: gateway.mulesoft.com/v1alpha1
 kind: Extension
 metadata:
   labels:
-    title: header_manipulation
+    title: header-manipulation
     category: Custom
     metadata/interfaceScope: api,resource
 spec:
