@@ -30,7 +30,7 @@ make run
 3. Make requests to the Flex Gateway by using the following Curl command:
 
 ```shell
-curl "https://localhost:8081" -v
+curl "http://localhost:8081" -v
 ```
 Flex Gateway should return the response of the request made by the policy:
 

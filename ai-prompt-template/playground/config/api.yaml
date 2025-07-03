@@ -19,7 +19,7 @@ spec:
       config:
         templates:
           - name: veterinarian-chat
-            template:  |-
+            template: |-
               {
                 "messages": [
                   {

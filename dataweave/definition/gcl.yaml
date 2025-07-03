@@ -1,0 +1,30 @@
+---
+apiVersion: gateway.mulesoft.com/v1alpha1
+kind: Extension
+metadata:
+  labels:
+    title: dataweave
+    category: Custom
+    metadata/interfaceScope: api,resource
+spec:
+  extends:
+    - name: extension-definition
+      namespace: default
+  properties:
+   expression:
+     type: string
+     format: dataweave
+     default: "#[vars.myVar]"
+     bindings:
+       payload:
+         mimeTypes: 
+         - text
+         - json
+         - xml
+       attributes: true
+       authentication: true
+       vars:
+         - defaultId
+         - version
+  required:
+    - expression

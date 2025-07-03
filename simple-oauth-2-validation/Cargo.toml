@@ -2,7 +2,7 @@
 [package]
 name = "simple_oauth_2_validation"
 version = "1.0.1"
-rust-version = "1.83.0"
+rust-version = "1.87.0"
 edition = "2018"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
@@ -13,14 +13,14 @@ definition_asset_id = "simple-oauth-2-validation"
 implementation_asset_id = "simple-oauth-2-validation-flex"
 
 [dependencies]
-pdk = { version = "1.3.0", registry = "anypoint" }
+pdk = { version = "1.4.0", registry = "anypoint" }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = { version = "1.0", default-features = false, features = ["alloc"] }
 serde_urlencoded = "0.7.0"
 anyhow = "1.0"
 
 [dev-dependencies]
-pdk-test = { version = "1.3.0", registry = "anypoint" }
+pdk-test = { version = "1.4.0", registry = "anypoint" }
 httpmock = "0.6"
 reqwest = "0.11"
 env_logger = "0.11.3"
