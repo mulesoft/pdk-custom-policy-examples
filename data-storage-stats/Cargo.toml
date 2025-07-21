@@ -1,0 +1,35 @@
+# Copyright 2023 Salesforce, Inc. All rights reserved.
+[package]
+name = "data_storage_stats"
+version = "1.0.0"
+rust-version = "1.87.0"
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[package.metadata.anypoint]
+group_id = "edce8390-cbc6-4b53-af21-b1991d7a14bc"
+definition_asset_id = "data-storage-stats"
+implementation_asset_id = "data-storage-stats-flex"
+
+# TODO remove github ref
+[dependencies]
+pdk = { git = "https://github.com/mulesoft-emu/mgw-policy-development-kit.git", branch = "master" }
+data-storage-lib = { git = "https://github.com/mulesoft-emu/mgw-policy-development-kit.git", branch = "master" }
+serde = { version = "1.0.219", features = ["derive"] }
+serde_json = { version = "1.0", default-features = false, features = ["alloc"] }
+anyhow = "1.0"
+thiserror = "1.0"
+
+[dev-dependencies]
+pdk-test = { git = "https://github.com/mulesoft-emu/mgw-policy-development-kit.git", branch = "master" }
+httpmock = "0.6"
+reqwest = { version = "0.11", features = [ "json" ] }
+
+[lib]
+crate-type = ["cdylib"]
+
+[profile.release]
+lto = true
+opt-level = 'z'
+strip = "debuginfo"
