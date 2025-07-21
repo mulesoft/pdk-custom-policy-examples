@@ -55,18 +55,24 @@ async fn update_request_stats<T: DataStorage>(
         .unwrap()
         .as_secs();
 
-    let mut stats = match storage.get::<RequestStats>(&key).await {
-        Ok(Some((existing_stats, _))) => existing_stats,
-        _ => RequestStats::default(),
-    };
+    loop {
+        let (current_stats, version) = match storage.get::<RequestStats>(&key).await {
+            Ok(Some((stats, ver))) => (stats, ver),
+            _ => (RequestStats::default(), "0".to_string()),
+        };
 
-    stats.count += 1; // Update stats
-    stats.last_request = now;
+        let mut new_stats = current_stats;
+        new_stats.count += 1;
+        new_stats.last_request = now;
 
-    // Store updated stats directly as the lib handles serialization
-    let _ = storage.store(&key, &StoreMode::Always, &stats).await;
-
-    stats
+        match storage.store(&key, &StoreMode::Cas(version), &new_stats).await {
+            Ok(_) => return new_stats,
+            Err(_) => {
+                // CAS failed, retry with updated version
+                continue;
+            }
+        }
+    }
 }
 
 async fn get_all_stats<T: DataStorage>(storage: &T, namespace: &str) -> HashMap<String, RequestStats> {
@@ -92,36 +98,39 @@ async fn request_filter(
     config: &Config,
 ) -> Flow<()> {
     let mut headers = vec![];
+    let mut status = 200;
+    let mut body = None;
     
     if state.handler().header("x-stats").is_some() {
         let all_stats = get_all_stats(storage, &config.namespace).await;
         let stats_json = serde_json::to_string(&all_stats).unwrap();
         headers.push(("x-all-stats".to_string(), stats_json));
-        return Flow::Break(Response::new(200).with_headers(headers));
-    }
-    
-    if state.handler().header("x-reset-stats").is_some() {
+    } else if state.handler().header("x-reset-stats").is_some() {
         let _ = storage.delete_all().await;
         headers.push(("x-stats-reset".to_string(), "true".to_string()));
-        return Flow::Break(Response::new(200).with_headers(headers));
+    } else {
+        match get_client_id(&state).await {
+            Some(client_id) => {
+                let stats = update_request_stats(storage, &client_id, &config.namespace).await;
+                headers.extend(vec![
+                    ("x-request-count".to_string(), stats.count.to_string()),
+                    ("x-client-id".to_string(), client_id.clone()),
+                    ("x-last-request".to_string(), stats.last_request.to_string()),
+                ]);
+            }
+            None => {
+                status = 400;
+                body = Some("Missing client identification header (x-client-id)");
+            }
+        }
+    }
+
+    let mut response = Response::new(status).with_headers(headers);
+    if let Some(body_content) = body {
+        response = response.with_body(body_content);
     }
     
-    let client_id = match get_client_id(&state).await {
-        Some(id) => id,
-        None => {
-            return Flow::Break(Response::new(400).with_body("Missing client identification header (x-client-id)"));
-        }
-    };
-
-    let stats = update_request_stats(storage, &client_id, &config.namespace).await;
-
-    headers.extend(vec![
-        ("x-request-count".to_string(), stats.count.to_string()),
-        ("x-client-id".to_string(), client_id.clone()),
-        ("x-last-request".to_string(), stats.last_request.to_string()),
-    ]);
-
-    Flow::Break(Response::new(200).with_headers(headers))
+    Flow::Break(response)
 }
 
 #[entrypoint]

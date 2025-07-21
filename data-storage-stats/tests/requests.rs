@@ -10,12 +10,13 @@ use pdk_test::{pdk_test, TestComposite};
 
 use common::*;
 use reqwest::StatusCode;
+use std::time::Duration;
 
 const FLEX_PORT: Port = 8081; // Flex port for the internal test network
 
 
 #[pdk_test]
-async fn increment_request_counter() -> anyhow::Result<()> {
+async fn test_basic_request_counter_increment() -> anyhow::Result<()> {
     let backend_config = HttpMockConfig::builder()
         .port(80)
         .hostname("backend")
@@ -418,6 +419,301 @@ async fn clear_all_stats() -> anyhow::Result<()> {
 
     assert_eq!(response.status(), StatusCode::OK);
     assert_eq!(response.headers().get("x-request-count").unwrap().to_str().unwrap(), "1"); // Back to 1
+
+    Ok(())
+}
+
+#[pdk_test]
+async fn test_cas_concurrency_handling() -> anyhow::Result<()> {
+    let backend_config = HttpMockConfig::builder()
+        .port(80)
+        .hostname("backend")
+        .build();
+
+    let policy_config = PolicyConfig::builder()
+        .name(POLICY_NAME)
+        .configuration(serde_json::json!({
+            "namespace": "test-cas-stats"
+        }))
+        .build();
+
+    let api_config = ApiConfig::builder()
+        .name("ingress-http")
+        .upstream(&backend_config)
+        .path("/anything/echo/")
+        .port(FLEX_PORT)
+        .policies([policy_config])
+        .build();
+
+    let flex_config = FlexConfig::builder()
+        .version("1.7.0")
+        .hostname("local-flex")
+        .with_api(api_config)
+        .config_mounts([(POLICY_DIR, "policy"), (COMMON_CONFIG_DIR, "common")])
+        .build();
+
+    let composite = TestComposite::builder()
+        .with_service(flex_config)
+        .with_service(backend_config)
+        .build()
+        .await?;
+
+    let flex: Flex = composite.service()?;
+    let flex_url = flex.external_url(FLEX_PORT).unwrap();
+    let upstream: HttpMock = composite.service()?;
+    let backend_server = MockServer::connect_async(upstream.socket()).await;
+
+    backend_server
+        .mock_async(|when, then| {
+            when.path_contains("/test");
+            then.status(200).body("OK");
+        })
+        .await;
+
+    let client = reqwest::Client::new();
+    let client_id = "cas-test-client";
+
+    // Make initial request to establish the counter
+    let response = client
+        .get(format!("{flex_url}/test"))
+        .header("x-client-id", client_id)
+        .send()
+        .await?;
+
+    assert_eq!(response.status(), StatusCode::OK);
+    assert_eq!(response.headers().get("x-request-count").unwrap().to_str().unwrap(), "1");
+
+    // Make multiple concurrent requests to test CAS handling
+    let mut handles = vec![];
+    for _ in 0..5 {
+        let client_clone = client.clone();
+        let url_clone = flex_url.clone();
+        let client_id_clone = client_id.to_string();
+        let handle = tokio::spawn(async move {
+            let response = client_clone
+                .get(format!("{url_clone}/test"))
+                .header("x-client-id", client_id_clone)
+                .send()
+                .await?;
+            Ok::<_, anyhow::Error>(response)
+        });
+        handles.push(handle);
+    }
+
+    // Wait for all concurrent requests to complete
+    let mut responses = vec![];
+    for handle in handles {
+        let response = handle.await??;
+        responses.push(response);
+    }
+
+    // Verify all responses are successful
+    for response in &responses {
+        assert_eq!(response.status(), StatusCode::OK);
+        assert!(response.headers().get("x-request-count").is_some());
+    }
+
+    // Make one final request to verify the final count
+    let final_response = client
+        .get(format!("{flex_url}/test"))
+        .header("x-client-id", client_id)
+        .send()
+        .await?;
+
+    assert_eq!(final_response.status(), StatusCode::OK);
+    // Should be 7 total: 1 initial + 5 concurrent + 1 final
+    assert_eq!(final_response.headers().get("x-request-count").unwrap().to_str().unwrap(), "7");
+
+    Ok(())
+}
+
+#[pdk_test]
+async fn test_multiple_clients_concurrent_access() -> anyhow::Result<()> {
+    let backend_config = HttpMockConfig::builder()
+        .port(80)
+        .hostname("backend")
+        .build();
+
+    let policy_config = PolicyConfig::builder()
+        .name(POLICY_NAME)
+        .configuration(serde_json::json!({
+            "namespace": "test-concurrent-stats"
+        }))
+        .build();
+
+    let api_config = ApiConfig::builder()
+        .name("ingress-http")
+        .upstream(&backend_config)
+        .path("/anything/echo/")
+        .port(FLEX_PORT)
+        .policies([policy_config])
+        .build();
+
+    let flex_config = FlexConfig::builder()
+        .version("1.7.0")
+        .hostname("local-flex")
+        .with_api(api_config)
+        .config_mounts([(POLICY_DIR, "policy"), (COMMON_CONFIG_DIR, "common")])
+        .build();
+
+    let composite = TestComposite::builder()
+        .with_service(flex_config)
+        .with_service(backend_config)
+        .build()
+        .await?;
+
+    let flex: Flex = composite.service()?;
+    let flex_url = flex.external_url(FLEX_PORT).unwrap();
+    let upstream: HttpMock = composite.service()?;
+    let backend_server = MockServer::connect_async(upstream.socket()).await;
+
+    backend_server
+        .mock_async(|when, then| {
+            when.path_contains("/test");
+            then.status(200).body("OK");
+        })
+        .await;
+
+    let client = reqwest::Client::new();
+    let client_ids = vec!["client-a", "client-b", "client-c"];
+
+    // Make sequential requests first to establish counters
+    for client_id in &client_ids {
+        for _ in 0..2 {
+            let response = client
+                .get(format!("{flex_url}/test"))
+                .header("x-client-id", *client_id)
+                .send()
+                .await?;
+            assert_eq!(response.status(), StatusCode::OK);
+        }
+    }
+
+    // Now make one concurrent request per client to test CAS
+    let mut handles = vec![];
+    for client_id in &client_ids {
+        let client_clone = client.clone();
+        let url_clone = flex_url.clone();
+        let client_id_clone = client_id.to_string();
+        let handle = tokio::spawn(async move {
+            let response = client_clone
+                .get(format!("{url_clone}/test"))
+                .header("x-client-id", client_id_clone)
+                .send()
+                .await?;
+            Ok::<_, anyhow::Error>(response)
+        });
+        handles.push(handle);
+    }
+
+    // Wait for all concurrent requests to complete
+    for handle in handles {
+        let response = handle.await??;
+        assert_eq!(response.status(), StatusCode::OK);
+        assert!(response.headers().get("x-request-count").is_some());
+    }
+
+    // Get all stats to verify isolation
+    let response = client
+        .get(format!("{flex_url}/test"))
+        .header("x-stats", "true")
+        .send()
+        .await?;
+
+    assert_eq!(response.status(), StatusCode::OK);
+    let all_stats = response.headers().get("x-all-stats").unwrap().to_str().unwrap();
+    let stats_dict: serde_json::Value = serde_json::from_str(all_stats)?;
+    let stats_object = stats_dict.as_object().expect("Expected JSON object");
+
+    // Verify each client has exactly 3 requests (2 sequential + 1 concurrent)
+    for client_id in &client_ids {
+        assert!(stats_object.contains_key(*client_id));
+        let client_stats = &stats_object[*client_id];
+        assert_eq!(client_stats["count"], 3);
+    }
+
+    Ok(())
+}
+
+#[pdk_test]
+async fn test_cas_retry_mechanism() -> anyhow::Result<()> {
+    let backend_config = HttpMockConfig::builder()
+        .port(80)
+        .hostname("backend")
+        .build();
+
+    let policy_config = PolicyConfig::builder()
+        .name(POLICY_NAME)
+        .configuration(serde_json::json!({
+            "namespace": "test-retry-stats"
+        }))
+        .build();
+
+    let api_config = ApiConfig::builder()
+        .name("ingress-http")
+        .upstream(&backend_config)
+        .path("/anything/echo/")
+        .port(FLEX_PORT)
+        .policies([policy_config])
+        .build();
+
+    let flex_config = FlexConfig::builder()
+        .version("1.7.0")
+        .hostname("local-flex")
+        .with_api(api_config)
+        .config_mounts([(POLICY_DIR, "policy"), (COMMON_CONFIG_DIR, "common")])
+        .build();
+
+    let composite = TestComposite::builder()
+        .with_service(flex_config)
+        .with_service(backend_config)
+        .build()
+        .await?;
+
+    let flex: Flex = composite.service()?;
+    let flex_url = flex.external_url(FLEX_PORT).unwrap();
+    let upstream: HttpMock = composite.service()?;
+    let backend_server = MockServer::connect_async(upstream.socket()).await;
+
+    backend_server
+        .mock_async(|when, then| {
+            when.path_contains("/test");
+            then.status(200).body("OK");
+        })
+        .await;
+
+    let client = reqwest::Client::new();
+    let client_id = "retry-test-client";
+
+    // Make successive requests to test CAS retry mechanism
+    let mut responses = vec![];
+    for _ in 0..10 {
+        let response = client
+            .get(format!("{flex_url}/test"))
+            .header("x-client-id", client_id)
+            .send()
+            .await?;
+        responses.push(response);
+        
+        // Small delay to increase chance of CAS conflicts
+        tokio::time::sleep(Duration::from_millis(10)).await;
+    }
+
+    // Verify all requests succeeded
+    for (i, response) in responses.iter().enumerate() {
+        assert_eq!(response.status(), StatusCode::OK);
+        assert_eq!(response.headers().get("x-request-count").unwrap().to_str().unwrap(), (i + 1).to_string());
+    }
+
+    // Verify final count is correct
+    let final_response = client
+        .get(format!("{flex_url}/test"))
+        .header("x-client-id", client_id)
+        .send()
+        .await?;
+
+    assert_eq!(final_response.status(), StatusCode::OK);
+    assert_eq!(final_response.headers().get("x-request-count").unwrap().to_str().unwrap(), "11");
 
     Ok(())
 }
