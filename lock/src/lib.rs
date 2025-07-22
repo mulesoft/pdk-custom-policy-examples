@@ -53,7 +53,7 @@ async fn configure(launcher: Launcher, lock_builder: LockBuilder) -> Result<()> 
     let try_lock: TryLock = lock_builder
         .new("example-id".to_string())
         .expiration(LOCK_EXPIRATION) // Amount of time in which the lock will be automatically released.
-        //.shared() // if uncommented the lock won't be limited to the current policy.
+        //.shared() // if uncommented the lock won't be isolated to the current policy.
         .build();
 
     // We can use the lock in the configuration context and even inside an async task.
