@@ -12,7 +12,6 @@ group_id = "edce8390-cbc6-4b53-af21-b1991d7a14bc"
 definition_asset_id = "data-storage-stats"
 implementation_asset_id = "data-storage-stats-flex"
 
-# TODO remove github ref
 [dependencies]
 pdk = { git = "https://github.com/mulesoft-emu/mgw-policy-development-kit.git", branch = "master" }
 serde = { version = "1.0.219", features = ["derive"] }
