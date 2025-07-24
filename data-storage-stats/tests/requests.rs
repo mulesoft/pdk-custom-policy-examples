@@ -27,6 +27,7 @@ async fn test_basic_local_storage_functionality() -> anyhow::Result<()> {
         .configuration(serde_json::json!({
             "namespace": "test-basic-stats",
             "storage_type": "local",
+            "ttl_seconds": 3600,
             "max_retries": 3
         }))
         .build();
@@ -117,6 +118,7 @@ async fn test_admin_stats_operations() -> anyhow::Result<()> {
         .configuration(serde_json::json!({
             "namespace": "test-admin-stats",
             "storage_type": "local",
+            "ttl_seconds": 3600,
             "max_retries": 3
         }))
         .build();
@@ -218,6 +220,7 @@ async fn test_cas_concurrency_handling() -> anyhow::Result<()> {
         .configuration(serde_json::json!({
             "namespace": "test-cas-stats",
             "storage_type": "local",
+            "ttl_seconds": 3600,
             "max_retries": 10
         }))
         .build();
@@ -307,6 +310,7 @@ async fn test_multiple_clients_concurrent_access() -> anyhow::Result<()> {
         .configuration(serde_json::json!({
             "namespace": "test-concurrent-stats",
             "storage_type": "local",
+            "ttl_seconds": 3600,
             "max_retries": 3
         }))
         .build();
@@ -412,6 +416,7 @@ async fn test_remote_storage_functionality() -> anyhow::Result<()> {
         .configuration(serde_json::json!({
             "namespace": "test-remote-stats",
             "storage_type": "remote",
+            "ttl_seconds": 3600,
             "max_retries": 3
         }))
         .build();
@@ -497,6 +502,7 @@ async fn test_invalid_configuration_handling() -> anyhow::Result<()> {
         .configuration(serde_json::json!({
             "namespace": "test-invalid-storage",
             "storage_type": "invalid",
+            "ttl_seconds": 3600,
             "max_retries": 3
         }))
         .build();

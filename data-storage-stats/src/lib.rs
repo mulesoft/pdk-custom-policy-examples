@@ -1,8 +1,7 @@
 // Copyright 2023 Salesforce, Inc. All rights reserved.
 
-mod constants;
+mod generated;
 
-use constants::*;
 use pdk::data_storage::{DataStorage, DataStorageBuilder, StoreMode};
 use pdk::hl::*;
 use pdk::logger;
@@ -11,36 +10,14 @@ use std::collections::HashMap;
 use std::rc::Rc;
 use std::time::{SystemTime, UNIX_EPOCH};
 
-/// Configuration parameters for the data storage stats policy.
-#[derive(Deserialize, Clone)]
-struct Config {
-    /// Namespace used to isolate data between different policy instances.
-    #[serde(default)]
-    namespace: String,
+use crate::generated::config::Config;
 
-    /// Storage type to use: "local" for in-memory storage or "remote" for distributed storage.
-    #[serde(default)]
-    storage_type: String,
+// HTTP header for client identification (input only)
+pub const CLIENT_ID_HEADER: &str = "x-client-id";
 
-    /// Time-to-live for stored items in seconds (used only for remote storage).
-    #[serde(default)]
-    ttl_seconds: u32,
-
-    /// Maximum number of retries for CAS operations.
-    max_retries: u32,
-}
-
-impl Default for Config {
-    /// Default configuration values.
-    fn default() -> Self {
-        Self {
-            namespace: DEFAULT_NAMESPACE.to_string(),
-            storage_type: DEFAULT_STORAGE_TYPE.to_string(),
-            ttl_seconds: DEFAULT_TTL_SECONDS,
-            max_retries: 0, // This will be overridden by the mandatory field
-        }
-    }
-}
+// Storage type values
+pub const REMOTE_STORAGE: &str = "remote";
+pub const LOCAL_STORAGE: &str = "local";
 
 /// Statistics for a client's request activity.
 #[derive(Serialize, Deserialize, Debug)]
@@ -67,7 +44,7 @@ impl Default for RequestStats {
 }
 
 /// Extracts the client ID from request headers.
-async fn get_client_id(state: &RequestHeadersState) -> Option<String> {
+fn get_client_id(state: &RequestHeadersState) -> Option<String> {
     if let Some(client_id) = state.handler().header(CLIENT_ID_HEADER) {
         // Validate that the client ID is not empty
         if !client_id.is_empty() {
@@ -98,9 +75,7 @@ async fn update_request_stats<T: DataStorage>(
     loop {
         if retry_count >= max_retries {
             logger::error!(
-                "Storage operation failed after {} retries for client {}",
-                max_retries,
-                client_id
+                "Storage operation failed after {max_retries} retries for client {client_id}"
             );
             return Err(format!(
                 "Storage operation failed after {} retries for client {}",
@@ -113,12 +88,7 @@ async fn update_request_stats<T: DataStorage>(
             Ok(Some((stats, ver))) => (stats, StoreMode::Cas(ver)),
             Ok(None) => (RequestStats::default(), StoreMode::Absent),
             Err(e) => {
-                logger::warn!(
-                    "Storage error for key: {}, retry: {} - {:?}",
-                    key,
-                    retry_count,
-                    e
-                );
+                logger::warn!("Storage error for key: {key}, retry: {retry_count} - {e:?}");
                 retry_count += 1;
                 continue;
             }
@@ -148,13 +118,14 @@ async fn get_all_stats<T: DataStorage>(
 
     // Get all keys from storage
     if let Ok(keys) = storage.get_keys().await {
+        let namespace_prefix = format!("{namespace}:");
         for key in keys {
             // Only process keys that belong to our namespace
-            if key.starts_with(&format!("{}:", namespace)) {
+            if key.starts_with(&namespace_prefix) {
                 // Retrieve stats for this client
                 if let Ok(Some((request_stats, _))) = storage.get::<RequestStats>(&key).await {
                     // Extract client ID by removing namespace prefix
-                    let client_id = key.replace(&format!("{}:", namespace), "");
+                    let client_id = key.replace(&namespace_prefix, "");
                     all_stats.insert(client_id, request_stats);
                 }
             }
@@ -212,19 +183,15 @@ async fn request_filter<T: DataStorage>(
         )
     } else {
         // Client operation: any other path - update stats and continue to backend
-        match get_client_id(&state).await {
+        match get_client_id(&state) {
             Some(client_id) => {
-                match update_request_stats(
-                    &*storage,
-                    &client_id,
-                    &config.namespace,
-                    config.max_retries,
-                )
-                .await
+                let max_retries = config.max_retries as u32;
+                match update_request_stats(&*storage, &client_id, &config.namespace, max_retries)
+                    .await
                 {
                     Ok(_) => Flow::Continue(()),
                     Err(error_msg) => {
-                        logger::error!("Failed to update stats: {}", error_msg);
+                        logger::error!("Failed to update stats: {error_msg}");
                         Flow::Break(Response::new(500).with_body(error_msg))
                     }
                 }
@@ -249,28 +216,32 @@ async fn configure(
 ) -> anyhow::Result<()> {
     let config: Config = serde_json::from_slice(&configuration)?;
 
-    if config.storage_type == LOCAL_STORAGE {
-        logger::info!("Using LOCAL storage");
-        let local = Rc::new(store_builder.local(config.namespace.clone()));
-        launcher
-            .launch(on_request(move |request| {
-                request_filter(request, local.clone(), config.clone())
-            }))
-            .await?;
-    } else if config.storage_type == REMOTE_STORAGE {
-        logger::info!("Using REMOTE storage");
-        let remote =
-            Rc::new(store_builder.remote(config.namespace.clone(), config.ttl_seconds * 1000));
-        launcher
-            .launch(on_request(move |request| {
-                request_filter(request, remote.clone(), config.clone())
-            }))
-            .await?;
-    } else {
-        return Err(anyhow::anyhow!(
-            "Invalid storage type: {}",
-            config.storage_type
-        ));
+    let storage_type = &config.storage_type;
+    let namespace = &config.namespace;
+
+    match storage_type.as_str() {
+        LOCAL_STORAGE => {
+            logger::info!("Using LOCAL storage");
+            let local = Rc::new(store_builder.local(namespace.to_string()));
+            launcher
+                .launch(on_request(move |request| {
+                    request_filter(request, local.clone(), config.clone())
+                }))
+                .await?;
+        }
+        REMOTE_STORAGE => {
+            logger::info!("Using REMOTE storage");
+            let ttl_seconds = config.ttl_seconds as u32;
+            let remote = Rc::new(store_builder.remote(namespace.to_string(), ttl_seconds * 1000));
+            launcher
+                .launch(on_request(move |request| {
+                    request_filter(request, remote.clone(), config.clone())
+                }))
+                .await?;
+        }
+        _ => {
+            return Err(anyhow::anyhow!("Invalid storage type: {storage_type}"));
+        }
     }
 
     Ok(())
