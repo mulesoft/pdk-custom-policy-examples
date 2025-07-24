@@ -86,7 +86,6 @@ async fn update_request_stats<T: DataStorage>(
     max_retries: u32,
 ) -> Result<RequestStats, String> {
     let key = format!("{}:{}", namespace, client_id);
-    logger::info!("update_request_stats: Starting for key: {}", key);
 
     // Get current timestamp for the last_request field
     let now = SystemTime::now()
@@ -99,9 +98,9 @@ async fn update_request_stats<T: DataStorage>(
     loop {
         if retry_count >= max_retries {
             logger::error!(
-                "update_request_stats: Exceeded max retries ({}) for key: {}, failing request",
+                "Storage operation failed after {} retries for client {}",
                 max_retries,
-                key
+                client_id
             );
             return Err(format!(
                 "Storage operation failed after {} retries for client {}",
@@ -111,57 +110,25 @@ async fn update_request_stats<T: DataStorage>(
 
         // Try to get existing stats or create new ones
         let (current_stats, mode) = match storage.get::<RequestStats>(&key).await {
-            Ok(Some((stats, ver))) => {
-                logger::info!("update_request_stats: Found existing stats for key: {}, count: {}, version: {}", key, stats.count, ver);
-                (stats, StoreMode::Cas(ver)) // Found existing stats
-            }
-            Ok(None) => {
-                logger::info!(
-                    "update_request_stats: No existing stats for key: {}, creating new",
-                    key
-                );
-                (RequestStats::default(), StoreMode::Absent) // No existing stats
-            }
+            Ok(Some((stats, ver))) => (stats, StoreMode::Cas(ver)),
+            Ok(None) => (RequestStats::default(), StoreMode::Absent),
             Err(e) => {
-                logger::warn!(
-                    "update_request_stats: Storage error for key: {}, error: {:?}, retry: {}",
-                    key,
-                    e,
-                    retry_count
-                );
+                logger::warn!("Storage error for key: {}, retry: {}", key, retry_count);
                 retry_count += 1;
-                continue; // Storage error, retry
+                continue;
             }
         };
 
         let mut new_stats = current_stats;
         new_stats.count += 1;
         new_stats.last_request = now;
-        logger::info!(
-            "update_request_stats: Prepared new stats for key: {}, count: {}",
-            key,
-            new_stats.count
-        );
 
         // Attempt CAS operation to atomically update the stats
         match storage.store(&key, &mode, &new_stats).await {
-            Ok(_) => {
-                logger::info!(
-                    "update_request_stats: Successfully stored stats for key: {}, count: {}",
-                    key,
-                    new_stats.count
-                );
-                return Ok(new_stats); // Success, return updated stats
-            }
-            Err(e) => {
-                logger::warn!(
-                    "update_request_stats: CAS failed for key: {}, error: {:?}, retry: {}",
-                    key,
-                    e,
-                    retry_count
-                );
+            Ok(_) => return Ok(new_stats),
+            Err(_) => {
                 retry_count += 1;
-                continue; // CAS failed, retry with updated version
+                continue;
             }
         }
     }
@@ -180,21 +147,24 @@ async fn get_all_stats<T: DataStorage>(
             // Only process keys that belong to our namespace
             if key.starts_with(&format!("{}:", namespace)) {
                 // Retrieve stats for this client
-                if let Ok(Some((stats, _))) = storage.get::<RequestStats>(&key).await {
+                if let Ok(Some((request_stats, _))) = storage.get::<RequestStats>(&key).await {
                     // Extract client ID by removing namespace prefix
                     let client_id = key.replace(&format!("{}:", namespace), "");
-                    all_stats.insert(client_id, stats);
+                    all_stats.insert(client_id, request_stats);
                 }
             }
         }
     }
 
+    logger::info!("Retrieved {} client stats", all_stats.len());
     all_stats
 }
 
-/// Main request filter that handles client stats operations and errors.
-/// At this example, we simulate client operations (which increment counters)
-/// and admin operations (as retrieving stats and resetting them).
+/// Main request filter that handles stats operations.
+///
+/// Admin operations:
+/// - GET /stats: Return all client statistics as JSON
+/// - DELETE /stats: Reset all statistics and return confirmation
 async fn request_filter<T: DataStorage>(
     state: RequestHeadersState,
     storage: Rc<T>,
@@ -202,21 +172,39 @@ async fn request_filter<T: DataStorage>(
 ) -> Flow<()> {
     // Route request based on path for RESTful API design
     let path = state.path();
+    let method = state.method();
 
-    if path == "/stats" {
-        // Admin operation: GET /stats - intercept and return stats
+    if path == "/stats" && method == "GET" {
+        // Admin operation: GET /stats - return stats as JSON in response body
         let all_stats = get_all_stats(&*storage, &config.namespace).await;
-        let stats_json = serde_json::to_string(&all_stats).unwrap();
+        let stats_json = serde_json::to_string_pretty(&all_stats).unwrap();
         Flow::Break(
-            Response::new(200).with_headers(vec![(ALL_STATS_HEADER.to_string(), stats_json)]),
-        )
-    } else if path == "/stats/reset" {
-        // Admin operation: POST /stats/reset - intercept and reset
-        let _ = storage.delete_all().await;
-        return Flow::Break(
             Response::new(200)
-                .with_headers(vec![(STATS_RESET_HEADER.to_string(), "true".to_string())]),
-        );
+                .with_headers(vec![(
+                    "Content-Type".to_string(),
+                    "application/json".to_string(),
+                )])
+                .with_body(stats_json),
+        )
+    } else if path == "/stats" && method == "DELETE" {
+        // Admin operation: DELETE /stats - reset all stats and return confirmation
+        let _ = storage.delete_all().await;
+        let response_body = serde_json::json!({
+            "message": "All statistics have been reset successfully",
+            "timestamp": SystemTime::now()
+                .duration_since(UNIX_EPOCH)
+                .unwrap()
+                .as_secs()
+        });
+        let response_json = serde_json::to_string_pretty(&response_body).unwrap();
+        Flow::Break(
+            Response::new(200)
+                .with_headers(vec![(
+                    "Content-Type".to_string(),
+                    "application/json".to_string(),
+                )])
+                .with_body(response_json),
+        )
     } else {
         // Client operation: any other path - update stats and continue to backend
         match get_client_id(&state).await {
@@ -229,25 +217,15 @@ async fn request_filter<T: DataStorage>(
                 )
                 .await
                 {
-                    Ok(stats) => {
-                        // Add stats headers to request and continue to backend
-                        state
-                            .handler()
-                            .add_header(REQUEST_COUNT_HEADER, &stats.count.to_string());
-                        state.handler().add_header(CLIENT_ID_HEADER, &client_id);
-                        state
-                            .handler()
-                            .add_header(LAST_REQUEST_HEADER, &stats.last_request.to_string());
-                        Flow::Continue(())
-                    }
+                    Ok(_) => Flow::Continue(()),
                     Err(error_msg) => {
-                        logger::error!("request_filter: Failed to update stats: {}", error_msg);
+                        logger::error!("Failed to update stats: {}", error_msg);
                         Flow::Break(Response::new(500).with_body(error_msg))
                     }
                 }
             }
             None => {
-                logger::warn!("request_filter: Missing client identification header");
+                logger::warn!("Missing client identification header");
                 Flow::Break(
                     Response::new(400)
                         .with_body("Missing client identification header (x-client-id)"),
@@ -267,6 +245,7 @@ async fn configure(
     let config: Config = serde_json::from_slice(&configuration)?;
 
     if config.storage_type == LOCAL_STORAGE {
+        logger::info!("Using LOCAL storage");
         let local = Rc::new(store_builder.local(config.namespace.clone()));
         launcher
             .launch(on_request(move |request| {
@@ -274,6 +253,7 @@ async fn configure(
             }))
             .await?;
     } else if config.storage_type == REMOTE_STORAGE {
+        logger::info!("Using REMOTE storage");
         let remote =
             Rc::new(store_builder.remote(config.namespace.clone(), config.ttl_seconds * 1000));
         launcher

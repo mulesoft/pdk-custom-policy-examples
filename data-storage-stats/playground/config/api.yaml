@@ -18,3 +18,7 @@ spec:
         namespace: default
       config:
         namespace: "request-stats"
+        storage_type: "remote"
+        ttl_seconds: 3600
+        max_retries: 3
+        shared_storage: "shared-storage-redis"

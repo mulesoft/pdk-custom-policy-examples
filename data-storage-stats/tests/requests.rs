@@ -104,7 +104,7 @@ async fn test_basic_local_storage_functionality() -> anyhow::Result<()> {
     Ok(())
 }
 
-// Stats operations - get all stats and reset stats
+// Admin stats operations - GET /stats to retrieve all stats and DELETE /stats to reset them
 #[pdk_test]
 async fn test_admin_stats_operations() -> anyhow::Result<()> {
     let backend_config = HttpMockConfig::builder()
@@ -166,38 +166,39 @@ async fn test_admin_stats_operations() -> anyhow::Result<()> {
         assert_eq!(response.status(), StatusCode::OK);
     }
 
-    // Retrieve all stats via admin endpoint
+    // Retrieve all stats via admin endpoint - GET /stats
     let response = client.get(format!("{flex_url}/stats")).send().await?;
     assert_eq!(response.status(), StatusCode::OK);
+    assert_eq!(
+        response.headers().get("Content-Type").unwrap(),
+        "application/json"
+    );
 
-    let all_stats = response
-        .headers()
-        .get("x-all-stats")
-        .unwrap()
-        .to_str()
-        .unwrap();
-    let stats: Value = serde_json::from_str(all_stats)?;
+    let stats: Value = response.json().await?;
     assert!(stats.is_object());
     assert_eq!(stats.as_object().unwrap().len(), 3); // Should have 3 clients
 
-    // Reset all stats via admin endpoint
-    let response = client
-        .post(format!("{flex_url}/stats/reset"))
-        .send()
-        .await?;
+    // Reset all stats via admin endpoint - DELETE /stats
+    let response = client.delete(format!("{flex_url}/stats")).send().await?;
     assert_eq!(response.status(), StatusCode::OK);
+    assert_eq!(
+        response.headers().get("Content-Type").unwrap(),
+        "application/json"
+    );
 
-    // Verify stats are properly cleared
+    let reset_response: Value = response.json().await?;
+    assert!(reset_response["message"].is_string());
+    assert!(reset_response["timestamp"].is_number());
+
+    // Verify stats are properly cleared - GET /stats again
     let response = client.get(format!("{flex_url}/stats")).send().await?;
     assert_eq!(response.status(), StatusCode::OK);
+    assert_eq!(
+        response.headers().get("Content-Type").unwrap(),
+        "application/json"
+    );
 
-    let all_stats = response
-        .headers()
-        .get("x-all-stats")
-        .unwrap()
-        .to_str()
-        .unwrap();
-    let stats: Value = serde_json::from_str(all_stats)?;
+    let stats: Value = response.json().await?;
     assert!(stats.is_object());
     assert_eq!(stats.as_object().unwrap().len(), 0); // Should have no clients after reset
 
@@ -281,14 +282,12 @@ async fn test_cas_concurrency_handling() -> anyhow::Result<()> {
     // Verify final count matches expected concurrent requests
     let response = client.get(format!("{flex_url}/stats")).send().await?;
     assert_eq!(response.status(), StatusCode::OK);
+    assert_eq!(
+        response.headers().get("Content-Type").unwrap(),
+        "application/json"
+    );
 
-    let all_stats = response
-        .headers()
-        .get("x-all-stats")
-        .unwrap()
-        .to_str()
-        .unwrap();
-    let stats: Value = serde_json::from_str(all_stats)?;
+    let stats: Value = response.json().await?;
     let client_stats = &stats["concurrent-client"];
     assert_eq!(client_stats["count"], 5);
 
@@ -385,14 +384,12 @@ async fn test_multiple_clients_concurrent_access() -> anyhow::Result<()> {
     // Verify each client has exactly 2 requests (1 sequential + 1 concurrent)
     let response = client.get(format!("{flex_url}/stats")).send().await?;
     assert_eq!(response.status(), StatusCode::OK);
+    assert_eq!(
+        response.headers().get("Content-Type").unwrap(),
+        "application/json"
+    );
 
-    let all_stats = response
-        .headers()
-        .get("x-all-stats")
-        .unwrap()
-        .to_str()
-        .unwrap();
-    let stats: Value = serde_json::from_str(all_stats)?;
+    let stats: Value = response.json().await?;
     for client_id in &client_ids {
         assert!(stats.get(*client_id).is_some());
         let client_stats = &stats[*client_id];
@@ -475,14 +472,12 @@ async fn test_remote_storage_functionality() -> anyhow::Result<()> {
     // Verify stats are properly tracked in remote storage
     let response = client.get(format!("{flex_url}/stats")).send().await?;
     assert_eq!(response.status(), StatusCode::OK);
+    assert_eq!(
+        response.headers().get("Content-Type").unwrap(),
+        "application/json"
+    );
 
-    let all_stats = response
-        .headers()
-        .get("x-all-stats")
-        .unwrap()
-        .to_str()
-        .unwrap();
-    let stats: Value = serde_json::from_str(all_stats)?;
+    let stats: Value = response.json().await?;
     assert!(stats.is_object());
 
     Ok(())
