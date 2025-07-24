@@ -15,7 +15,6 @@ implementation_asset_id = "data-storage-stats-flex"
 # TODO remove github ref
 [dependencies]
 pdk = { git = "https://github.com/mulesoft-emu/mgw-policy-development-kit.git", branch = "master" }
-data-storage-lib = { git = "https://github.com/mulesoft-emu/mgw-policy-development-kit.git", branch = "master" }
 serde = { version = "1.0.219", features = ["derive"] }
 serde_json = { version = "1.0", default-features = false, features = ["alloc"] }
 anyhow = "1.0"

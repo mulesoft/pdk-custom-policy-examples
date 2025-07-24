@@ -3,8 +3,8 @@
 mod constants;
 
 use constants::*;
-use data_storage_lib::{DataStorage, DataStorageBuilder, StoreMode};
 use pdk::hl::*;
+use pdk::data_storage::{DataStorage, DataStorageBuilder, StoreMode};
 use pdk::logger;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
