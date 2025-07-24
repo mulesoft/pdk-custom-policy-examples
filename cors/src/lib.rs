@@ -1,9 +1,6 @@
-extern crate alloc;
-
 // Copyright 2023 Salesforce, Inc. All rights reserved.
 mod generated;
 
-use alloc::vec;
 use regex::Regex;
 use pdk::cors;
 use pdk::cors::{AllowedMethod, Cors, OriginGroup};
