@@ -113,7 +113,12 @@ async fn update_request_stats<T: DataStorage>(
             Ok(Some((stats, ver))) => (stats, StoreMode::Cas(ver)),
             Ok(None) => (RequestStats::default(), StoreMode::Absent),
             Err(e) => {
-                logger::warn!("Storage error for key: {}, retry: {}", key, retry_count);
+                logger::warn!(
+                    "Storage error for key: {}, retry: {} - {:?}",
+                    key,
+                    retry_count,
+                    e
+                );
                 retry_count += 1;
                 continue;
             }
