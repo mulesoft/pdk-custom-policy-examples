@@ -7,7 +7,6 @@ use pdk::hl::*;
 use pdk::logger;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
-use std::rc::Rc;
 use std::time::{SystemTime, UNIX_EPOCH};
 
 use crate::generated::config::Config;
@@ -62,7 +61,7 @@ async fn update_request_stats<T: DataStorage>(
     namespace: &str,
     max_retries: u32,
 ) -> Result<RequestStats, String> {
-    let key = format!("{}:{}", namespace, client_id);
+    let key = format!("{namespace}:{client_id}");
 
     // Get current timestamp for the last_request field
     let now = SystemTime::now()
@@ -78,8 +77,7 @@ async fn update_request_stats<T: DataStorage>(
                 "Storage operation failed after {max_retries} retries for client {client_id}"
             );
             return Err(format!(
-                "Storage operation failed after {} retries for client {}",
-                max_retries, client_id
+                "Storage operation failed after {max_retries} retries for client {client_id}"
             ));
         }
 
@@ -141,10 +139,10 @@ async fn get_all_stats<T: DataStorage>(
 /// Admin operations:
 /// - GET /stats: Return all client statistics as JSON
 /// - DELETE /stats: Reset all statistics and return confirmation
-async fn request_filter<T: DataStorage>(
+async fn request_filter(
     state: RequestHeadersState,
-    storage: Rc<T>,
-    config: Config,
+    storage: &impl DataStorage,
+    config: &Config,
 ) -> Flow<()> {
     // Route request based on path for RESTful API design
     let path = state.path();
@@ -152,7 +150,7 @@ async fn request_filter<T: DataStorage>(
 
     if path == "/stats" && method == "GET" {
         // Admin operation: GET /stats - return stats as JSON in response body
-        let all_stats = get_all_stats(&*storage, &config.namespace).await;
+        let all_stats = get_all_stats(storage, &config.namespace).await;
         let stats_json = serde_json::to_string_pretty(&all_stats).unwrap();
         Flow::Break(
             Response::new(200)
@@ -186,7 +184,7 @@ async fn request_filter<T: DataStorage>(
         match get_client_id(&state) {
             Some(client_id) => {
                 let max_retries = config.max_retries as u32;
-                match update_request_stats(&*storage, &client_id, &config.namespace, max_retries)
+                match update_request_stats(storage, &client_id, &config.namespace, max_retries)
                     .await
                 {
                     Ok(_) => Flow::Continue(()),
@@ -221,21 +219,21 @@ async fn configure(
 
     match storage_type.as_str() {
         LOCAL_STORAGE => {
-            logger::info!("Using LOCAL storage");
-            let local = Rc::new(store_builder.local(namespace.to_string()));
+            logger::info!("CONFIG: Local storage");
+            let local = store_builder.local(namespace);
             launcher
-                .launch(on_request(move |request| {
-                    request_filter(request, local.clone(), config.clone())
+                .launch(on_request(|request| {
+                    request_filter(request, &local, &config)
                 }))
                 .await?;
         }
         REMOTE_STORAGE => {
-            logger::info!("Using REMOTE storage");
+            logger::info!("CONFIG: Remote storage");
             let ttl_seconds = config.ttl_seconds as u32;
-            let remote = Rc::new(store_builder.remote(namespace.to_string(), ttl_seconds * 1000));
+            let remote = store_builder.remote(namespace, ttl_seconds * 1000);
             launcher
-                .launch(on_request(move |request| {
-                    request_filter(request, remote.clone(), config.clone())
+                .launch(on_request(|request| {
+                    request_filter(request, &remote, &config)
                 }))
                 .await?;
         }
