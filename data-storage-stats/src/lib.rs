@@ -55,8 +55,8 @@ fn get_client_id(state: &RequestHeadersState) -> Option<String> {
 }
 
 /// Updates request statistics using CAS operations with retry logic.
-async fn update_request_stats<T: DataStorage>(
-    storage: &T,
+async fn update_request_stats(
+    storage: &impl DataStorage,
     client_id: &str,
     namespace: &str,
     max_retries: u32,
@@ -108,8 +108,8 @@ async fn update_request_stats<T: DataStorage>(
 }
 
 /// Retrieves all client statistics from storage.
-async fn get_all_stats<T: DataStorage>(
-    storage: &T,
+async fn get_all_stats(
+    storage: &impl DataStorage,
     namespace: &str,
 ) -> HashMap<String, RequestStats> {
     let mut all_stats = HashMap::new();
