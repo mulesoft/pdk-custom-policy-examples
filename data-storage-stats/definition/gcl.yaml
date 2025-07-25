@@ -1,0 +1,31 @@
+---
+apiVersion: gateway.mulesoft.com/v1alpha1
+kind: Extension
+metadata:
+  labels:
+    title: "Data Storage Stats"
+    description: "Request counting and stats system using data storage to track API usage per client"
+    category: Custom
+    metadata/interfaceScope: api,resource
+spec:
+  extends:
+    - name: extension-definition
+      namespace: default
+  properties:
+    namespace:
+      type: string
+      description: "Storage namespace for request stats"
+    storage_type:
+      type: string
+      description: "Storage type - local for in-memory or remote for distributed"
+    ttl_seconds:
+      type: integer
+      description: "Time-to-live for stored items in seconds (remote storage only)"
+    max_retries:
+      type: integer
+      description: "Maximum number of retries for CAS operations"
+  required:
+    - namespace
+    - storage_type
+    - ttl_seconds
+    - max_retries
