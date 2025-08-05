@@ -1,0 +1,9 @@
+# Copyright 2023 Salesforce, Inc. All rights reserved.
+---
+apiVersion: gateway.mulesoft.com/v1alpha1
+kind: Logging
+metadata:
+  name: logging
+spec:
+  level: INFO
+  format: json

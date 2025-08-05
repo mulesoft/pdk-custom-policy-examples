@@ -1,0 +1,12 @@
+# Copyright 2023 Salesforce, Inc. All rights reserved.
+---
+apiVersion: gateway.mulesoft.com/v1alpha1
+kind: SharedStorage
+metadata:
+  name: shared-storage-redis
+spec:
+  type: redis
+  config:
+    address: redis:6379
+    password: ""
+    database: 0 

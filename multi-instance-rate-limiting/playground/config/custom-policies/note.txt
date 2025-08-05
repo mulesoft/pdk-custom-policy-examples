@@ -1,0 +1,2 @@
+This directory contains the policy definition for the multi-instance rate limiting playground.
+The policy implementation will be built and deployed using 'make run' from the parent directory.
