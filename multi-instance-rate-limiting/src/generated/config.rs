@@ -14,6 +14,4 @@ pub struct RateLimits0Config {
 pub struct Config {
     #[serde(alias = "rate_limits")]
     pub rate_limits: Vec<RateLimits0Config>,
-    #[serde(alias = "shared_storage")]
-    pub shared_storage: Option<String>,
 }

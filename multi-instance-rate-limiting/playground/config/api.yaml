@@ -20,6 +20,10 @@ spec:
         rate_limits:
           - group_name: "api"
             requests_per_window: 3
-            window_size_seconds: 60
+            window_size_seconds: 10
             key_selector: "api_key"
+          - group_name: "user"
+            requests_per_window: 5
+            window_size_seconds: 15
+            key_selector: "user_id"
         shared_storage: "shared-storage-redis"

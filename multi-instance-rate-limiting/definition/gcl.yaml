@@ -3,8 +3,8 @@ apiVersion: gateway.mulesoft.com/v1alpha1
 kind: Extension
 metadata:
   labels:
-    title: "Simple Multi-Instance Rate Limiting"
-    description: "Simple rate limiting policy that can be shared across multiple gateway instances using rate-limit-lib"
+    title: "Multi-Instance Rate Limiting"
+    description: "Simple rate limiting policy that supports multiple configurations and can be shared across multiple gateway instances using rate-limit-lib with Redis support"
     category: Custom
     metadata/interfaceScope: api,resource
 spec:
@@ -14,13 +14,13 @@ spec:
   properties:
     rate_limits:
       type: array
-      description: Array of rate limit configurations (only the first one will be used)
+      description: Array of rate limit configurations. All configurations will be applied to each request. A request must pass all rate limits to be allowed.
       items:
         type: object
         properties:
           group_name:
             type: string
-            description: Name of the rate limit group (e.g., 'api', 'auth', 'premium')
+            description: Name of the rate limit group (e.g., 'api', 'user', 'premium'). Each group operates independently.
           requests_per_window:
             type: integer
             description: Maximum number of requests allowed in the time window
@@ -32,7 +32,7 @@ spec:
           key_selector:
             type: string
             enum: [api_key, user_id]
-            description: How to identify the client for rate limiting
+            description: How to identify the client for rate limiting. 'api_key' uses x-api-key header, 'user_id' uses x-user-id header
         required:
           - group_name
           - requests_per_window
