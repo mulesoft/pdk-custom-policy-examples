@@ -44,6 +44,12 @@ make test
 
 ### Playground Testing
 
+To test the clustered behavior with multiple instances:
+
+1. The playground is configured with two Flex Gateway instances (ports 8081 and 8082)
+2. Both instances share the same Redis backend for rate limit state
+3. Rate limits are enforced across both instances
+
 To test the policy:
 
 1. Run the `build` command to compile the policy:
@@ -101,6 +107,7 @@ make run
 curl -H "x-api-key: test-key-1" http://localhost:8081/anything/echo/
 curl -H "x-api-key: test-key-1" http://localhost:8081/anything/echo/
 curl -H "x-api-key: test-key-1" http://localhost:8081/anything/echo/
+
 # This should be rate limited (429)
 curl -H "x-api-key: test-key-1" http://localhost:8081/anything/echo/
 
@@ -110,6 +117,7 @@ curl -H "x-user-id: user-123" http://localhost:8081/anything/echo/
 curl -H "x-user-id: user-123" http://localhost:8081/anything/echo/
 curl -H "x-user-id: user-123" http://localhost:8081/anything/echo/
 curl -H "x-user-id: user-123" http://localhost:8081/anything/echo/
+
 # This should be rate limited (429)
 curl -H "x-user-id: user-123" http://localhost:8081/anything/echo/
 
@@ -117,22 +125,4 @@ curl -H "x-user-id: user-123" http://localhost:8081/anything/echo/
 curl -H "x-api-key: test-key-2" -H "x-user-id: user-456" http://localhost:8081/anything/echo/
 ```
 
-## Multi-Instance Testing
-
-To test the clustered behavior with multiple instances:
-
-1. The playground is configured with two Flex Gateway instances (ports 8081 and 8082)
-2. Both instances share the same Redis backend for rate limit state
-3. Rate limits are enforced across both instances
-
-```shell
-# Test clustered behavior
-# Instance 1
-curl -H "x-api-key: clustered-test" http://localhost:8081/anything/echo/
-curl -H "x-api-key: clustered-test" http://localhost:8081/anything/echo/
-
-# Instance 2 (should share rate limit state)
-curl -H "x-api-key: clustered-test" http://localhost:8082/anything/echo/
-# This should be rate limited (429) - total 3 requests across both instances
-curl -H "x-api-key: clustered-test" http://localhost:8081/anything/echo/
-```
+> **Note**: When only one header is sent, the missing header uses "unknown" as key, causing the more restrictive rate limit (API key: 3 requests) to activate first. With both headers, you can test the full range of both rate limits.

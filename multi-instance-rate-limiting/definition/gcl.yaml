@@ -4,7 +4,7 @@ kind: Extension
 metadata:
   labels:
     title: "Multi-Instance Rate Limiting"
-    description: "Simple rate limiting policy that supports multiple configurations and can be shared across multiple gateway instances using rate-limit-lib with Redis support"
+    description: "Simple rate limiting policy that supports multiple configurations and can be shared across multiple gateway instances using Redis"
     category: Custom
     metadata/interfaceScope: api,resource
 spec:
@@ -20,7 +20,7 @@ spec:
         properties:
           group_name:
             type: string
-            description: Name of the rate limit group (e.g., 'api', 'user', 'premium'). Each group operates independently.
+            description: Name of the rate limit group (e.g., 'api', 'user'). Each group operates independently.
           requests_per_window:
             type: integer
             description: Maximum number of requests allowed in the time window
