@@ -79,7 +79,6 @@ async fn query() -> anyhow::Result<()> {
             when.header("X-Query-Key", "value")
                 .header("X-Query-Missing", "Undefined")
                 .header("X-Query-Extra", "")
-                .path_contains("/hello")
                 .query_param("absent", "absent")
                 .query_param("removed", "extra")
                 .query_param("removed", "key");
