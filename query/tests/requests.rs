@@ -38,7 +38,7 @@ async fn query() -> anyhow::Result<()> {
         .build();
 
     let flex_config = FlexConfig::builder()
-        .version("1.7.0")
+        .version("1.10.0")
         .hostname("local-flex")
         .with_api(api_config)
         .config_mounts([(POLICY_DIR, "policy"), (COMMON_CONFIG_DIR, "common")])
@@ -79,10 +79,10 @@ async fn query() -> anyhow::Result<()> {
             when.header("X-Query-Key", "value")
                 .header("X-Query-Missing", "Undefined")
                 .header("X-Query-Extra", "")
-                .header(
-                    "X-Envoy-Original-Path",
-                    "/hello?absent=absent&removed=extra&removed=key",
-                );
+                .path_contains("/hello")
+                .query_param("absent", "absent")
+                .query_param("removed", "extra")
+                .query_param("removed", "key");
             then.status(200);
         })
         .await;
