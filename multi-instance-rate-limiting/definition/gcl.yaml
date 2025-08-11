@@ -12,32 +12,45 @@ spec:
     - name: extension-definition
       namespace: default
   properties:
-    rate_limits:
-      type: array
-      description: Array of rate limit configurations. All configurations will be applied to each request. A request must pass all rate limits to be allowed.
-      items:
-        type: object
-        properties:
-          group_name:
-            type: string
-            description: Name of the rate limit group (e.g., 'api', 'user'). Each group operates independently.
-          requests_per_window:
-            type: integer
-            description: Maximum number of requests allowed in the time window
-            minimum: 1
-          window_size_seconds:
-            type: integer
-            description: Time window size in seconds
-            minimum: 1
-          key_selector:
-            type: string
-            enum: [api_key, user_id]
-            description: How to identify the client for rate limiting. 'api_key' uses x-api-key header, 'user_id' uses x-user-id header
-        required:
-          - group_name
-          - requests_per_window
-          - window_size_seconds
-          - key_selector
+    api_key_rate_limit:
+      type: object
+      description: Rate limiting configuration for API key
+      properties:
+        group_name:
+          type: string
+          description: Name of the rate limit group for API key
+          default: "api"
+        requests_per_window:
+          type: integer
+          description: Maximum number of requests allowed in the time window
+          minimum: 1
+        window_size_seconds:
+          type: integer
+          description: Time window size in seconds
+          minimum: 1
+      required:
+        - requests_per_window
+        - window_size_seconds
+    user_id_rate_limit:
+      type: object
+      description: Rate limiting configuration for user ID
+      properties:
+        group_name:
+          type: string
+          description: Name of the rate limit group for user ID
+          default: "user"
+        requests_per_window:
+          type: integer
+          description: Maximum number of requests allowed in the time window
+          minimum: 1
+        window_size_seconds:
+          type: integer
+          description: Time window size in seconds
+          minimum: 1
+      required:
+        - requests_per_window
+        - window_size_seconds
   
   required:
-    - rate_limits
+    - api_key_rate_limit
+    - user_id_rate_limit

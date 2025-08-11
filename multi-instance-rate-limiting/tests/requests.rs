@@ -24,15 +24,16 @@ async fn test_basic_rate_limiting_with_api_key() -> anyhow::Result<()> {
     let policy_config = PolicyConfig::builder()
         .name(POLICY_NAME)
         .configuration(serde_json::json!({
-            "rate_limits": [
-                {
-                    "group_name": "api",
-                    "requests_per_window": 2,
-                    "window_size_seconds": 60,
-                    "key_selector": "api_key",
-                    "path_pattern": "*"
-                }
-            ]
+            "api_key_rate_limit": {
+                "group_name": "api",
+                "requests_per_window": 2,
+                "window_size_seconds": 60
+            },
+            "user_id_rate_limit": {
+                "group_name": "user",
+                "requests_per_window": 5,
+                "window_size_seconds": 120
+            }
         }))
         .build();
 
@@ -121,15 +122,16 @@ async fn test_rate_limiting_with_user_id() -> anyhow::Result<()> {
     let policy_config = PolicyConfig::builder()
         .name(POLICY_NAME)
         .configuration(serde_json::json!({
-            "rate_limits": [
-                {
-                    "group_name": "user",
-                    "requests_per_window": 3,
-                    "window_size_seconds": 60,
-                    "key_selector": "user_id",
-                    "path_pattern": "*"
-                }
-            ]
+            "api_key_rate_limit": {
+                "group_name": "api",
+                "requests_per_window": 5,
+                "window_size_seconds": 60
+            },
+            "user_id_rate_limit": {
+                "group_name": "user",
+                "requests_per_window": 3,
+                "window_size_seconds": 60
+            }
         }))
         .build();
 
@@ -222,14 +224,16 @@ async fn test_simple_rate_limiting() -> anyhow::Result<()> {
     let policy_config = PolicyConfig::builder()
         .name(POLICY_NAME)
         .configuration(serde_json::json!({
-            "rate_limits": [
-                {
-                    "group_name": "api",
-                    "requests_per_window": 2,
-                    "window_size_seconds": 60,
-                    "key_selector": "api_key"
-                }
-            ]
+            "api_key_rate_limit": {
+                "group_name": "api",
+                "requests_per_window": 2,
+                "window_size_seconds": 60
+            },
+            "user_id_rate_limit": {
+                "group_name": "user",
+                "requests_per_window": 5,
+                "window_size_seconds": 120
+            }
         }))
         .build();
 
@@ -306,15 +310,16 @@ async fn test_missing_headers() -> anyhow::Result<()> {
     let policy_config = PolicyConfig::builder()
         .name(POLICY_NAME)
         .configuration(serde_json::json!({
-            "rate_limits": [
-                {
-                    "group_name": "api",
-                    "requests_per_window": 5,
-                    "window_size_seconds": 60,
-                    "key_selector": "api_key",
-                    "path_pattern": "*"
-                }
-            ]
+            "api_key_rate_limit": {
+                "group_name": "api",
+                "requests_per_window": 5,
+                "window_size_seconds": 60
+            },
+            "user_id_rate_limit": {
+                "group_name": "user",
+                "requests_per_window": 3,
+                "window_size_seconds": 60
+            }
         }))
         .build();
 
@@ -383,14 +388,16 @@ async fn test_single_request_limit() -> anyhow::Result<()> {
     let policy_config = PolicyConfig::builder()
         .name(POLICY_NAME)
         .configuration(serde_json::json!({
-            "rate_limits": [
-                {
-                    "group_name": "api",
-                    "requests_per_window": 1,
-                    "window_size_seconds": 60,
-                    "key_selector": "api_key"
-                }
-            ]
+            "api_key_rate_limit": {
+                "group_name": "api",
+                "requests_per_window": 1,
+                "window_size_seconds": 60
+            },
+            "user_id_rate_limit": {
+                "group_name": "user",
+                "requests_per_window": 3,
+                "window_size_seconds": 60
+            }
         }))
         .build();
 
@@ -467,14 +474,16 @@ async fn test_different_window_sizes() -> anyhow::Result<()> {
     let policy_config = PolicyConfig::builder()
         .name(POLICY_NAME)
         .configuration(serde_json::json!({
-            "rate_limits": [
-                {
-                    "group_name": "api",
-                    "requests_per_window": 2,
-                    "window_size_seconds": 1, // Very short window for testing
-                    "key_selector": "api_key"
-                }
-            ]
+            "api_key_rate_limit": {
+                "group_name": "api",
+                "requests_per_window": 2,
+                "window_size_seconds": 1
+            },
+            "user_id_rate_limit": {
+                "group_name": "user",
+                "requests_per_window": 3,
+                "window_size_seconds": 60
+            }
         }))
         .build();
 
@@ -568,14 +577,16 @@ async fn test_api_key_rate_limiting() -> anyhow::Result<()> {
     let policy_config = PolicyConfig::builder()
         .name(POLICY_NAME)
         .configuration(serde_json::json!({
-            "rate_limits": [
-                {
-                    "group_name": "api",
-                    "requests_per_window": 3,
-                    "window_size_seconds": 10,
-                    "key_selector": "api_key"
-                }
-            ]
+            "api_key_rate_limit": {
+                "group_name": "api",
+                "requests_per_window": 3,
+                "window_size_seconds": 10
+            },
+            "user_id_rate_limit": {
+                "group_name": "user",
+                "requests_per_window": 5,
+                "window_size_seconds": 15
+            }
         }))
         .build();
 

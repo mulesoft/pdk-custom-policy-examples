@@ -10,14 +10,16 @@ An organization needs to implement rate limiting across multiple Flex Gateway in
 
 Multi-Instance Rate Limiting example policy implementation:
 
-1. The policy intercepts each incoming request and extracts client identifiers based on configured key selectors (e.g., `x-api-key`, `x-user-id` headers).
-2. The policy applies all configured rate limits to each request - a request must pass all rate limits to be allowed.
+1. The policy intercepts each incoming request and extracts client identifiers from `x-api-key` and `x-user-id` headers.
+2. The policy applies both API key and user ID rate limits to each request - a request must pass both rate limits to be allowed.
 3. The policy uses clustered mode with shared storage (Redis) to coordinate rate limiting across multiple gateway instances.
 4. Rate limit state is persisted in Redis, ensuring consistency across all instances.
-5. The policy supports multiple independent rate limit groups, each with their own configuration and key selectors.
+5. The policy supports two independent rate limit configurations: API key-based and user ID-based, each with their own limits and time windows.
 6. The policy is designed so that any error in the rate limiting flow blocks the request.
 
 > **Note**: This policy requires Redis to be configured as shared storage for multi-instance coordination. For single-instance deployments, the policy will still work but won't provide cross-instance rate limiting.
+
+Details on how to enable Shared Storage at https://docs.mulesoft.com/gateway/latest/flex-conn-shared-storage-config.
 
 ## Test the Policy
 
@@ -80,16 +82,14 @@ spec:
         name: multi-instance-rate-limiting-v1-0-impl
         namespace: default
       config:
-        rate_limits:
-          - group_name: "api"
-            requests_per_window: 3
-            window_size_seconds: 10
-            key_selector: "api_key"
-          - group_name: "user"
-            requests_per_window: 5
-            window_size_seconds: 15
-            key_selector: "user_id"
-        shared_storage: "shared-storage-redis"
+        api_key_rate_limit:
+          group_name: "api"
+          requests_per_window: 3
+          window_size_seconds: 10
+        user_id_rate_limit:
+          group_name: "user"
+          requests_per_window: 5
+          window_size_seconds: 15
 ```
 
 3. Configure a Flex Gateway instance to debug the policy by placing a `registration.yaml` file in `playground/config`.
@@ -121,8 +121,6 @@ curl -H "x-user-id: user-123" http://localhost:8081/anything/echo/
 # This should be rate limited (429)
 curl -H "x-user-id: user-123" http://localhost:8081/anything/echo/
 
-# Test both limits simultaneously
+# Test both headers simultaneously (both rate limits apply)
 curl -H "x-api-key: test-key-2" -H "x-user-id: user-456" http://localhost:8081/anything/echo/
 ```
-
-> **Note**: When only one header is sent, the missing header uses "unknown" as key, causing the more restrictive rate limit (API key: 3 requests) to activate first. With both headers, you can test the full range of both rate limits.
