@@ -22,6 +22,10 @@ const TIMER_PERIOD_MS: u64 = 100;
 const BUILDER_ID: &str = "multi-instance-rate-limiting";
 const REQUEST_AMOUNT: usize = 1;
 
+// Rate limit group names
+const API_KEY_RATE_LIMIT_GROUP: &str = "api_key_rate_limit";
+const USER_ID_RATE_LIMIT_GROUP: &str = "user_id_rate_limit";
+
 /// Checks if a rate limit is allowed for a given client key and configuration
 async fn check_rate_limit(
     rate_limiter: &RateLimitInstance,
@@ -47,11 +51,7 @@ async fn check_rate_limit(
 }
 
 /// Main request filter that applies rate limiting to incoming requests
-async fn request_filter(
-    state: RequestHeadersState,
-    config: &Config,
-    rate_limiter: &RateLimitInstance,
-) -> Flow<()> {
+async fn request_filter(state: RequestHeadersState, rate_limiter: &RateLimitInstance) -> Flow<()> {
     // Extract client identifiers directly
     let api_key = state
         .handler()
@@ -64,9 +64,7 @@ async fn request_filter(
         .unwrap_or(DEFAULT_CLIENT_KEY.to_string());
 
     // Apply API key rate limit
-    let api_config = &config.api_key_rate_limit;
-    let group_name = api_config.group_name.as_deref().unwrap_or("api");
-    match check_rate_limit(rate_limiter, group_name, &api_key).await {
+    match check_rate_limit(rate_limiter, API_KEY_RATE_LIMIT_GROUP, &api_key).await {
         Ok(true) => (), // Rate limit passed
         Ok(false) => {
             return Flow::Break(Response::new(429).with_body("API key rate limit exceeded"))
@@ -77,9 +75,7 @@ async fn request_filter(
     }
 
     // Apply User ID rate limit
-    let user_config = &config.user_id_rate_limit;
-    let group_name = user_config.group_name.as_deref().unwrap_or("user");
-    match check_rate_limit(rate_limiter, group_name, &user_id).await {
+    match check_rate_limit(rate_limiter, USER_ID_RATE_LIMIT_GROUP, &user_id).await {
         Ok(true) => (), // Rate limit passed
         Ok(false) => {
             return Flow::Break(Response::new(429).with_body("User ID rate limit exceeded"))
@@ -103,13 +99,7 @@ impl Config {
             requests: api_config.requests_per_window as u64,
             period_in_millis: api_config.window_size_seconds as u64 * 1000,
         };
-        buckets.push((
-            api_config
-                .group_name
-                .clone()
-                .unwrap_or_else(|| "api".to_string()),
-            vec![tier],
-        ));
+        buckets.push((API_KEY_RATE_LIMIT_GROUP.to_string(), vec![tier]));
 
         // Add User ID rate limit bucket
         let user_config = &self.user_id_rate_limit;
@@ -117,13 +107,7 @@ impl Config {
             requests: user_config.requests_per_window as u64,
             period_in_millis: user_config.window_size_seconds as u64 * 1000,
         };
-        buckets.push((
-            user_config
-                .group_name
-                .clone()
-                .unwrap_or_else(|| "user".to_string()),
-            vec![tier],
-        ));
+        buckets.push((USER_ID_RATE_LIMIT_GROUP.to_string(), vec![tier]));
 
         buckets
     }
@@ -164,9 +148,7 @@ async fn configure(
 
     // Launch the request handler with rate limiting applied
     launcher
-        .launch(on_request(|request| {
-            request_filter(request, &config, &rate_limiter)
-        }))
+        .launch(on_request(|request| request_filter(request, &rate_limiter)))
         .await
         .map_err(|e| format!("Failed to launch request handler: {e:?}"))?;
 

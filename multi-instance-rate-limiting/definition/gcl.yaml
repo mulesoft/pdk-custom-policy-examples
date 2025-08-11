@@ -16,10 +16,6 @@ spec:
       type: object
       description: Rate limiting configuration for API key
       properties:
-        group_name:
-          type: string
-          description: Name of the rate limit group for API key
-          default: "api"
         requests_per_window:
           type: integer
           description: Maximum number of requests allowed in the time window
@@ -35,10 +31,6 @@ spec:
       type: object
       description: Rate limiting configuration for user ID
       properties:
-        group_name:
-          type: string
-          description: Name of the rate limit group for user ID
-          default: "user"
         requests_per_window:
           type: integer
           description: Maximum number of requests allowed in the time window

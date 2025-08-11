@@ -1,8 +1,6 @@
 use serde::Deserialize;
 #[derive(Deserialize, Clone, Debug)]
 pub struct ApiKeyRateLimitConfig {
-    #[serde(alias = "group_name")]
-    pub group_name: Option<String>,
     #[serde(alias = "requests_per_window")]
     pub requests_per_window: i64,
     #[serde(alias = "window_size_seconds")]
@@ -10,8 +8,6 @@ pub struct ApiKeyRateLimitConfig {
 }
 #[derive(Deserialize, Clone, Debug)]
 pub struct UserIdRateLimitConfig {
-    #[serde(alias = "group_name")]
-    pub group_name: Option<String>,
     #[serde(alias = "requests_per_window")]
     pub requests_per_window: i64,
     #[serde(alias = "window_size_seconds")]

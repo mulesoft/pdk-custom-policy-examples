@@ -18,10 +18,8 @@ spec:
         namespace: default
       config:
         api_key_rate_limit:
-          group_name: "api"
           requests_per_window: 3
           window_size_seconds: 10
         user_id_rate_limit:
-          group_name: "user"
           requests_per_window: 5
           window_size_seconds: 15
