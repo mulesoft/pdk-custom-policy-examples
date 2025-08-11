@@ -79,7 +79,6 @@ spec:
         storage_type: "remote"
         ttl_seconds: 3600
         max_retries: 3
-        shared_storage: "shared-storage-redis"
 ```
 
 3. Configure a Flex Gateway instance to debug the policy by placing a `registration.yaml` file in `playground/config`.
