@@ -299,7 +299,7 @@ async fn test_simple_rate_limiting() -> anyhow::Result<()> {
     Ok(())
 }
 
-// Test missing headers handling
+// Test missing headers validation should return 400 Bad Request
 #[pdk_test]
 async fn test_missing_headers() -> anyhow::Result<()> {
     let backend_config = HttpMockConfig::builder()
@@ -358,21 +358,8 @@ async fn test_missing_headers() -> anyhow::Result<()> {
 
     let client = reqwest::Client::new();
 
-    // Request without API key header - should use "unknown" as key
     let response = client.get(format!("{flex_url}/test")).send().await?;
-    assert_eq!(response.status(), StatusCode::OK);
-
-    // Another request without API key - should be allowed (separate "unknown" key)
-    let response = client.get(format!("{flex_url}/test")).send().await?;
-    assert_eq!(response.status(), StatusCode::OK);
-
-    // Request with empty API key - should use "unknown" as key
-    let response = client
-        .get(format!("{flex_url}/test"))
-        .header("x-api-key", "")
-        .send()
-        .await?;
-    assert_eq!(response.status(), StatusCode::OK);
+    assert_eq!(response.status(), StatusCode::BAD_REQUEST);
 
     Ok(())
 }
