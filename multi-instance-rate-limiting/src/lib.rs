@@ -16,8 +16,7 @@ use crate::generated::config::Config;
 pub const API_KEY_HEADER: &str = "x-api-key";
 pub const USER_ID_HEADER: &str = "x-user-id";
 
-// Default values and configuration constants
-const DEFAULT_CLIENT_KEY: &str = "unknown";
+// Default values and configs
 const TIMER_PERIOD_MS: u64 = 100;
 const BUILDER_ID: &str = "multi-instance-rate-limiting";
 const REQUEST_AMOUNT: usize = 1;
@@ -52,40 +51,50 @@ async fn check_rate_limit(
 
 /// Main request filter that applies rate limiting to incoming requests
 async fn request_filter(state: RequestHeadersState, rate_limiter: &RateLimitInstance) -> Flow<()> {
-    // Extract client identifiers directly
-    let api_key = state
-        .handler()
-        .header(API_KEY_HEADER)
-        .unwrap_or(DEFAULT_CLIENT_KEY.to_string());
+    // Extract client identifiers, only if headers are present
+    let api_key_header = state.handler().header(API_KEY_HEADER);
+    let user_id_header = state.handler().header(USER_ID_HEADER);
 
-    let user_id = state
-        .handler()
-        .header(USER_ID_HEADER)
-        .unwrap_or(DEFAULT_CLIENT_KEY.to_string());
-
-    // Apply API key rate limit
-    match check_rate_limit(rate_limiter, API_KEY_RATE_LIMIT_GROUP, &api_key).await {
-        Ok(true) => (), // Rate limit passed
-        Ok(false) => {
-            return Flow::Break(Response::new(429).with_body("API key rate limit exceeded"))
-        }
-        Err(_) => {
-            return Flow::Break(Response::new(503).with_body("Service temporarily unavailable"))
+    // Check API key rate limit only if header is present
+    if let Some(api_key) = &api_key_header {
+        let api_key_allowed =
+            check_rate_limit(rate_limiter, API_KEY_RATE_LIMIT_GROUP, api_key).await;
+        match api_key_allowed {
+            Ok(false) => {
+                return Flow::Break(Response::new(429).with_body("API key rate limit exceeded"))
+            }
+            Err(_) => {
+                return Flow::Break(Response::new(503).with_body("Service temporarily unavailable"))
+            }
+            Ok(true) => (),
         }
     }
 
-    // Apply User ID rate limit
-    match check_rate_limit(rate_limiter, USER_ID_RATE_LIMIT_GROUP, &user_id).await {
-        Ok(true) => (), // Rate limit passed
-        Ok(false) => {
-            return Flow::Break(Response::new(429).with_body("User ID rate limit exceeded"))
-        }
-        Err(_) => {
-            return Flow::Break(Response::new(503).with_body("Service temporarily unavailable"))
+    // Check User ID rate limit only if header is present
+    if let Some(user_id) = &user_id_header {
+        let user_id_allowed =
+            check_rate_limit(rate_limiter, USER_ID_RATE_LIMIT_GROUP, user_id).await;
+        match user_id_allowed {
+            Ok(false) => {
+                return Flow::Break(Response::new(429).with_body("User ID rate limit exceeded"))
+            }
+            Err(_) => {
+                return Flow::Break(Response::new(503).with_body("Service temporarily unavailable"))
+            }
+            Ok(true) => (),
         }
     }
 
-    Flow::Continue(()) // All rate limits passed, allow the request
+    // At least one header must be present
+    if api_key_header.is_none() && user_id_header.is_none() {
+        return Flow::Break(
+            Response::new(400)
+                .with_body("At least one header (x-api-key or x-user-id) is required"),
+        );
+    }
+
+    // Rate limits passed
+    Flow::Continue(())
 }
 
 impl Config {
