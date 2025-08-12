@@ -22,4 +22,4 @@ spec:
           window_size_seconds: 10
         user_id_rate_limit:
           requests_per_window: 5
-          window_size_seconds: 15
+          window_size_seconds: 10
