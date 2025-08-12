@@ -6,7 +6,7 @@ use pdk::hl::timer::Clock;
 use pdk::hl::*;
 use pdk::logger;
 use pdk::metadata::Tier;
-use pdk::rl::{RateLimit, RateLimitBuilder, RateLimitInstance, RateLimitResult};
+use pdk::rl::{RateLimit, RateLimitBuilder, RateLimitError, RateLimitInstance, RateLimitResult};
 use std::rc::Rc;
 use std::time::Duration;
 
@@ -16,8 +16,7 @@ use crate::generated::config::Config;
 pub const API_KEY_HEADER: &str = "x-api-key";
 pub const USER_ID_HEADER: &str = "x-user-id";
 
-// Default values and configuration constants
-const DEFAULT_CLIENT_KEY: &str = "unknown";
+// Default values and configs
 const TIMER_PERIOD_MS: u64 = 100;
 const BUILDER_ID: &str = "multi-instance-rate-limiting";
 const REQUEST_AMOUNT: usize = 1;
@@ -27,89 +26,81 @@ const API_KEY_RATE_LIMIT_GROUP: &str = "api_key_rate_limit";
 const USER_ID_RATE_LIMIT_GROUP: &str = "user_id_rate_limit";
 
 /// Checks if a rate limit is allowed for a given client key and configuration
-async fn check_rate_limit(
+async fn is_request_allowed(
     rate_limiter: &RateLimitInstance,
     group_name: &str,
     client_key: &str,
-) -> Result<bool, String> {
+) -> Result<bool, RateLimitError> {
     match rate_limiter
         .is_allowed(group_name, client_key, REQUEST_AMOUNT)
-        .await
+        .await?
     {
-        Ok(RateLimitResult::Allowed(_)) => Ok(true),
-        Ok(RateLimitResult::TooManyRequests(_)) => {
+        RateLimitResult::Allowed(_) => Ok(true),
+        RateLimitResult::TooManyRequests(_) => {
             logger::warn!(
                 "Rate limit exceeded for client: '{client_key}' in group: '{group_name}'"
             );
             Ok(false)
         }
+    }
+}
+
+/// Checks rate limit for a header value and returns Flow response
+async fn check_header(
+    rate_limiter: &RateLimitInstance,
+    group_name: &str,
+    header_value: &str,
+    error_message: &str,
+) -> Result<(), Response> {
+    let allowed = is_request_allowed(rate_limiter, group_name, header_value).await;
+    match allowed {
+        Ok(false) => Err(Response::new(429).with_body(error_message)),
         Err(e) => {
-            logger::error!("Rate limiting error for group '{group_name}': {e}");
-            Err(format!("Rate limiting error: {e}"))
+            Err(Response::new(503).with_body(format!("Service temporarily unavailable. {e}")))
+        }
+        Ok(true) => Ok(()),
+    }
+}
+
+/// Checks rate limits for all present headers and returns appropriate response
+async fn check_all_rate_limits(
+    rate_limiter: &RateLimitInstance,
+    api_key_header: Option<String>,
+    user_id_header: Option<String>,
+) -> Result<(), Response> {
+    let headers = [
+        (
+            api_key_header.as_deref(),
+            API_KEY_RATE_LIMIT_GROUP,
+            "API key rate limit exceeded",
+        ),
+        (
+            user_id_header.as_deref(),
+            USER_ID_RATE_LIMIT_GROUP,
+            "User ID rate limit exceeded",
+        ),
+    ];
+
+    // Check each header if present
+    for (header_value, group_name, error_message) in headers {
+        if let Some(value) = header_value {
+            check_header(rate_limiter, group_name, value, error_message).await?;
         }
     }
+
+    Ok(())
 }
 
 /// Main request filter that applies rate limiting to incoming requests
 async fn request_filter(state: RequestHeadersState, rate_limiter: &RateLimitInstance) -> Flow<()> {
-    // Extract client identifiers directly
-    let api_key = state
-        .handler()
-        .header(API_KEY_HEADER)
-        .unwrap_or(DEFAULT_CLIENT_KEY.to_string());
+    // Extract client identifiers, only if headers are present
+    let api_key_header = state.handler().header(API_KEY_HEADER);
+    let user_id_header = state.handler().header(USER_ID_HEADER);
 
-    let user_id = state
-        .handler()
-        .header(USER_ID_HEADER)
-        .unwrap_or(DEFAULT_CLIENT_KEY.to_string());
-
-    // Apply API key rate limit
-    match check_rate_limit(rate_limiter, API_KEY_RATE_LIMIT_GROUP, &api_key).await {
-        Ok(true) => (), // Rate limit passed
-        Ok(false) => {
-            return Flow::Break(Response::new(429).with_body("API key rate limit exceeded"))
-        }
-        Err(_) => {
-            return Flow::Break(Response::new(503).with_body("Service temporarily unavailable"))
-        }
-    }
-
-    // Apply User ID rate limit
-    match check_rate_limit(rate_limiter, USER_ID_RATE_LIMIT_GROUP, &user_id).await {
-        Ok(true) => (), // Rate limit passed
-        Ok(false) => {
-            return Flow::Break(Response::new(429).with_body("User ID rate limit exceeded"))
-        }
-        Err(_) => {
-            return Flow::Break(Response::new(503).with_body("Service temporarily unavailable"))
-        }
-    }
-
-    Flow::Continue(()) // All rate limits passed, allow the request
-}
-
-impl Config {
-    /// Builds the buckets configuration from the rate limits
-    fn build_buckets(&self) -> Vec<(String, Vec<Tier>)> {
-        let mut buckets = Vec::new();
-
-        // Add API key rate limit bucket
-        let api_config = &self.api_key_rate_limit;
-        let tier = Tier {
-            requests: api_config.requests_per_window as u64,
-            period_in_millis: api_config.window_size_seconds as u64 * 1000,
-        };
-        buckets.push((API_KEY_RATE_LIMIT_GROUP.to_string(), vec![tier]));
-
-        // Add User ID rate limit bucket
-        let user_config = &self.user_id_rate_limit;
-        let tier = Tier {
-            requests: user_config.requests_per_window as u64,
-            period_in_millis: user_config.window_size_seconds as u64 * 1000,
-        };
-        buckets.push((USER_ID_RATE_LIMIT_GROUP.to_string(), vec![tier]));
-
-        buckets
+    // Check all rate limits
+    match check_all_rate_limits(rate_limiter, api_key_header, user_id_header).await {
+        Ok(_) => Flow::Continue(()),
+        Err(response) => Flow::Break(response),
     }
 }
 
@@ -129,7 +120,27 @@ async fn configure(
     );
 
     // Build buckets configuration from the rate limits
-    let buckets = config.build_buckets();
+    let mut buckets = Vec::new();
+
+    // Add API key rate limit bucket
+    let api_config = config.api_key_rate_limit;
+    buckets.push((
+        API_KEY_RATE_LIMIT_GROUP.to_string(),
+        vec![Tier {
+            requests: api_config.requests_per_window as u64,
+            period_in_millis: api_config.window_size_seconds as u64 * 1000,
+        }],
+    ));
+
+    // Add User ID rate limit bucket
+    let user_config = config.user_id_rate_limit;
+    buckets.push((
+        USER_ID_RATE_LIMIT_GROUP.to_string(),
+        vec![Tier {
+            requests: user_config.requests_per_window as u64,
+            period_in_millis: user_config.window_size_seconds as u64 * 1000,
+        }],
+    ));
 
     // Create timer for rate limit sync (TIMER_PERIOD_MS intervals)
     let timer = clock.period(Duration::from_millis(TIMER_PERIOD_MS));
