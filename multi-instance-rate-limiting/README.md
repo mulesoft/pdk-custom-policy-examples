@@ -109,7 +109,7 @@ curl -H "x-api-key: key-1" http://localhost:8081/anything/echo/
 # This should be rate limited on instance 1
 curl -H "x-api-key: key-1" http://localhost:8081/anything/echo/
 
-# Test the SAME API key on instance 2, it should also be rate limited due to shared storage
+# Test the SAME API key on instance 2 - should also be rate limited due to shared storage
 curl -H "x-api-key: key-1" http://localhost:8082/anything/echo/
 
 # Test user ID rate limiting on instance 2 (5 requests per 10s)
@@ -119,16 +119,16 @@ curl -H "x-user-id: user-1" http://localhost:8082/anything/echo/
 curl -H "x-user-id: user-1" http://localhost:8082/anything/echo/
 curl -H "x-user-id: user-1" http://localhost:8082/anything/echo/
 
-# This should be rate limited (429) on instance 2
+# This should be rate limited on instance 2
 curl -H "x-user-id: user-1" http://localhost:8082/anything/echo/
 
-# Test the SAME user ID on instance 1 - should also be rate limited due to shared storage
+# Test the same user ID on instance 1 - should also be rate limited
 curl -H "x-user-id: user-1" http://localhost:8081/anything/echo/
 
 # Test both headers simultaneously (both rate limits apply independently)
 curl -H "x-api-key: key-2" -H "x-user-id: user-2" http://localhost:8081/anything/echo/
 
-# Test independent rate limits (User ID still works after API key is rate limited)
+# Test independent rate limits (user ID still works after API key is rate limited)
 curl -H "x-user-id: user-3" http://localhost:8081/anything/echo/
 
 # Test requests without headers (should pass without rate limiting)
