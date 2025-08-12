@@ -155,7 +155,7 @@ fn flex_config(upstream_config: &HttpMockConfig, policy_config: PolicyConfig) ->
         .build();
 
     FlexConfig::builder()
-        .version("1.7.0")
+        .version("1.10.0")
         .hostname("local-flex")
         .with_api(api_config)
         .config_mounts([(POLICY_DIR, "policy"), (COMMON_CONFIG_DIR, "common")])

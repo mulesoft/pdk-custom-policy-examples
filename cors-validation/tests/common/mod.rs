@@ -42,7 +42,7 @@ pub async fn compose<T: Serialize>(config: &T) -> Result<TestComposite> {
         .build();
 
     let flex_config = FlexConfig::builder()
-        .version("1.7.0")
+        .version("1.10.0")
         .with_api(api)
         .config_mounts([
             (COMMON_CONFIG_DIR, "common"),
