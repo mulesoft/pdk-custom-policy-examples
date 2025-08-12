@@ -49,41 +49,28 @@ async fn check_rate_limit(
     }
 }
 
+/// Checks rate limit for a header value and returns Flow response
+async fn check_header_rate_limit(
+    rate_limiter: &RateLimitInstance,
+    group_name: &str,
+    header_value: &str,
+    error_message: &str,
+) -> Result<(), Flow<()>> {
+    let allowed = check_rate_limit(rate_limiter, group_name, header_value).await;
+    match allowed {
+        Ok(false) => Err(Flow::Break(Response::new(429).with_body(error_message))),
+        Err(_) => Err(Flow::Break(
+            Response::new(503).with_body("Service temporarily unavailable"),
+        )),
+        Ok(true) => Ok(()),
+    }
+}
+
 /// Main request filter that applies rate limiting to incoming requests
 async fn request_filter(state: RequestHeadersState, rate_limiter: &RateLimitInstance) -> Flow<()> {
     // Extract client identifiers, only if headers are present
     let api_key_header = state.handler().header(API_KEY_HEADER);
     let user_id_header = state.handler().header(USER_ID_HEADER);
-
-    // Check API key rate limit only if header is present
-    if let Some(api_key) = &api_key_header {
-        let api_key_allowed =
-            check_rate_limit(rate_limiter, API_KEY_RATE_LIMIT_GROUP, api_key).await;
-        match api_key_allowed {
-            Ok(false) => {
-                return Flow::Break(Response::new(429).with_body("API key rate limit exceeded"))
-            }
-            Err(_) => {
-                return Flow::Break(Response::new(503).with_body("Service temporarily unavailable"))
-            }
-            Ok(true) => (),
-        }
-    }
-
-    // Check User ID rate limit only if header is present
-    if let Some(user_id) = &user_id_header {
-        let user_id_allowed =
-            check_rate_limit(rate_limiter, USER_ID_RATE_LIMIT_GROUP, user_id).await;
-        match user_id_allowed {
-            Ok(false) => {
-                return Flow::Break(Response::new(429).with_body("User ID rate limit exceeded"))
-            }
-            Err(_) => {
-                return Flow::Break(Response::new(503).with_body("Service temporarily unavailable"))
-            }
-            Ok(true) => (),
-        }
-    }
 
     // At least one header must be present
     if api_key_header.is_none() && user_id_header.is_none() {
@@ -91,6 +78,34 @@ async fn request_filter(state: RequestHeadersState, rate_limiter: &RateLimitInst
             Response::new(400)
                 .with_body("At least one header (x-api-key or x-user-id) is required"),
         );
+    }
+
+    // Check API key rate limit if header is present
+    if let Some(api_key) = &api_key_header {
+        if let Err(flow) = check_header_rate_limit(
+            rate_limiter,
+            API_KEY_RATE_LIMIT_GROUP,
+            api_key,
+            "API key rate limit exceeded",
+        )
+        .await
+        {
+            return flow;
+        }
+    }
+
+    // Check User ID rate limit if header is present
+    if let Some(user_id) = &user_id_header {
+        if let Err(flow) = check_header_rate_limit(
+            rate_limiter,
+            USER_ID_RATE_LIMIT_GROUP,
+            user_id,
+            "User ID rate limit exceeded",
+        )
+        .await
+        {
+            return flow;
+        }
     }
 
     // Rate limits passed
