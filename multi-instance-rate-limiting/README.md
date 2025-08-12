@@ -11,7 +11,7 @@ An organization needs to implement rate limiting across multiple Flex Gateway in
 Multi-Instance Rate Limiting example policy implementation:
 
 1. The policy intercepts each incoming request and extracts client identifiers from `x-api-key` and `x-user-id` headers.
-2. The policy applies both API key and user ID rate limits to each request - a request must pass both rate limits to be allowed.
+2. The policy applies rate limits only for headers that are present.
 3. The policy uses clustered mode with shared storage (Redis) to coordinate rate limiting across multiple gateway instances.
 4. Rate limit state is persisted in Redis, ensuring consistency across all instances.
 5. The policy supports two independent rate limit configurations: API key-based and user ID-based, each with their own limits and time windows.
@@ -87,7 +87,7 @@ spec:
           window_size_seconds: 10
         user_id_rate_limit:
           requests_per_window: 5
-          window_size_seconds: 15
+          window_size_seconds: 10
 ```
 
 3. Configure a Flex Gateway instance to debug the policy by placing a `registration.yaml` file in `playground/config`.
@@ -98,27 +98,42 @@ spec:
 make run
 ```
 
-5. Send requests to Flex Gateway:
+5. Send requests to test rate limiting across both instances:
 
 ```shell
-# Test API key rate limiting (3 requests per 10s)
-curl -H "x-api-key: test-key-1" http://localhost:8081/anything/echo/
-curl -H "x-api-key: test-key-1" http://localhost:8081/anything/echo/
-curl -H "x-api-key: test-key-1" http://localhost:8081/anything/echo/
+# Test API key rate limiting on instance 1 (3 requests per 10s)
+curl -H "x-api-key: key-1" http://localhost:8081/anything/echo/
+curl -H "x-api-key: key-1" http://localhost:8081/anything/echo/
+curl -H "x-api-key: key-1" http://localhost:8081/anything/echo/
 
-# This should be rate limited (429)
-curl -H "x-api-key: test-key-1" http://localhost:8081/anything/echo/
+# This should be rate limited on instance 1
+curl -H "x-api-key: key-1" http://localhost:8081/anything/echo/
 
-# Test user ID rate limiting (5 requests per 15s)
-curl -H "x-user-id: user-123" http://localhost:8081/anything/echo/
-curl -H "x-user-id: user-123" http://localhost:8081/anything/echo/
-curl -H "x-user-id: user-123" http://localhost:8081/anything/echo/
-curl -H "x-user-id: user-123" http://localhost:8081/anything/echo/
-curl -H "x-user-id: user-123" http://localhost:8081/anything/echo/
+# Test the SAME API key on instance 2 - should also be rate limited due to shared storage
+curl -H "x-api-key: key-1" http://localhost:8082/anything/echo/
 
-# This should be rate limited (429)
-curl -H "x-user-id: user-123" http://localhost:8081/anything/echo/
+# Test user ID rate limiting on instance 2 (5 requests per 10s)
+curl -H "x-user-id: user-1" http://localhost:8082/anything/echo/
+curl -H "x-user-id: user-1" http://localhost:8082/anything/echo/
+curl -H "x-user-id: user-1" http://localhost:8082/anything/echo/
+curl -H "x-user-id: user-1" http://localhost:8082/anything/echo/
+curl -H "x-user-id: user-1" http://localhost:8082/anything/echo/
 
-# Test both headers simultaneously (both rate limits apply)
-curl -H "x-api-key: test-key-2" -H "x-user-id: user-456" http://localhost:8081/anything/echo/
+# This should be rate limited on instance 2
+curl -H "x-user-id: user-1" http://localhost:8082/anything/echo/
+
+# Test the same user ID on instance 1 - should also be rate limited
+curl -H "x-user-id: user-1" http://localhost:8081/anything/echo/
+
+# Test both headers simultaneously (both rate limits apply independently)
+curl -H "x-api-key: key-2" -H "x-user-id: user-2" http://localhost:8081/anything/echo/
+
+# Test independent rate limits (user ID still works after API key is rate limited)
+curl -H "x-user-id: user-3" http://localhost:8081/anything/echo/
+
+# Test requests without headers (should pass without rate limiting)
+curl http://localhost:8081/anything/echo/
+curl http://localhost:8082/anything/echo/
 ```
+
+> **Note**: Rate limiting uses sliding windows so requests must be made quickly to see the expected behavior.
