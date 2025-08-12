@@ -6,7 +6,7 @@ use pdk::hl::timer::Clock;
 use pdk::hl::*;
 use pdk::logger;
 use pdk::metadata::Tier;
-use pdk::rl::{RateLimit, RateLimitBuilder, RateLimitInstance, RateLimitResult};
+use pdk::rl::{RateLimit, RateLimitBuilder, RateLimitError, RateLimitInstance, RateLimitResult};
 use std::rc::Rc;
 use std::time::Duration;
 
@@ -30,21 +30,17 @@ async fn is_request_allowed(
     rate_limiter: &RateLimitInstance,
     group_name: &str,
     client_key: &str,
-) -> Result<bool, String> {
+) -> Result<bool, RateLimitError> {
     match rate_limiter
         .is_allowed(group_name, client_key, REQUEST_AMOUNT)
-        .await
+        .await?
     {
-        Ok(RateLimitResult::Allowed(_)) => Ok(true),
-        Ok(RateLimitResult::TooManyRequests(_)) => {
+        RateLimitResult::Allowed(_) => Ok(true),
+        RateLimitResult::TooManyRequests(_) => {
             logger::warn!(
                 "Rate limit exceeded for client: '{client_key}' in group: '{group_name}'"
             );
             Ok(false)
-        }
-        Err(e) => {
-            logger::error!("Rate limiting error for group '{group_name}': {e}");
-            Err(format!("Rate limiting error: {e}"))
         }
     }
 }
@@ -55,13 +51,13 @@ async fn check_header(
     group_name: &str,
     header_value: &str,
     error_message: &str,
-) -> Result<(), Flow<()>> {
+) -> Result<(), Response> {
     let allowed = is_request_allowed(rate_limiter, group_name, header_value).await;
     match allowed {
-        Ok(false) => Err(Flow::Break(Response::new(429).with_body(error_message))),
-        Err(_) => Err(Flow::Break(
-            Response::new(503).with_body("Service temporarily unavailable"),
-        )),
+        Ok(false) => Err(Response::new(429).with_body(error_message)),
+        Err(e) => {
+            Err(Response::new(503).with_body(format!("Service temporarily unavailable. {e}")))
+        }
         Ok(true) => Ok(()),
     }
 }
@@ -71,7 +67,7 @@ async fn check_all_rate_limits(
     rate_limiter: &RateLimitInstance,
     api_key_header: Option<String>,
     user_id_header: Option<String>,
-) -> Result<(), Flow<()>> {
+) -> Result<(), Response> {
     let headers = [
         (
             api_key_header.as_deref(),
@@ -104,7 +100,7 @@ async fn request_filter(state: RequestHeadersState, rate_limiter: &RateLimitInst
     // Check all rate limits
     match check_all_rate_limits(rate_limiter, api_key_header, user_id_header).await {
         Ok(_) => Flow::Continue(()),
-        Err(flow) => flow,
+        Err(response) => Flow::Break(response),
     }
 }
 
