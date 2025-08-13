@@ -41,7 +41,7 @@ async fn test_basic_local_storage_functionality() -> anyhow::Result<()> {
         .build();
 
     let flex_config = FlexConfig::builder()
-        .version("1.7.0")
+        .version("1.10.0")
         .hostname("local-flex-basic")
         .with_api(api_config)
         .config_mounts([(POLICY_DIR, "policy"), (COMMON_CONFIG_DIR, "common")])
@@ -132,7 +132,7 @@ async fn test_admin_stats_operations() -> anyhow::Result<()> {
         .build();
 
     let flex_config = FlexConfig::builder()
-        .version("1.7.0")
+        .version("1.10.0")
         .hostname("local-flex-admin")
         .with_api(api_config)
         .config_mounts([(POLICY_DIR, "policy"), (COMMON_CONFIG_DIR, "common")])
@@ -234,7 +234,7 @@ async fn test_cas_concurrency_handling() -> anyhow::Result<()> {
         .build();
 
     let flex_config = FlexConfig::builder()
-        .version("1.7.0")
+        .version("1.10.0")
         .hostname("local-flex-cas")
         .with_api(api_config)
         .config_mounts([(POLICY_DIR, "policy"), (COMMON_CONFIG_DIR, "common")])
@@ -324,7 +324,7 @@ async fn test_multiple_clients_concurrent_access() -> anyhow::Result<()> {
         .build();
 
     let flex_config = FlexConfig::builder()
-        .version("1.7.0")
+        .version("1.10.0")
         .hostname("local-flex-concurrent")
         .with_api(api_config)
         .config_mounts([(POLICY_DIR, "policy"), (COMMON_CONFIG_DIR, "common")])
@@ -430,7 +430,7 @@ async fn test_remote_storage_functionality() -> anyhow::Result<()> {
         .build();
 
     let flex_config = FlexConfig::builder()
-        .version("1.7.0")
+        .version("1.10.0")
         .hostname("local-flex-remote")
         .with_api(api_config)
         .config_mounts([(POLICY_DIR, "policy"), (COMMON_CONFIG_DIR, "common")])
@@ -516,7 +516,7 @@ async fn test_invalid_configuration_handling() -> anyhow::Result<()> {
         .build();
 
     let flex_config = FlexConfig::builder()
-        .version("1.7.0")
+        .version("1.10.0")
         .hostname("local-flex-invalid")
         .with_api(api_config)
         .config_mounts([(POLICY_DIR, "policy"), (COMMON_CONFIG_DIR, "common")])
