@@ -3,7 +3,7 @@ version: "3.3"
 
 services:
   local-flex:
-    image: mulesoft/flex-gateway:1.9.0
+    image: mulesoft/flex-gateway:1.10.0
     ports:
       - 8081:8081
     volumes:
