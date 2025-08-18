@@ -1,3 +1,5 @@
+# Copyright 2023 Salesforce, Inc. All rights reserved.
+
 #!/bin/bash
 
 # Run make test for all examples
