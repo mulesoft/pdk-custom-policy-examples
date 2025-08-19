@@ -42,7 +42,7 @@ pub async fn compose<T: Serialize>(config: &T) -> Result<TestComposite> {
         .build();
 
     let flex_config = FlexConfig::builder()
-        .version("1.10.0")
+        .image_name("artifacts.msap.io/mulesoft/microgateway").version("v1.10.1.26e83c4")
         .with_api(api)
         .config_mounts([
             (COMMON_CONFIG_DIR, "common"),
