@@ -5,7 +5,11 @@ pub struct FileDecorators0Config {
     pub condition: Option<pdk::script::Script>,
     #[serde(alias = "file", deserialize_with = "de_file_1")]
     pub file: pdk::script::Script,
-    #[serde(alias = "fileMimeType", default, deserialize_with = "de_file_mime_type_2")]
+    #[serde(
+        alias = "fileMimeType",
+        default,
+        deserialize_with = "de_file_mime_type_2"
+    )]
     pub file_mime_type: Option<pdk::script::Script>,
     #[serde(alias = "fileName", default, deserialize_with = "de_file_name_3")]
     pub file_name: Option<pdk::script::Script>,
@@ -31,32 +35,26 @@ fn init(abi: &dyn pdk::flex_abi::api::FlexAbi) -> Result<(), anyhow::Error> {
     abi.setup()?;
     Ok(())
 }
-fn de_condition_0<'de, D>(
-    deserializer: D,
-) -> Result<Option<pdk::script::Script>, D::Error>
+fn de_condition_0<'de, D>(deserializer: D) -> Result<Option<pdk::script::Script>, D::Error>
 where
     D: serde::de::Deserializer<'de>,
 {
-    let exp: Option<pdk::script::Expression> = serde::de::Deserialize::deserialize(
-        deserializer,
-    )?;
+    let exp: Option<pdk::script::Expression> = serde::de::Deserialize::deserialize(deserializer)?;
     exp.map(|exp| {
-            pdk::script::ScriptingEngine::script(&exp)
-                .input(pdk::script::Input::Attributes)
-                .input(pdk::script::Input::Authentication)
-                .input(pdk::script::Input::Vars("params"))
-                .compile()
-                .map_err(serde::de::Error::custom)
-        })
-        .transpose()
+        pdk::script::ScriptingEngine::script(&exp)
+            .input(pdk::script::Input::Attributes)
+            .input(pdk::script::Input::Authentication)
+            .input(pdk::script::Input::Vars("params"))
+            .compile()
+            .map_err(serde::de::Error::custom)
+    })
+    .transpose()
 }
 fn de_file_1<'de, D>(deserializer: D) -> Result<pdk::script::Script, D::Error>
 where
     D: serde::de::Deserializer<'de>,
 {
-    let exp: pdk::script::Expression = serde::de::Deserialize::deserialize(
-        deserializer,
-    )?;
+    let exp: pdk::script::Expression = serde::de::Deserialize::deserialize(deserializer)?;
     pdk::script::ScriptingEngine::script(&exp)
         .input(pdk::script::Input::Attributes)
         .input(pdk::script::Input::Authentication)
@@ -64,70 +62,56 @@ where
         .compile()
         .map_err(serde::de::Error::custom)
 }
-fn de_file_mime_type_2<'de, D>(
-    deserializer: D,
-) -> Result<Option<pdk::script::Script>, D::Error>
+fn de_file_mime_type_2<'de, D>(deserializer: D) -> Result<Option<pdk::script::Script>, D::Error>
 where
     D: serde::de::Deserializer<'de>,
 {
-    let exp: Option<pdk::script::Expression> = serde::de::Deserialize::deserialize(
-        deserializer,
-    )?;
+    let exp: Option<pdk::script::Expression> = serde::de::Deserialize::deserialize(deserializer)?;
     exp.map(|exp| {
-            pdk::script::ScriptingEngine::script(&exp)
-                .input(pdk::script::Input::Attributes)
-                .input(pdk::script::Input::Authentication)
-                .input(pdk::script::Input::Vars("params"))
-                .compile()
-                .map_err(serde::de::Error::custom)
-        })
-        .transpose()
+        pdk::script::ScriptingEngine::script(&exp)
+            .input(pdk::script::Input::Attributes)
+            .input(pdk::script::Input::Authentication)
+            .input(pdk::script::Input::Vars("params"))
+            .compile()
+            .map_err(serde::de::Error::custom)
+    })
+    .transpose()
 }
-fn de_file_name_3<'de, D>(
-    deserializer: D,
-) -> Result<Option<pdk::script::Script>, D::Error>
+fn de_file_name_3<'de, D>(deserializer: D) -> Result<Option<pdk::script::Script>, D::Error>
 where
     D: serde::de::Deserializer<'de>,
 {
-    let exp: Option<pdk::script::Expression> = serde::de::Deserialize::deserialize(
-        deserializer,
-    )?;
+    let exp: Option<pdk::script::Expression> = serde::de::Deserialize::deserialize(deserializer)?;
     exp.map(|exp| {
-            pdk::script::ScriptingEngine::script(&exp)
-                .input(pdk::script::Input::Attributes)
-                .input(pdk::script::Input::Authentication)
-                .input(pdk::script::Input::Vars("params"))
-                .compile()
-                .map_err(serde::de::Error::custom)
-        })
-        .transpose()
+        pdk::script::ScriptingEngine::script(&exp)
+            .input(pdk::script::Input::Attributes)
+            .input(pdk::script::Input::Authentication)
+            .input(pdk::script::Input::Vars("params"))
+            .compile()
+            .map_err(serde::de::Error::custom)
+    })
+    .transpose()
 }
-fn de_condition_4<'de, D>(
-    deserializer: D,
-) -> Result<Option<pdk::script::Script>, D::Error>
+fn de_condition_4<'de, D>(deserializer: D) -> Result<Option<pdk::script::Script>, D::Error>
 where
     D: serde::de::Deserializer<'de>,
 {
-    let exp: Option<pdk::script::Expression> = serde::de::Deserialize::deserialize(
-        deserializer,
-    )?;
+    let exp: Option<pdk::script::Expression> = serde::de::Deserialize::deserialize(deserializer)?;
     exp.map(|exp| {
-            pdk::script::ScriptingEngine::script(&exp)
-                .input(pdk::script::Input::Attributes)
-                .input(pdk::script::Input::Authentication)
-                .input(pdk::script::Input::Vars("params"))
-                .compile()
-                .map_err(serde::de::Error::custom)
-        })
-        .transpose()
+        pdk::script::ScriptingEngine::script(&exp)
+            .input(pdk::script::Input::Attributes)
+            .input(pdk::script::Input::Authentication)
+            .input(pdk::script::Input::Vars("params"))
+            .compile()
+            .map_err(serde::de::Error::custom)
+    })
+    .transpose()
 }
 fn de_text_5<'de, D>(deserializer: D) -> Result<pdk::script::Script, D::Error>
 where
     D: serde::de::Deserializer<'de>,
 {
-    let exp: pdk::script::Expression = serde::de::Deserialize::deserialize(
-        deserializer,
-    )?;
+    let exp: pdk::script::Expression = serde::de::Deserialize::deserialize(deserializer)?;
     pdk::script::ScriptingEngine::script(&exp)
         .input(pdk::script::Input::Attributes)
         .input(pdk::script::Input::Authentication)

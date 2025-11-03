@@ -13,9 +13,9 @@ use pdk::script::{PayloadBinding, Script};
 use serde_json::value::RawValue;
 use serde_json::{Error, Map, Value};
 
-use pdk::authentication::{Authentication, AuthenticationHandler};
 use agent_core::attributes::HeadersAttributes;
 use agent_core::json_rpc::JsonRpcRequest;
+use pdk::authentication::{Authentication, AuthenticationHandler};
 
 async fn request_filter(
     request_state: RequestState,
@@ -25,10 +25,10 @@ async fn request_filter(
 ) -> Flow<()> {
     let header_state = request_state.into_headers_state().await;
     let handler = header_state.handler();
-    
+
     // Remove the timeout
     with_no_timeout(handler);
-    
+
     match header_state.method().as_str() {
         POST_METHOD => {
             let content_type_maybe = handler.header(CONTENT_TYPE_HEADER);
@@ -197,7 +197,7 @@ fn evaluate_to_json_string_value(
     evaluator.bind_authentication(&auth.authentication());
     let x: Value = json_value.clone();
     evaluator.bind_vars("params", x);
-    
+
     match evaluator.eval() {
         Ok(value) => as_serde_string_value(&value),
         Err(e) => {
@@ -218,7 +218,7 @@ fn evaluate_to_bool(
     evaluator.bind_authentication(&auth.authentication());
     let x: Value = json_value.clone();
     evaluator.bind_vars("params", x);
-    
+
     match evaluator.eval() {
         Ok(pdk::script::Value::Bool(b)) => b,
         Ok(e) => {
