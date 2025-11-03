@@ -20,3 +20,8 @@ pub struct Config {
     #[serde(alias = "user_id_rate_limit")]
     pub user_id_rate_limit: UserIdRateLimitConfig,
 }
+#[pdk::hl::entrypoint_flex]
+fn init(abi: &dyn pdk::flex_abi::api::FlexAbi) -> Result<(), anyhow::Error> {
+    abi.setup()?;
+    Ok(())
+}

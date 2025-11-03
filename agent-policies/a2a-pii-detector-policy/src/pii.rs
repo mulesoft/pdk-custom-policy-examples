@@ -58,7 +58,7 @@ impl RegexPiiDetector {
                 PiiType::PhoneNumber,
                 Regex::new(r"\b(?:\+?1[-.\s]?)?\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}\b")
                     .map_err(|e| PiiError::InvalidRegex(e.to_string()))?,
-            )
+            ),
         ];
 
         Ok(Self { patterns })

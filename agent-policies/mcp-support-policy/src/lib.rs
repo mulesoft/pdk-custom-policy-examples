@@ -11,10 +11,10 @@ use serde_json::from_slice;
 async fn request_filter(request_state: RequestState) -> Flow<()> {
     let headers_state = request_state.into_headers_state().await;
     let header_handler = headers_state.handler();
-    
+
     // Remove the timeout
     with_no_timeout(header_handler);
-    
+
     Flow::Continue(())
 }
 

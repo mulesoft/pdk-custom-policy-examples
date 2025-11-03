@@ -18,13 +18,12 @@ async fn request_filter(
     // Determine what kind of request is incoming.
     match cors.check_headers(state.handler().headers().as_slice()) {
         Ok(check) => match check.response_type() {
-
             // A preflight request must return a 200 OK.
             cors::ResponseType::Preflight => {
                 logger::info!("Preflight CORS response.");
                 Flow::Break(Response::new(200).with_headers(check.into_headers()))
             }
-            
+
             // A main request must continue.
             cors::ResponseType::Main => {
                 logger::info!("Main CORS response.");

@@ -17,7 +17,6 @@ use pdk::metadata::Metadata;
 use pdk::script::PayloadBinding;
 use serde_json::{from_slice, Error, Value};
 
-
 async fn request_filter(request_state: RequestState, config: &Config) -> Flow<AgentCard> {
     let header_state = request_state.into_headers_state().await;
     let path = header_state.path();
