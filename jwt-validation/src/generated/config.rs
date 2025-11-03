@@ -6,6 +6,11 @@ pub struct Config {
     #[serde(alias = "secret")]
     pub secret: String,
 }
+#[pdk::hl::entrypoint_flex]
+fn init(abi: &dyn pdk::flex_abi::api::FlexAbi) -> Result<(), anyhow::Error> {
+    abi.setup()?;
+    Ok(())
+}
 fn de_custom_rule_0<'de, D>(deserializer: D) -> Result<pdk::script::Script, D::Error>
 where
     D: serde::de::Deserializer<'de>,

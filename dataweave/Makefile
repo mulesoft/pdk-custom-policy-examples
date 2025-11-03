@@ -24,7 +24,7 @@ else
 endif
 
 .PHONY: setup
-setup: registry-creds login install-cargo-anypoint ## Setup all required tools to build
+setup: install-cargo-anypoint ## Setup all required tools to build
 	cargo fetch
 
 .PHONY: build
@@ -66,28 +66,9 @@ build-asset-files: $(DEFINITION_SRC_GCL_PATH)
 	@anypoint-cli-v4 pdk policy-project build-asset-files --metadata '$(ANYPOINT_METADATA_JSON)'
 	@cargo anypoint config-gen -p -m $(DEFINITION_SRC_GCL_PATH) -o src/generated/config.rs
 
-.PHONY: login
-login:
-	@cargo login --registry anypoint $(OAUTH_TOKEN)
-
-.PHONY: registry-creds
-registry-creds:
-	@git config --global credential."https://anypoint.mulesoft.com/git/68ef9520-24e9-4cf2-b2f5-620025690913/19f9d123-5775-44d7-a67f-49328cfa00b0".username me
-ifeq ($(OS), Windows_NT)
-	@# First removing other password helpers for Anypoint context
-	@git config --global --replace-all credential."https://anypoint.mulesoft.com/git/68ef9520-24e9-4cf2-b2f5-620025690913/19f9d123-5775-44d7-a67f-49328cfa00b0".helper `"`"
-	@# Finally adding the only password helper for Anypoint context
-	@git config --global --add credential."https://anypoint.mulesoft.com/git/68ef9520-24e9-4cf2-b2f5-620025690913/19f9d123-5775-44d7-a67f-49328cfa00b0".helper '!f() { test \"$$1\" = get && echo \"password=$$(anypoint-cli-v4 pdk get-token)\"; }; f'
-else
-	@# First removing other password helpers for Anypoint context
-	@git config --global --replace-all credential."https://anypoint.mulesoft.com/git/68ef9520-24e9-4cf2-b2f5-620025690913/19f9d123-5775-44d7-a67f-49328cfa00b0".helper ""
-	@# Finally adding the only password helper for Anypoint context
-	@git config --global --add credential."https://anypoint.mulesoft.com/git/68ef9520-24e9-4cf2-b2f5-620025690913/19f9d123-5775-44d7-a67f-49328cfa00b0".helper "!f() { test \"\$$1\" = get && echo \"password=\$$(anypoint-cli-v4 pdk get-token)\"; }; f"
-endif
-
 .PHONY: install-cargo-anypoint
 install-cargo-anypoint:
-	cargo install cargo-anypoint@1.4.0 --registry anypoint --config .cargo/config.toml
+	cargo install cargo-anypoint@1.6.0-rc.1
 
 .PHONY: show-policy-ref-name
 show-policy-ref-name:

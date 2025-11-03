@@ -8,3 +8,8 @@ pub struct Config {
     #[serde(alias = "verifySchema")]
     pub verify_schema: bool,
 }
+#[pdk::hl::entrypoint_flex]
+fn init(abi: &dyn pdk::flex_abi::api::FlexAbi) -> Result<(), anyhow::Error> {
+    abi.setup()?;
+    Ok(())
+}
