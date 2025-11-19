@@ -6,6 +6,7 @@ use httpmock::MockServer;
 use pdk_test::port::Port;
 use pdk_test::services::flex::{ApiConfig, Flex, FlexConfig, PolicyConfig};
 use pdk_test::services::httpmock::{HttpMock, HttpMockConfig};
+use pdk_test::services::httpbin::HttpBinConfig;
 use pdk_test::{pdk_test, TestComposite};
 use reqwest::StatusCode;
 use serde_json::Value;
@@ -429,6 +430,14 @@ async fn test_remote_storage_functionality() -> anyhow::Result<()> {
         .policies([policy_config])
         .build();
 
+    // Configure Redis using HttpBinConfig with a custom image as we need Redis
+    // to listen on port 80 and output the expected message for readiness probe
+    let redis_config = HttpBinConfig::builder()
+        .hostname("redis")
+        .image_name("redis")
+        .version("80")  // Use custom image tag
+        .build();
+
     let flex_config = FlexConfig::builder()
         .version("1.10.0")
         .hostname("local-flex-remote")
@@ -439,6 +448,7 @@ async fn test_remote_storage_functionality() -> anyhow::Result<()> {
     let composite = TestComposite::builder()
         .with_service(flex_config)
         .with_service(backend_config)
+        .with_service(redis_config)
         .build()
         .await?;
 
