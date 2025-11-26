@@ -13,14 +13,14 @@ definition_asset_id = "jwt-validation"
 implementation_asset_id = "jwt-validation-flex-gateway"
 
 [dependencies]
-pdk = { version = "1.6.0-rc.1" }
+pdk = { version = "1.6.0" }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = { version = "1.0", default-features = false, features = ["alloc"] }
 anyhow = "1.0"
 chrono = { version = "0.4.19" }
 
 [dev-dependencies]
-pdk-test = { version = "1.6.0-rc.1" }
+pdk-test = { version = "1.6.0" }
 httpmock = "0.6"
 reqwest = "0.11"
 
