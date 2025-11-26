@@ -27,6 +27,8 @@ for dir in */; do
             echo "Testing $dir_name..."
             echo ""
 
+            make setup
+
             if make test 2>&1; then
                 success=$((success + 1))
             else

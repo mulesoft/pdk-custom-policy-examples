@@ -25,7 +25,6 @@ pub const POLICY_NAME: &str = "cors-validation-v1-0-impl";
 pub const FLEX_PORT: Port = 8081;
 
 pub async fn compose<T: Serialize>(config: &T) -> Result<TestComposite> {
-
     let httpbin_config = HttpBinConfig::builder().hostname("httpbin").build();
 
     let policy_config = PolicyConfig::builder()

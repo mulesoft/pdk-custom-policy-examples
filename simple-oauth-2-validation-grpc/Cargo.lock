@@ -520,20 +520,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "8318a53db07bb3f8dca91a600466bdb3f2eaadeedfdbcf02e1accbad9271ba50"
 
 [[package]]
-name = "cache-lib"
-version = "1.5.0"
-source = "registry+https://anypoint.mulesoft.com/git/68ef9520-24e9-4cf2-b2f5-620025690913/19f9d123-5775-44d7-a67f-49328cfa00b0"
-checksum = "c6ccb88c76fc8ec771bfa1f3257131d9976d2387208f323141b0c55aadbdb9e4"
-dependencies = [
- "bincode",
- "cfg-if",
- "log",
- "pdk-core",
- "serde",
- "thiserror 1.0.63",
-]
-
-[[package]]
 name = "castaway"
 version = "0.1.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -591,25 +577,6 @@ checksum = "57663b653d948a338bfb3eeba9bb2fd5fcfaecb9e199e87e1eda4d9e8b240fd9"
 dependencies = [
  "ciborium-io",
  "half",
-]
-
-[[package]]
-name = "classy"
-version = "1.5.0"
-source = "registry+https://anypoint.mulesoft.com/git/68ef9520-24e9-4cf2-b2f5-620025690913/19f9d123-5775-44d7-a67f-49328cfa00b0"
-checksum = "b2a39b3e05e477cf5a4f5607dc6178ab37371119099cf5a0fc32913da96ceddc"
-dependencies = [
- "bincode",
- "futures",
- "getrandom",
- "http 0.2.12",
- "log",
- "protobuf",
- "proxy-wasm",
- "proxy-wasm-stub",
- "serde",
- "serde_derive",
- "thiserror 1.0.63",
 ]
 
 [[package]]
@@ -678,24 +645,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "contracts-lib"
-version = "1.5.0"
-source = "registry+https://anypoint.mulesoft.com/git/68ef9520-24e9-4cf2-b2f5-620025690913/19f9d123-5775-44d7-a67f-49328cfa00b0"
-checksum = "b038b7b4f50de90de8e09e74608f21555eea75cc826971a0cc869f5e644cd8bb"
-dependencies = [
- "base64 0.22.1",
- "const_format",
- "hex",
- "lock-lib",
- "pdk-core",
- "serde",
- "serde_json",
- "sha2",
- "thiserror 1.0.63",
- "zeroize",
-]
-
-[[package]]
 name = "convert_case"
 version = "0.6.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -719,22 +668,6 @@ name = "core-foundation-sys"
 version = "0.8.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "773648b94d0e5d620f64f280777445740e61fe701025087ec8b57f45c791888b"
-
-[[package]]
-name = "cors-lib"
-version = "1.5.0"
-source = "registry+https://anypoint.mulesoft.com/git/68ef9520-24e9-4cf2-b2f5-620025690913/19f9d123-5775-44d7-a67f-49328cfa00b0"
-checksum = "708d31601c5ed9cce987e95bd9e3206e704f8a4160ecc076c4c70f66cf9ec3da"
-dependencies = [
- "derive_builder",
- "log",
- "pdk-core",
- "regex",
- "serde",
- "serde_json",
- "thiserror 1.0.63",
- "wildcard",
-]
 
 [[package]]
 name = "cpufeatures"
@@ -870,21 +803,6 @@ dependencies = [
  "darling_core",
  "quote",
  "syn 2.0.104",
-]
-
-[[package]]
-name = "data-storage-lib"
-version = "1.5.0"
-source = "registry+https://anypoint.mulesoft.com/git/68ef9520-24e9-4cf2-b2f5-620025690913/19f9d123-5775-44d7-a67f-49328cfa00b0"
-checksum = "dfafcbda6a6c7ad174daef974111b7bb2dce612685248556a9fac52b5f2bb026"
-dependencies = [
- "base64 0.22.1",
- "bincode",
- "pdk-core",
- "serde",
- "serde_json",
- "thiserror 1.0.63",
- "url",
 ]
 
 [[package]]
@@ -1248,9 +1166,9 @@ checksum = "3f9eec918d3f24069decb9af1554cad7c880e2da24a9afd88aca000531ab82c1"
 
 [[package]]
 name = "foldhash"
-version = "0.1.5"
+version = "0.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d9c4f5dac5e15c24eb999c26181a6ca40b39fe946cbe4c263c7209467bc83af2"
+checksum = "77ce24cb58228fbb8aa041425bb1050850ac19177686ea6e0f41a70416f56fdb"
 
 [[package]]
 name = "foreign-types"
@@ -1500,9 +1418,9 @@ checksum = "e5274423e17b7c9fc20b6e7e208532f9b19825d82dfd615708b70edd83df41f1"
 
 [[package]]
 name = "hashbrown"
-version = "0.15.4"
+version = "0.16.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5971ac85611da7067dbfcabef3c70ebb5606018acd9e2a3903a0da507521e0d5"
+checksum = "5419bdc4f6a9207fbeba6d11b604d481addf78ecd10c11ad51e76c2f6482748d"
 dependencies = [
  "allocator-api2",
  "equivalent",
@@ -1697,7 +1615,7 @@ dependencies = [
  "httpdate",
  "itoa",
  "pin-project-lite",
- "socket2 0.4.10",
+ "socket2 0.5.7",
  "tokio",
  "tower-service",
  "tracing",
@@ -1968,31 +1886,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "jwt-lib"
-version = "1.5.0"
-source = "registry+https://anypoint.mulesoft.com/git/68ef9520-24e9-4cf2-b2f5-620025690913/19f9d123-5775-44d7-a67f-49328cfa00b0"
-checksum = "46e506f92079669b6758916da026daf378cf758bdf082553556847f75c59bec3"
-dependencies = [
- "base64 0.13.1",
- "cfg-if",
- "chrono",
- "const-hex",
- "elliptic-curve 0.12.3",
- "jwt-compact",
- "jwt-simple",
- "p256 0.11.1",
- "p384 0.11.2",
- "p521",
- "pdk-core",
- "pdk-script",
- "pem",
- "proxy-wasm",
- "rsa 0.9.6",
- "serde",
- "serde_json",
-]
-
-[[package]]
 name = "jwt-simple"
 version = "0.11.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2143,16 +2036,6 @@ name = "linux-raw-sys"
 version = "0.4.14"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "78b3ae25bc7c8c38cec158d1f2757ee79e9b3740fbc7ccf0e59e4b08d793fa89"
-
-[[package]]
-name = "lock-lib"
-version = "1.5.0"
-source = "registry+https://anypoint.mulesoft.com/git/68ef9520-24e9-4cf2-b2f5-620025690913/19f9d123-5775-44d7-a67f-49328cfa00b0"
-checksum = "c9ac45c452372b16574f93c2881951f8a919d0833631b8f5845abae7108b314c"
-dependencies = [
- "bincode",
- "pdk-core",
-]
 
 [[package]]
 name = "lock_api"
@@ -2461,33 +2344,84 @@ checksum = "57c0d7b74b563b49d38dae00a0c37d4d6de9b432382b2892f0574ddcae73fd0a"
 
 [[package]]
 name = "pdk"
-version = "1.5.0"
-source = "registry+https://anypoint.mulesoft.com/git/68ef9520-24e9-4cf2-b2f5-620025690913/19f9d123-5775-44d7-a67f-49328cfa00b0"
-checksum = "64759b36c3ef3cde4f037a9ef674e377add20d33a2e41d5183be12df779a009f"
+version = "1.6.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "c35e4522b718d45db902d7508696d93ac02aee04da867f2d4c7f558f391e3d0f"
 dependencies = [
- "cache-lib",
- "classy",
- "contracts-lib",
- "cors-lib",
- "data-storage-lib",
- "jwt-lib",
- "lock-lib",
+ "pdk-cache-lib",
+ "pdk-classy",
+ "pdk-contracts-lib",
  "pdk-core",
+ "pdk-cors-lib",
+ "pdk-data-storage-lib",
  "pdk-flex-abi",
+ "pdk-jwt-lib",
+ "pdk-lock-lib",
  "pdk-macros",
+ "pdk-rate-limit-lib",
  "pdk-script",
- "rate-limit-lib",
+]
+
+[[package]]
+name = "pdk-cache-lib"
+version = "1.6.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "826b6b011ea35b5aad7a9360674edcd74d238285710ef97127e30e6438323482"
+dependencies = [
+ "bincode",
+ "cfg-if",
+ "log",
+ "pdk-core",
+ "serde",
+ "thiserror 1.0.63",
+]
+
+[[package]]
+name = "pdk-classy"
+version = "1.6.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "68feac10b9ded17bc3bfc467efe925042eb9da26cb773a9530ff3f228c5b323f"
+dependencies = [
+ "bincode",
+ "futures",
+ "getrandom",
+ "http 0.2.12",
+ "log",
+ "pdk-proxy-wasm-stub",
+ "protobuf",
+ "proxy-wasm",
+ "serde",
+ "serde_derive",
+ "thiserror 1.0.63",
+]
+
+[[package]]
+name = "pdk-contracts-lib"
+version = "1.6.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a10b5620fa27046ff0f62936d776089e61a0f5e99f6c7a35c52b1e40824dbdc6"
+dependencies = [
+ "base64 0.22.1",
+ "const_format",
+ "hex",
+ "pdk-core",
+ "pdk-lock-lib",
+ "serde",
+ "serde_json",
+ "sha2",
+ "thiserror 1.0.63",
+ "zeroize",
 ]
 
 [[package]]
 name = "pdk-core"
-version = "1.5.0"
-source = "registry+https://anypoint.mulesoft.com/git/68ef9520-24e9-4cf2-b2f5-620025690913/19f9d123-5775-44d7-a67f-49328cfa00b0"
-checksum = "d923748050b13dcb85b65504bdaceecc8294ec7c5f2b46251ad010a39f5d1f18"
+version = "1.6.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "91f2e4338018e33fc6b16189034696081dbd0fa6fd045472e1f4fb526a26d965"
 dependencies = [
  "anyhow",
- "classy",
  "log",
+ "pdk-classy",
  "pdk-macros",
  "pdk-script",
  "protobuf",
@@ -2501,10 +2435,41 @@ dependencies = [
 ]
 
 [[package]]
+name = "pdk-cors-lib"
+version = "1.6.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d666ee5b7ccbe65ac0e015b666387f9bef2e3ff76ed77bb5652e7b0ed41e761e"
+dependencies = [
+ "derive_builder",
+ "log",
+ "pdk-core",
+ "regex",
+ "serde",
+ "serde_json",
+ "thiserror 1.0.63",
+ "wildcard",
+]
+
+[[package]]
+name = "pdk-data-storage-lib"
+version = "1.6.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "9553845d9417ea570ee56b9454e04dd8c9456821e786b0708b2427ea3c4ceb78"
+dependencies = [
+ "base64 0.22.1",
+ "bincode",
+ "pdk-core",
+ "serde",
+ "serde_json",
+ "thiserror 1.0.63",
+ "url",
+]
+
+[[package]]
 name = "pdk-flex-abi"
-version = "1.5.0"
-source = "registry+https://anypoint.mulesoft.com/git/68ef9520-24e9-4cf2-b2f5-620025690913/19f9d123-5775-44d7-a67f-49328cfa00b0"
-checksum = "32288ba5f77d15fcffb0fa0f71cfdfaff7d141af834b09883adec9ff0ac5e5a4"
+version = "1.6.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d527b925542a2a3a921e4577bc53d223ea0759a39c325ed47557dcb934184728"
 dependencies = [
  "anyhow",
  "pdk-core",
@@ -2514,10 +2479,45 @@ dependencies = [
 ]
 
 [[package]]
+name = "pdk-jwt-lib"
+version = "1.6.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "17f51a9d845030f5c23dd5879fd41072d05f7492ee5eb6730ff7a6ae8a44fe85"
+dependencies = [
+ "base64 0.13.1",
+ "cfg-if",
+ "chrono",
+ "const-hex",
+ "elliptic-curve 0.12.3",
+ "jwt-compact",
+ "jwt-simple",
+ "p256 0.11.1",
+ "p384 0.11.2",
+ "p521",
+ "pdk-core",
+ "pdk-script",
+ "pem",
+ "proxy-wasm",
+ "rsa 0.9.6",
+ "serde",
+ "serde_json",
+]
+
+[[package]]
+name = "pdk-lock-lib"
+version = "1.6.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "ff5f5d0a9312ef748cec9d48413516c8eeddd734b02c682c0f65eaabccf72814"
+dependencies = [
+ "bincode",
+ "pdk-core",
+]
+
+[[package]]
 name = "pdk-macros"
-version = "1.5.0"
-source = "registry+https://anypoint.mulesoft.com/git/68ef9520-24e9-4cf2-b2f5-620025690913/19f9d123-5775-44d7-a67f-49328cfa00b0"
-checksum = "2c7b3a806bcae1697f3deb3691ba20abf523836ce7270642f04893d8e50bc921"
+version = "1.6.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "67e7c7c70b17bc90ac93874fc3b97059ca7736112be919f6c7ba09983c9e5e87"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -2525,16 +2525,51 @@ dependencies = [
 ]
 
 [[package]]
-name = "pdk-script"
-version = "1.5.0"
-source = "registry+https://anypoint.mulesoft.com/git/68ef9520-24e9-4cf2-b2f5-620025690913/19f9d123-5775-44d7-a67f-49328cfa00b0"
-checksum = "e0485c5ca752e211a305da48f00196622af840928300d0135fb973956dbec9b1"
+name = "pdk-pel"
+version = "1.6.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "01657fe5b020def9bb7353681c0c6921ea80b81211d75283c277a1a6a6cea6f2"
 dependencies = [
- "classy",
+ "base64 0.22.1",
+ "getrandom",
+ "serde_json",
+ "thiserror 1.0.63",
+ "uuid",
+]
+
+[[package]]
+name = "pdk-proxy-wasm-stub"
+version = "1.6.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "efd9c34e50edd997d384cbc7de253b576dc3dc855e22b2a8d43db47a470308f3"
+
+[[package]]
+name = "pdk-rate-limit-lib"
+version = "1.6.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "8a5857107ba2539057bfc3ba0548cfde74dcd6346994b828a93f884558e20a7a"
+dependencies = [
+ "base64 0.22.1",
+ "bincode",
+ "pdk-core",
+ "pdk-data-storage-lib",
+ "pdk-lock-lib",
+ "serde",
+ "thiserror 1.0.63",
+ "url",
+]
+
+[[package]]
+name = "pdk-script"
+version = "1.6.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "c2529eb3ba1a0716060e9e72860d8bf82669124b2eaaaca90b7748e0ac7f4c11"
+dependencies = [
  "log",
  "num-traits",
  "oorandom",
- "pel",
+ "pdk-classy",
+ "pdk-pel",
  "roxmltree",
  "serde",
  "serde_json",
@@ -2544,9 +2579,9 @@ dependencies = [
 
 [[package]]
 name = "pdk-test"
-version = "1.4.0"
-source = "registry+https://anypoint.mulesoft.com/git/68ef9520-24e9-4cf2-b2f5-620025690913/19f9d123-5775-44d7-a67f-49328cfa00b0"
-checksum = "373750694da80d00209b8f9ecb1f7d46c01b761e60de8b0083d796ac9d8fb52f"
+version = "1.6.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "7c90d3255af3aed1d36981526295620f4aa66b10f8a34d72c0b21572440a0ee1"
 dependencies = [
  "async-trait",
  "bollard",
@@ -2569,26 +2604,13 @@ dependencies = [
 
 [[package]]
 name = "pdk-test-macros"
-version = "1.4.0"
-source = "registry+https://anypoint.mulesoft.com/git/68ef9520-24e9-4cf2-b2f5-620025690913/19f9d123-5775-44d7-a67f-49328cfa00b0"
-checksum = "b3a8b52a5d38c2bd82b767ea39f7256a0d3d11364bd90cebd5c382c10264ab3b"
+version = "1.6.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f1890a09b43c0371971dfbd61589ceb2ef1fb690946a605005d698d778277d68"
 dependencies = [
  "proc-macro2",
  "quote",
  "syn 2.0.104",
-]
-
-[[package]]
-name = "pel"
-version = "1.5.0"
-source = "registry+https://anypoint.mulesoft.com/git/68ef9520-24e9-4cf2-b2f5-620025690913/19f9d123-5775-44d7-a67f-49328cfa00b0"
-checksum = "40296d8e96af9e80ebebd82d2d92ba83a6ebb65efbe072ac0f703070a21f7c75"
-dependencies = [
- "base64 0.22.1",
- "getrandom",
- "serde_json",
- "thiserror 1.0.63",
- "uuid",
 ]
 
 [[package]]
@@ -2881,19 +2903,13 @@ dependencies = [
 
 [[package]]
 name = "proxy-wasm"
-version = "0.2.3"
+version = "0.2.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b1091bf0c55673146a93a310b28375282b64e2681acfd501684135ee85cdc4ad"
+checksum = "f8d35d9e2bc5104e2e954b149aa1d5f9fa3bb27f73b45b2706020fed101db685"
 dependencies = [
- "hashbrown 0.15.4",
+ "hashbrown 0.16.0",
  "log",
 ]
-
-[[package]]
-name = "proxy-wasm-stub"
-version = "1.5.0"
-source = "registry+https://anypoint.mulesoft.com/git/68ef9520-24e9-4cf2-b2f5-620025690913/19f9d123-5775-44d7-a67f-49328cfa00b0"
-checksum = "84047dd00ba382ef4525dbb8e1a9f9908a104a2e26f1bb48fd351d82db55e45c"
 
 [[package]]
 name = "quote"
@@ -2941,22 +2957,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d25bf25ec5ae4a3f1b92f929810509a2f53d7dca2f50b794ff57e3face536c8f"
 dependencies = [
  "rand_core",
-]
-
-[[package]]
-name = "rate-limit-lib"
-version = "1.5.0"
-source = "registry+https://anypoint.mulesoft.com/git/68ef9520-24e9-4cf2-b2f5-620025690913/19f9d123-5775-44d7-a67f-49328cfa00b0"
-checksum = "2d44642a98399ff8c2b9dd07d9101ea8a1fb88501d50e0208328d5321b0e7684"
-dependencies = [
- "base64 0.22.1",
- "bincode",
- "data-storage-lib",
- "lock-lib",
- "pdk-core",
- "serde",
- "thiserror 1.0.63",
- "url",
 ]
 
 [[package]]
@@ -4098,7 +4098,7 @@ version = "0.1.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "cf221c93e13a30d793f7645a0e7762c55d169dbb0a49671918a2319d289b10bb"
 dependencies = [
- "windows-sys 0.48.0",
+ "windows-sys 0.59.0",
 ]
 
 [[package]]

@@ -26,10 +26,10 @@ async fn request_filter(
 ) -> Flow<()> {
     let header_state = request_state.into_headers_state().await;
     let handler = header_state.handler();
-    
+
     // Remove the timeout
     with_no_timeout(handler);
-    
+
     match header_state.method().as_str() {
         POST_METHOD => {
             let content_type_maybe = handler.header(CONTENT_TYPE_HEADER);

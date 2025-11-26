@@ -13,3 +13,8 @@ pub struct Config {
     #[serde(alias = "service")]
     pub service: ServiceConfig,
 }
+#[pdk::hl::entrypoint_flex]
+fn init(abi: &dyn pdk::flex_abi::api::FlexAbi) -> Result<(), anyhow::Error> {
+    abi.setup()?;
+    Ok(())
+}
