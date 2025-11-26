@@ -467,3 +467,80 @@ async fn test_invalid_configuration_handling() -> anyhow::Result<()> {
 
     Ok(())
 }
+
+// Remote storage with multiple clients
+#[pdk_test]
+async fn test_remote_storage_with_multiple_clients() -> anyhow::Result<()> {
+    let backend_config = HttpMockConfig::builder()
+        .port(80)
+        .hostname("backend")
+        .build();
+
+    let policy_config = PolicyConfig::builder()
+        .name(POLICY_NAME)
+        .configuration(serde_json::json!({
+            "namespace": "test-remote-stats",
+            "storage_type": "remote",
+            "ttl_seconds": 3600,
+            "max_retries": 3
+        }))
+        .build();
+
+    let api_config = ApiConfig::builder()
+        .name("ingress-http")
+        .upstream(&backend_config)
+        .path("/anything/echo/")
+        .port(FLEX_PORT)
+        .policies([policy_config])
+        .build();
+
+    let flex_config = FlexConfig::builder()
+        .version("1.10.0")
+        .hostname("local-flex-remote")
+        .with_api(api_config)
+        .config_mounts([(POLICY_DIR, "policy"), (COMMON_CONFIG_DIR, "common")])
+        .build();
+
+    let composite = TestComposite::builder()
+        .with_service(flex_config)
+        .with_service(backend_config)
+        .build()
+        .await?;
+
+    let flex: Flex = composite.service()?;
+    let flex_url = flex.external_url(FLEX_PORT).unwrap();
+    let upstream: HttpMock = composite.service()?;
+    let backend_server = MockServer::connect_async(upstream.socket()).await;
+
+    backend_server
+        .mock_async(|when, then| {
+            when.path_contains("/test");
+            then.status(200).body("OK");
+        })
+        .await;
+
+    let client = reqwest::Client::new();
+
+    // Multiple clients with remote storage
+    for i in 1..=3 {
+        let response = client
+            .get(format!("{flex_url}/test"))
+            .header("x-client-id", format!("remote-client-{}", i))
+            .send()
+            .await?;
+        assert_eq!(response.status(), StatusCode::OK);
+    }
+
+    // Verify stats are properly tracked in remote storage
+    let response = client.get(format!("{flex_url}/stats")).send().await?;
+    assert_eq!(response.status(), StatusCode::OK);
+    assert_eq!(
+        response.headers().get("Content-Type").unwrap(),
+        "application/json"
+    );
+
+    let stats: Value = response.json().await?;
+    assert!(stats.is_object());
+
+    Ok(())
+}
