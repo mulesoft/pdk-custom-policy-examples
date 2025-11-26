@@ -16,7 +16,7 @@ implementation_asset_id = "a-two-a-prompt-decorator-wasm"
 
 [dependencies]
 agent-core = {workspace = true}
-pdk = { version = "1.6.0" }
+pdk = { version = "1.7.0-rc.0" }
 serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true, features = ["alloc","raw_value"] }
 anyhow = { workspace = true }
