@@ -138,6 +138,7 @@ spec:
     alpn:
       - http/1.1
       - h2
+    minversion: "1.2"
     maxversion: "1.3"
     ciphers:
       - TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256

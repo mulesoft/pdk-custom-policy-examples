@@ -2293,9 +2293,7 @@ checksum = "de3145af08024dea9fa9914f381a17b8fc6034dfb00f3a84013f7ff43f29ed4c"
 
 [[package]]
 name = "pdk"
-version = "1.6.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c35e4522b718d45db902d7508696d93ac02aee04da867f2d4c7f558f391e3d0f"
+version = "1.7.0-rc.0"
 dependencies = [
  "pdk-cache-lib",
  "pdk-classy",
@@ -2313,9 +2311,7 @@ dependencies = [
 
 [[package]]
 name = "pdk-cache-lib"
-version = "1.6.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "826b6b011ea35b5aad7a9360674edcd74d238285710ef97127e30e6438323482"
+version = "1.7.0-rc.0"
 dependencies = [
  "bincode",
  "cfg-if",
@@ -2327,9 +2323,7 @@ dependencies = [
 
 [[package]]
 name = "pdk-classy"
-version = "1.6.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "68feac10b9ded17bc3bfc467efe925042eb9da26cb773a9530ff3f228c5b323f"
+version = "1.7.0-rc.0"
 dependencies = [
  "bincode",
  "futures",
@@ -2346,9 +2340,7 @@ dependencies = [
 
 [[package]]
 name = "pdk-contracts-lib"
-version = "1.6.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a10b5620fa27046ff0f62936d776089e61a0f5e99f6c7a35c52b1e40824dbdc6"
+version = "1.7.0-rc.0"
 dependencies = [
  "base64 0.22.1",
  "const_format",
@@ -2364,9 +2356,7 @@ dependencies = [
 
 [[package]]
 name = "pdk-core"
-version = "1.6.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "91f2e4338018e33fc6b16189034696081dbd0fa6fd045472e1f4fb526a26d965"
+version = "1.7.0-rc.0"
 dependencies = [
  "anyhow",
  "log",
@@ -2385,9 +2375,7 @@ dependencies = [
 
 [[package]]
 name = "pdk-cors-lib"
-version = "1.6.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d666ee5b7ccbe65ac0e015b666387f9bef2e3ff76ed77bb5652e7b0ed41e761e"
+version = "1.7.0-rc.0"
 dependencies = [
  "derive_builder",
  "log",
@@ -2401,9 +2389,7 @@ dependencies = [
 
 [[package]]
 name = "pdk-data-storage-lib"
-version = "1.6.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9553845d9417ea570ee56b9454e04dd8c9456821e786b0708b2427ea3c4ceb78"
+version = "1.7.0-rc.0"
 dependencies = [
  "base64 0.22.1",
  "bincode",
@@ -2416,9 +2402,7 @@ dependencies = [
 
 [[package]]
 name = "pdk-flex-abi"
-version = "1.6.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d527b925542a2a3a921e4577bc53d223ea0759a39c325ed47557dcb934184728"
+version = "1.7.0-rc.0"
 dependencies = [
  "anyhow",
  "pdk-core",
@@ -2429,9 +2413,7 @@ dependencies = [
 
 [[package]]
 name = "pdk-jwt-lib"
-version = "1.6.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "17f51a9d845030f5c23dd5879fd41072d05f7492ee5eb6730ff7a6ae8a44fe85"
+version = "1.7.0-rc.0"
 dependencies = [
  "base64 0.13.1",
  "cfg-if",
@@ -2454,9 +2436,7 @@ dependencies = [
 
 [[package]]
 name = "pdk-lock-lib"
-version = "1.6.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ff5f5d0a9312ef748cec9d48413516c8eeddd734b02c682c0f65eaabccf72814"
+version = "1.7.0-rc.0"
 dependencies = [
  "bincode",
  "pdk-core",
@@ -2464,9 +2444,7 @@ dependencies = [
 
 [[package]]
 name = "pdk-macros"
-version = "1.6.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "67e7c7c70b17bc90ac93874fc3b97059ca7736112be919f6c7ba09983c9e5e87"
+version = "1.7.0-rc.0"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -2475,9 +2453,7 @@ dependencies = [
 
 [[package]]
 name = "pdk-pel"
-version = "1.6.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "01657fe5b020def9bb7353681c0c6921ea80b81211d75283c277a1a6a6cea6f2"
+version = "1.7.0-rc.0"
 dependencies = [
  "base64 0.22.1",
  "getrandom",
@@ -2488,15 +2464,11 @@ dependencies = [
 
 [[package]]
 name = "pdk-proxy-wasm-stub"
-version = "1.6.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "efd9c34e50edd997d384cbc7de253b576dc3dc855e22b2a8d43db47a470308f3"
+version = "1.7.0-rc.0"
 
 [[package]]
 name = "pdk-rate-limit-lib"
-version = "1.6.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8a5857107ba2539057bfc3ba0548cfde74dcd6346994b828a93f884558e20a7a"
+version = "1.7.0-rc.0"
 dependencies = [
  "base64 0.22.1",
  "bincode",
@@ -2510,9 +2482,7 @@ dependencies = [
 
 [[package]]
 name = "pdk-script"
-version = "1.6.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c2529eb3ba1a0716060e9e72860d8bf82669124b2eaaaca90b7748e0ac7f4c11"
+version = "1.7.0-rc.0"
 dependencies = [
  "log",
  "num-traits",
@@ -2528,9 +2498,7 @@ dependencies = [
 
 [[package]]
 name = "pdk-test"
-version = "1.6.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7c90d3255af3aed1d36981526295620f4aa66b10f8a34d72c0b21572440a0ee1"
+version = "1.7.0-rc.0"
 dependencies = [
  "async-trait",
  "bollard",
@@ -2553,9 +2521,7 @@ dependencies = [
 
 [[package]]
 name = "pdk-test-macros"
-version = "1.6.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f1890a09b43c0371971dfbd61589ceb2ef1fb690946a605005d698d778277d68"
+version = "1.7.0-rc.0"
 dependencies = [
  "proc-macro2",
  "quote",
