@@ -1,0 +1,28 @@
+---
+apiVersion: gateway.mulesoft.com/v1alpha1
+kind: Extension
+metadata:
+  labels:
+    title: rate-limiting
+    category: Custom
+    metadata/interfaceScope: api,resource
+spec:
+  extends:
+    - name: extension-definition
+      namespace: default
+  properties:
+    rateLimits:
+      type: array
+      items:
+        type: object
+        properties:
+          timePeriodInMilliseconds:
+            type: number
+          maximumRequests:
+            type: number
+        required:
+          - timePeriodInMilliseconds
+          - maximumRequests
+
+  required:
+    - rateLimits
