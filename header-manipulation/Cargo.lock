@@ -1421,6 +1421,19 @@ dependencies = [
 ]
 
 [[package]]
+name = "header_manipulation"
+version = "1.0.0"
+dependencies = [
+ "anyhow",
+ "httpmock",
+ "pdk",
+ "pdk-test",
+ "reqwest",
+ "serde",
+ "serde_json",
+]
+
+[[package]]
 name = "hermit-abi"
 version = "0.5.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1437,19 +1450,6 @@ name = "hex-literal"
 version = "0.3.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7ebdb29d2ea9ed0083cd8cece49bbd968021bd99b0849edb4a9a7ee0fdf6a4e0"
-
-[[package]]
-name = "hi"
-version = "1.0.0"
-dependencies = [
- "anyhow",
- "httpmock",
- "pdk",
- "pdk-test",
- "reqwest",
- "serde",
- "serde_json",
-]
 
 [[package]]
 name = "hkdf"

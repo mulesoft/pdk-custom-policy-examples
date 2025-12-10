@@ -9,38 +9,29 @@ use pdk::metadata::Tier;
 use pdk::rl::{RateLimit, RateLimitBuilder, RateLimitError, RateLimitInstance, RateLimitResult, RateLimitStatistics};
 use crate::generated::config::Config;
 
-pub const TOO_MANY_REQUEST_MESSAGE: &str = "Too Many Requests";
-pub const INTERNAL_ERROR_MESSAGE: &str = "Internal Gateway Error";
-pub const X_RATE_LIMIT_REMAINING: &str = "x-ratelimit-remaining";
-pub const X_RATE_LIMIT_LIMIT: &str = "x-ratelimit-limit";
-pub const X_RATE_LIMIT_RESET: &str = "x-ratelimit-reset";
-pub const CONTENT_TYPE: &str = "Content-Type";
-pub const APPLICATION_JSON: &str = "application/json; charset=UTF-8";
-
 async fn request_filter(_request_state: RequestState, _config: &Config, rate_limit: &RateLimitInstance) -> Flow<RateLimitStatistics> {
     match rate_limit.is_allowed("default", "bucket", 1).await {
         Ok(RateLimitResult::Allowed(stats)) => Flow::Continue(stats),
         Ok(RateLimitResult::TooManyRequests(stats)) => {
-            let response = Response::new(429).with_body(TOO_MANY_REQUEST_MESSAGE);
+            let response = Response::new(429).with_body("Too Many Requests");
             let expose_headers = vec![
-                (CONTENT_TYPE.to_string(), APPLICATION_JSON.to_string()),
-                (X_RATE_LIMIT_LIMIT.to_string(), stats.limit.to_string()),
-                (X_RATE_LIMIT_REMAINING.to_string(), stats.remaining.to_string()),
-                (X_RATE_LIMIT_RESET.to_string(), stats.reset.to_string()),
+                ("x-ratelimit-limit".to_string(), stats.limit.to_string()),
+                ("x-ratelimit-remaining".to_string(), stats.remaining.to_string()),
+                ("x-ratelimit-reset".to_string(), stats.reset.to_string()),
             ];
             Flow::Break(response.with_headers(expose_headers))
         }
         Err(RateLimitError::MaxHops) => {
             warn!("Unexpected error: Hops reached");
-            Flow::Break(Response::new(503).with_body(INTERNAL_ERROR_MESSAGE))
+            Flow::Break(Response::new(503).with_body("Internal Gateway Error"))
         }
         Err(RateLimitError::Unexpected(_error)) => {
             warn!("Unexpected error: Request error");
-            Flow::Break(Response::new(503).with_body(INTERNAL_ERROR_MESSAGE))
+            Flow::Break(Response::new(503).with_body("Internal Gateway Error"))
         }
         Err(e) => {
             warn!("Unexpected error: {e}");
-            Flow::Break(Response::new(503).with_body(INTERNAL_ERROR_MESSAGE))
+            Flow::Break(Response::new(503).with_body("Internal Gateway Error"))
         }
     }
 }
@@ -61,11 +52,9 @@ async fn configure(launcher: Launcher,
     let mut builder = rate_limit_builder.new("rate-limit-filter".to_string());
 
     let mut tiers = vec![];
-    config.rate_limits.iter().for_each(|rate| {
-        tiers.push(Tier {
-            requests: rate.maximum_requests as u64,
-            period_in_millis: rate.time_period_in_milliseconds as u64,
-        })
+    tiers.push(Tier {
+        requests: 2,
+        period_in_millis: 5000,
     });
     // If the rate limit is clusterizable, we can use the clustered feature in the builder.
     // if rate_limit_config.clusterizable {

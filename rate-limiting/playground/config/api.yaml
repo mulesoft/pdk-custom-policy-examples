@@ -20,7 +20,4 @@ spec:
       # definition gcl.yaml. Eg:
       # config:
       #   someProperty: desiredValue
-      config: 
-        rateLimits:
-          - maximumRequests: 2
-            timePeriodInMilliseconds: 5000
+      config:
