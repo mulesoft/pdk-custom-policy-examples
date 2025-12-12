@@ -3,7 +3,7 @@ apiVersion: gateway.mulesoft.com/v1alpha1
 kind: Extension
 metadata:
   labels:
-    title: ip-allowlist
+    title: ip-filtering
     category: Custom
     metadata/interfaceScope: api,resource
 spec:

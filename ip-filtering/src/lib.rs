@@ -9,15 +9,15 @@ use pdk::ip_filter::IpFilter;
 
 async fn request_filter(request_state: RequestState, ip_filter: &IpFilter) -> Flow<()> {
     let headers = request_state.into_headers_state().await;
-    // Get client IP from x-forwarded-for header (first IP if multiple)
+
     let client_ip = headers
         .handler()
         .header("x-forwarded-for")
         .map(|h| h.split(',').next().unwrap_or(&h).trim().to_string());
+
     match client_ip {
-        // If the IP is allowed, continue the flow
         Some(ip) if ip_filter.is_allowed(&ip) => Flow::Continue(()),
-        // If the IP is not allowed, break the flow
+        // To check if the IP is blocked, use: ip_filter.is_blocked(&ip)
         _ => Flow::Break(Response::new(403).with_body("Forbidden")),
     }
 }
@@ -31,10 +31,16 @@ async fn configure(launcher: Launcher, Configuration(bytes): Configuration) -> R
             err
         )
     })?;
-    // Create allowlist from configured IPs
+
+    // Create allowlist filter from configured IPs
     let ip_filter = IpFilter::allow(&config.ips).map_err(|e| anyhow!("Invalid IP: {e}"))?;
 
+    // To block IPs instead use following line:
+    // let ip_filter = IpFilter::block(&config.ips).map_err(|e| anyhow!("Invalid IP: {e}"))?;
+
     let filter = on_request(|rs| request_filter(rs, &ip_filter));
+
     launcher.launch(filter).await?;
+
     Ok(())
 }

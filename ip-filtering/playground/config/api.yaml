@@ -14,7 +14,7 @@ spec:
             destinationPath: /anything/echo/
   policies:
     - policyRef:
-        name: ip-allowlist-flex-v1-0 # This value will be overriden during 'make run' execution
+        name: ip-filtering-flex-v1-0 # This value will be overriden during 'make run' execution
         namespace: default
       config:
         ips:
