@@ -1,0 +1,23 @@
+---
+apiVersion: gateway.mulesoft.com/v1alpha1
+kind: Extension
+metadata:
+  labels:
+    title: ip-allowlist
+    category: Custom
+    metadata/interfaceScope: api,resource
+spec:
+  extends:
+    - name: extension-definition
+      namespace: default
+  properties:
+    ips:
+      type: array
+      items:
+        type: string
+    ipExpression:
+      type: string
+      format: dataweave
+  required:
+    - ips
+    - ipExpression
