@@ -15,9 +15,5 @@ spec:
       type: array
       items:
         type: string
-    ipExpression:
-      type: string
-      format: dataweave
   required:
     - ips
-    - ipExpression

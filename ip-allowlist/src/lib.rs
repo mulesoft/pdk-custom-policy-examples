@@ -4,34 +4,21 @@ mod generated;
 use anyhow::{anyhow, Result};
 
 use crate::generated::config::Config;
-use pdk::authentication::{Authentication, AuthenticationHandler};
 use pdk::hl::*;
 use pdk::ip_filter::IpFilter;
-use pdk::script::{HandlerAttributesBinding, Script, Value};
 
-async fn request_filter(
-    request_state: RequestState,
-    stream_properties: StreamProperties,
-    auth: Authentication,
-    ip_filter: &IpFilter,
-    script: &Script,
-) -> Flow<()> {
+async fn request_filter(request_state: RequestState, ip_filter: &IpFilter) -> Flow<()> {
     let headers = request_state.into_headers_state().await;
-
-    let mut evaluator = script.evaluator();
-    let binding = HandlerAttributesBinding::new(headers.handler(), &stream_properties);
-    evaluator.bind_attributes(&binding);
-    evaluator.bind_authentication(&auth.authentication());
-
-    let client_ip = match evaluator.eval() {
-        Ok(Value::String(ip)) => ip.split(',').next().unwrap_or(&ip).trim().to_string(),
-        _ => return Flow::Break(Response::new(403).with_body("Forbidden")),
-    };
-
-    if ip_filter.is_allowed(&client_ip) {
-        Flow::Continue(())
-    } else {
-        Flow::Break(Response::new(403).with_body("Forbidden"))
+    // Get client IP from x-forwarded-for header (first IP if multiple)
+    let client_ip = headers
+        .handler()
+        .header("x-forwarded-for")
+        .map(|h| h.split(',').next().unwrap_or(&h).trim().to_string());
+    match client_ip {
+        // If the IP is allowed, continue the flow
+        Some(ip) if ip_filter.is_allowed(&ip) => Flow::Continue(()),
+        // If the IP is not allowed, break the flow
+        _ => Flow::Break(Response::new(403).with_body("Forbidden")),
     }
 }
 
@@ -44,12 +31,10 @@ async fn configure(launcher: Launcher, Configuration(bytes): Configuration) -> R
             err
         )
     })?;
-
+    // Create allowlist from configured IPs
     let ip_filter = IpFilter::allow(&config.ips).map_err(|e| anyhow!("Invalid IP: {e}"))?;
 
-    let script = config.ip_expression;
-
-    let filter = on_request(|rs, sp, auth| request_filter(rs, sp, auth, &ip_filter, &script));
+    let filter = on_request(|rs| request_filter(rs, &ip_filter));
     launcher.launch(filter).await?;
     Ok(())
 }
