@@ -1,0 +1,32 @@
+# Copyright 2023 Salesforce, Inc. All rights reserved.
+[package]
+name = "ip_filtering"
+version = "1.0.0"
+rust-version = "1.87.0"
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[package.metadata.anypoint]
+group_id = "c5882134-2454-4663-a9c7-2ff11fd17c41"
+definition_asset_id = "ip-filtering"
+implementation_asset_id = "ip-filtering-flex"
+
+[dependencies]
+pdk = { path = "../../mgw-policy-development-kit/pdk", package = "pdk", features = ["ll"]}
+serde = { version = "1.0", features = ["derive"] }
+serde_json = { version = "1.0", default-features = false, features = ["alloc"] }
+anyhow = "1.0"
+
+[dev-dependencies]
+pdk-test = { path = "../../mgw-policy-development-kit/pdk-test", package = "pdk-test" }
+httpmock = "0.6"
+reqwest = "0.11"
+
+[lib]
+crate-type = ["cdylib"]
+
+[profile.release]
+lto = true
+opt-level = 'z'
+strip = "debuginfo"

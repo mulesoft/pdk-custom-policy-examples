@@ -1,0 +1,22 @@
+# Copyright 2023 Salesforce, Inc. All rights reserved.
+---
+apiVersion: gateway.mulesoft.com/v1alpha1
+kind: ApiInstance
+metadata:
+  name: ingress-http
+spec:
+  address: http://0.0.0.0:8081
+  services:
+    upstream:
+      address: http://backend
+      routes:
+        - config:
+            destinationPath: /anything/echo/
+  policies:
+    - policyRef:
+        name: ip-filtering-flex-v1-0 # This value will be overriden during 'make run' execution
+        namespace: default
+      config:
+        ips:
+          - "192.168.1.0/24"
+          - "10.0.0.1"
