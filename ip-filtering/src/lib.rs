@@ -19,7 +19,8 @@ async fn request_filter(request_state: RequestState, ip_filter: &IpFilter) -> Fl
 async fn configure(launcher: Launcher, Configuration(_): Configuration) -> Result<()> {
     // Create allowlist filter - only these IPs can access
     let ip_filter = IpFilter::allow(&["192.168.1.1", "10.0.0.0/8"])?;
-    // To block IPs instead: IpFilter::block(&["192.168.1.1", "10.0.0.0/8"]);
+    // Uncomment following line to block IPs instead:
+    // let ip_filter = IpFilter::block(&["192.168.1.1", "10.0.0.0/8"])?;
     let filter = on_request(|rs| request_filter(rs, &ip_filter));
     launcher.launch(filter).await?;
     Ok(())
