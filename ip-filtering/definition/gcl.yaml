@@ -10,10 +10,4 @@ spec:
   extends:
     - name: extension-definition
       namespace: default
-  properties:
-    ips:
-      type: array
-      items:
-        type: string
-  required:
-    - ips
+  properties: {}
