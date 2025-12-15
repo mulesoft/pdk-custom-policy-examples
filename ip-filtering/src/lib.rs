@@ -11,7 +11,6 @@ async fn request_filter(request_state: RequestState, ip_filter: &IpFilter) -> Fl
     let client_ip = headers.handler().header("x-real-ip");
     match client_ip {
         Some(ip) if ip_filter.is_allowed(&ip) => Flow::Continue(()),
-        // To check if the IP is blocked, use: ip_filter.is_blocked(&ip)
         _ => Flow::Break(Response::new(403).with_body("Forbidden")),
     }
 }
