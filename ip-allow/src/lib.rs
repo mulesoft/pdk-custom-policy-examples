@@ -15,10 +15,13 @@ async fn request_filter(
     ip_header: &str,
 ) -> Flow<()> {
     let headers = request_state.into_headers_state().await;
+
     let client_ip = headers.handler().header(ip_header);
+
     match client_ip {
         // If IP is allowed, continue
         Some(ip) if ip_filter.is_allowed(&ip) => Flow::Continue(()),
+
         // If IP is not allowed, break
         _ => Flow::Break(Response::new(403).with_body("Forbidden IP!")),
     }
@@ -40,11 +43,8 @@ async fn configure(launcher: Launcher, Configuration(bytes): Configuration) -> R
     // Create IP filter with allowed IPs
     let ip_filter = IpFilter::allow(&ip_values)?;
 
-    // Get header name from config
-    let ip_header = config.ip_header.clone();
-
     // Create filter with IP filter and header name
-    let filter = on_request(|rs| request_filter(rs, &ip_filter, &ip_header));
+    let filter = on_request(|rs| request_filter(rs, &ip_filter, &config.ip_header));
 
     launcher.launch(filter).await?;
 
