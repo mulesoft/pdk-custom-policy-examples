@@ -1,24 +1,23 @@
-# IP Allow Policy
+# IP Filter Policy
 
-This policy filters incoming requests allowing only specified IP addresses or CIDR ranges in a configured header.
+This policy filters incoming requests based on IP allowlists and/or blocklists using a configured header.
 
 To learn more about IP filtering, see [IP Filtering](https://docs.mulesoft.com/pdk/latest/policies-pdk-configure-features-ip-filter).
 
-IP Allow policy implementation:
+IP Filter policy implementation:
 
 1. The policy intercepts each incoming request and extracts the client IP from a configurable header.
-2. The policy checks if the IP address matches any of the allowed IPs or CIDR ranges.
-3. If the IP is allowed, the request proceeds to the upstream service.
-4. If the IP is not allowed or the header is missing, the policy returns a 403 Forbidden response.
+2. If `ipsBlocked` is configured, the policy checks if the IP is in the blocklist (rejects if matched).
+3. If `ipsAllowed` is configured, the policy checks if the IP is in the allowlist (rejects if not matched).
+4. If the IP passes all checks, the request proceeds to the upstream service.
 
 ## Policy Configuration
 
 The policy accepts the following parameters:
 
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `ips` | array[string] | Yes | List of allowed IPs or CIDR ranges (e.g., `192.168.1.0/24`, `10.0.0.1`) |
-| `ipHeader` | string | Yes | Header name from which to extract the client IP (e.g., `x-real-ip`) |
+- ipsAllowed (optional): List of allowed IPs or CIDR ranges (e.g., `192.168.1.0/24`, `10.0.0.1`)
+- ipsBlocked (optional): List of blocked IPs or CIDR ranges (e.g., `192.168.1.0/24`, `10.0.0.1`)
+- ipHeader (required): Header name from which to extract the client IP (e.g., `x-real-ip`)
 
 ## Test the Policy
 
@@ -72,12 +71,15 @@ spec:
             destinationPath: /anything/echo/
   policies:
     - policyRef:
-        name: ip-allow-flex-v1-0
+        name: ip-filter-flex-v1-0
         namespace: default
       config:
-        ips:
+        # Use ipsAllowed, ipsBlocked, or both
+        ipsAllowed:
           - "192.168.1.0/24"
           - "10.0.0.1"
+        ipsBlocked:
+          - "192.168.1.50"
         ipHeader: "x-real-ip"
 ```
 
@@ -92,15 +94,15 @@ make run
 5. Send requests to test the IP filtering:
 
 ```shell
-# Test with an allowed IP (from CIDR range) - should succeed
+# Test with an allowed IP (from CIDR range) should succeed
 curl -H "x-real-ip: 192.168.1.100" http://localhost:8081/anything/echo/
 
-# Test with specific allowed IP - should succeed
+# Test with specific allowed IP should succeed
 curl -H "x-real-ip: 10.0.0.1" http://localhost:8081/anything/echo/
 
-# Test with a forbidden IP - should return 403
-curl -H "x-real-ip: 8.8.8.8" http://localhost:8081/anything/echo/
+# Test with a blocked IP (even if in allowed range) should return 403
+curl -H "x-real-ip: 192.168.1.50" http://localhost:8081/anything/echo/
 
-# Test without IP header - should return 403
-curl http://localhost:8081/anything/echo/
+# Test with an IP not in allowlist should return 403
+curl -H "x-real-ip: 8.8.8.8" http://localhost:8081/anything/echo/
 ```

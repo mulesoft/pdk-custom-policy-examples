@@ -3,21 +3,25 @@ apiVersion: gateway.mulesoft.com/v1alpha1
 kind: Extension
 metadata:
   labels:
-    title: ip-allow
+    title: ip-filter
     category: Custom
 spec:
   extends:
     - name: extension-definition
       namespace: default
   properties:
-    ips:
+    ipsAllowed:
       type: array
       items:
         type: string
-      description: List of allowed IPs or CIDR ranges.
+      description: List of allowed IPs or CIDR ranges (optional).
+    ipsBlocked:
+      type: array
+      items:
+        type: string
+      description: List of blocked IPs or CIDR ranges (optional).
     ipHeader:
       type: string
       description: Header name from which to extract the client IP.
   required:
-    - ips
     - ipHeader

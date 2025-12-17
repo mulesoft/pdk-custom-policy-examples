@@ -1748,7 +1748,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "ip_allow"
+name = "ip_filter"
 version = "1.0.0"
 dependencies = [
  "anyhow",

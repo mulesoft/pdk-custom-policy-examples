@@ -14,10 +14,12 @@ spec:
             destinationPath: /anything/echo/
   policies:
     - policyRef:
-        name: ip-allow-flex-v1-0 # This value will be overriden during 'make run' execution
+        name: ip-filter-flex-v1-0 # This value will be overriden during 'make run' execution
         namespace: default
       config:
-        ips:
+        ipsAllowed:
           - "192.168.1.0/24"
           - "10.0.0.1"
+        ipsBlocked:
+          - "192.168.1.50"
         ipHeader: "x-real-ip"

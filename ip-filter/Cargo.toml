@@ -1,6 +1,6 @@
 # Copyright 2023 Salesforce, Inc. All rights reserved.
 [package]
-name = "ip_allow"
+name = "ip_filter"
 version = "1.0.0"
 rust-version = "1.87.0"
 edition = "2018"
@@ -9,8 +9,8 @@ edition = "2018"
 
 [package.metadata.anypoint]
 group_id = "c5882134-2454-4663-a9c7-2ff11fd17c41"
-definition_asset_id = "ip-allow"
-implementation_asset_id = "ip-allow-flex"
+definition_asset_id = "ip-filter"
+implementation_asset_id = "ip-filter-flex"
 
 [dependencies]
 pdk = { path = "../../mgw-policy-development-kit/pdk", package = "pdk", features = ["ll"]}

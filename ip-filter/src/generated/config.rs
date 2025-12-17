@@ -3,8 +3,10 @@ use serde::Deserialize;
 pub struct Config {
     #[serde(alias = "ipHeader")]
     pub ip_header: String,
-    #[serde(alias = "ips")]
-    pub ips: Vec<String>,
+    #[serde(alias = "ipsAllowed")]
+    pub ips_allowed: Option<Vec<String>>,
+    #[serde(alias = "ipsBlocked")]
+    pub ips_blocked: Option<Vec<String>>,
 }
 #[pdk::hl::entrypoint_flex]
 fn init(abi: &dyn pdk::flex_abi::api::FlexAbi) -> Result<(), anyhow::Error> {
