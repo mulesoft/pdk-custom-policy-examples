@@ -1,0 +1,13 @@
+---
+apiVersion: gateway.mulesoft.com/v1alpha1
+kind: Extension
+metadata:
+  labels:
+    title: jwt-generation
+    category: Custom
+spec:
+  extends:
+    - name: extension-definition
+      namespace: default
+  properties: {}
+  required: []
