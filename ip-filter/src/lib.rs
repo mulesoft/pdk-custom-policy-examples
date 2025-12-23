@@ -22,7 +22,7 @@ async fn request_filter(
     };
 
     if let Some(filter) = block_filter {
-        if filter.is_allowed(&ip) {
+        if !filter.is_allowed(&ip) {
             return Flow::Break(Response::new(403).with_body("Blocked IP!"));
         }
     }
@@ -59,13 +59,14 @@ async fn configure(launcher: Launcher, Configuration(bytes): Configuration) -> R
     let block_filter = match &config.ips_blocked {
         Some(ips) if !ips.is_empty() => {
             let ip_values: Vec<&str> = ips.iter().map(|s| s.as_str()).collect();
-            Some(IpFilter::allow(&ip_values)?)
+            Some(IpFilter::block(&ip_values)?)
         }
         _ => None,
     };
 
     // Create filter with both IP filters and header name
-    let filter = on_request(|rs| request_filter(rs, &allow_filter, &block_filter, &config.ip_header));
+    let filter =
+        on_request(|rs| request_filter(rs, &allow_filter, &block_filter, &config.ip_header));
 
     launcher.launch(filter).await?;
 
