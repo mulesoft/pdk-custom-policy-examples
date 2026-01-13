@@ -25,7 +25,7 @@ aes-gcm = "0.10.3"
 pdk-test = { version = "1.6.0" }
 httpmock = "0.6"
 reqwest = "0.11"
-rand = "0.8.5"
+rand = "0.9.0"
 
 [lib]
 crate-type = ["cdylib"]
