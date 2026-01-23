@@ -8,9 +8,6 @@ use pdk::hl::*;
 use pdk::logger::{debug, error};
 use pdk::token_introspection::{ScopesValidator, TokenValidator, TokenValidatorBuilder};
 
-const AUTHORIZATION_HEADER: &str = "authorization";
-const CONTENT_TYPE_JSON: &str = "application/json; charset=UTF-8";
-
 async fn request_filter(
     request_state: RequestState,
     validator: &TokenValidator,
@@ -18,28 +15,20 @@ async fn request_filter(
     let headers_state = request_state.into_headers_state().await;
     let handler = headers_state.handler();
 
-    let auth_header = handler.header(AUTHORIZATION_HEADER).unwrap_or_else(|| String::from(""));
-    let token = auth_header.split_whitespace().collect::<Vec<_>>()[1];
-
+    let auth_header = handler.header("authorization").unwrap_or_default();
+    let token = auth_header.split_whitespace()
+        .last()
+        .unwrap_or_default();
     debug!("Token extracted successfully (len={})", token.len());
 
     // Validate token.
     let result = validator
-        .validate(&token)
+        .validate(token)
         .await;
 
     match result {
         Ok(_success) => Flow::Continue(()),
-        Err(_error) => {
-            Flow::Break(
-                Response::new(401)
-                    .with_headers(vec![(
-                        "Content-Type".to_string(),
-                        CONTENT_TYPE_JSON.to_string(),
-                    )])
-                    .with_body(serde_json::json!({"error": "Unauthorized"}).to_string())
-            )
-        }
+        Err(_error) => Flow::Break(Response::new(401))
     }
 }
 
