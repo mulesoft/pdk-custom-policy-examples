@@ -1,0 +1,35 @@
+# Copyright 2023 Salesforce, Inc. All rights reserved.
+[package]
+name = "oauth_2_token_introspection"
+version = "1.0.0"
+rust-version = "1.87.0"
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[package.metadata.anypoint]
+group_id = "c5882134-2454-4663-a9c7-2ff11fd17c41"
+definition_asset_id = "oauth-2-token-introspection"
+implementation_asset_id = "oauth-2-token-introspection-flex"
+
+[dependencies]
+pdk = { path="/Users/pgarrett/mule/pdk-bondi/mgw-policy-development-kit/pdk" }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = { version = "1.0", default-features = false, features = ["alloc"] }
+anyhow = "1.0"
+futures = "0.3"
+url = "2.2"
+serde_urlencoded = "0.7.1"
+
+[dev-dependencies]
+pdk-test = { path="/Users/pgarrett/mule/pdk-bondi/mgw-policy-development-kit/pdk-test" }
+httpmock = "0.6"
+reqwest = "0.11"
+
+[lib]
+crate-type = ["cdylib"]
+
+[profile.release]
+lto = true
+opt-level = 'z'
+strip = "debuginfo"
