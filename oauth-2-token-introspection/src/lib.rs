@@ -4,93 +4,14 @@ mod generated;
 use anyhow::{anyhow, Result};
 
 use pdk::hl::*;
-use pdk::logger::{debug, error, trace, warn};
+use pdk::logger::{debug, error};
 use pdk::token_introspection::{IntrospectionError, IntrospectionResult, ParsedToken, ScopesValidator, TokenValidator, TokenValidatorBuilder, ValidationError};
 use crate::generated::config::Config;
 
 const AUTHORIZATION_HEADER: &str = "authorization";
-const ACCESS_TOKEN_PARAM: &str = "access_token";
-const PATH_HEADER: &str = ":path";
 const X_AGW_PREFIX: &str = "x-agw";
 const CONTENT_TYPE_JSON: &str = "application/json; charset=UTF-8";
 const WWW_AUTHENTICATE_OAUTH2: &str = "Bearer realm=\"OAuth2 Introspection Client Realm\"";
-const BEARER: &str = "bearer";
-
-// Token extraction errors.
-#[derive(Debug)]
-enum ExtractionError {
-    AccessTokenNotProvided,
-    InvalidAuthorizationHeader,
-}
-
-impl std::fmt::Display for ExtractionError {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            ExtractionError::AccessTokenNotProvided => {
-                write!(f, "Access token was not provided")
-            }
-            ExtractionError::InvalidAuthorizationHeader => {
-                write!(f, "Authorization header is invalid")
-            }
-        }
-    }
-}
-
-// Extracts access token from Authorization header or query parameter.
-//
-// - If the Authorization header is present, it must be a valid Bearer header (otherwise fail).
-// - Otherwise, use the access_token query parameter when present.
-// - If neither is provided, fail.
-fn extract_token(
-    query_token: Option<&str>,
-    auth_header: Option<&str>,
-) -> Result<String, ExtractionError> {
-    let query_token = query_token.filter(|s| !s.trim().is_empty());
-    let auth_header = auth_header.filter(|s| !s.trim().is_empty());
-
-    if let Some(header) = auth_header {
-        return extract_bearer(header).ok_or(ExtractionError::InvalidAuthorizationHeader);
-    }
-
-    if let Some(token) = query_token {
-        return Ok(token.to_string());
-    }
-
-    Err(ExtractionError::AccessTokenNotProvided)
-}
-
-// Extracts Bearer token from Authorization header.
-// Returns Some(token) if valid Bearer, None otherwise.
-fn extract_bearer(header: &str) -> Option<String> {
-    let parts: Vec<&str> = header.split_whitespace().collect();
-    if parts.len() == 2 && parts[0].to_lowercase() == BEARER {
-        Some(parts[1].to_string())
-    } else {
-        None
-    }
-}
-
-// Policy error types.
-enum PolicyError {
-    // Token extraction failed.
-    Extraction(ExtractionError),
-    // Token introspection/validation failed.
-    Introspection(IntrospectionError),
-}
-
-// Result of successful token validation.
-struct TokenSuccess {
-    // The introspection result containing parsed token and access token.
-    result: IntrospectionResult,
-}
-
-// Extracts a query parameter value from a URL path.
-fn extract_query_param(path: &str, name: &str) -> Option<String> {
-    url::Url::parse(&format!("http://fake_base{path}"))
-        .ok()?
-        .query_pairs()
-        .find_map(|(key, value)| (key == name).then(|| value.to_string()))
-}
 
 // Exposes token claims as HTTP headers with `x-agw-` prefix.
 fn expose_claims(handler: &dyn HeadersHandler, parsed_token: &ParsedToken) {
@@ -129,59 +50,22 @@ fn unauthorized_response(message: &str) -> Response {
         .with_body(serde_json::json!({"error": message}).to_string())
 }
 
-fn get_query_token(handler: &dyn HeadersHandler, auth_header: Option<String>) -> Option<String> {
-    if auth_header
-        .as_deref()
-        .filter(|s| !s.trim().is_empty())
-        .is_some()
-    {
-        None
-    } else {
-        handler
-            .header(PATH_HEADER)
-            .as_deref()
-            .and_then(|p| extract_query_param(p, ACCESS_TOKEN_PARAM))
-    }
-}
-
 // Extracts token, validates via introspection, validates contract.
 async fn do_request_filter(
     handler: &dyn HeadersHandler,
     validator: &TokenValidator,
-) -> Result<TokenSuccess, PolicyError> {
-    // Extract token from request
-    let auth_header = handler.header(AUTHORIZATION_HEADER);
-    let query_token = get_query_token(handler, auth_header.clone());
-
-    debug!(
-        "Token extraction - auth_header present: {}, query_token present: {}",
-        auth_header
-            .as_deref()
-            .filter(|s| !s.trim().is_empty())
-            .is_some(),
-        query_token.is_some()
-    );
-
-    let token = extract_token(query_token.as_deref(), auth_header.as_deref())
-        .map_err(PolicyError::Extraction)?;
+) -> Result<IntrospectionResult, IntrospectionError> {
+    let auth_header = handler.header(AUTHORIZATION_HEADER).unwrap_or_else(|| String::from(""));
+    let token = auth_header.split_whitespace().collect::<Vec<_>>()[1];
 
     debug!("Token extracted successfully (len={})", token.len());
 
     // Validate token.
     let result = validator
         .validate(&token)
-        .await
-        .map_err(PolicyError::Introspection)?;
+        .await?;
 
-    Ok(TokenSuccess { result })
-}
-
-// Maps PolicyError to HTTP Response.
-fn error_response(error: &PolicyError) -> Response {
-    match error {
-        PolicyError::Extraction(e) => json_error_response(400, &e.to_string()),
-        PolicyError::Introspection(e) => introspection_error_response(e),
-    }
+    Ok(result)
 }
 
 // Maps IntrospectionError to HTTP Response.
@@ -209,30 +93,6 @@ fn introspection_error_response(error: &IntrospectionError) -> Response {
     }
 }
 
-// Logs error message based on the PolicyError.
-fn log_error(error: &PolicyError) {
-    match error {
-        PolicyError::Extraction(e) => {
-            trace!("Error extracting token parameter: {e} (ErrorCode: FED-400)")
-        }
-        PolicyError::Introspection(e) => match e {
-            IntrospectionError::RequestFailed(e) => {
-                error!("Error trying to send authorize token request. Reason: {e}")
-            }
-            IntrospectionError::HttpError { status, body } => {
-                warn!("Invalid status code {status} while processing auth response: {body}")
-            }
-            IntrospectionError::ParseError(e) => {
-                error!("Error creating token from authentication server response: {e}")
-            }
-            IntrospectionError::Validation(v) => {
-                warn!("Invalid token: {v}")
-            }
-            _ => error!("Unexpected introspection error: {e}"),
-        },
-    }
-}
-
 async fn request_filter(
     request_state: RequestState,
     expose_headers: bool,
@@ -244,13 +104,12 @@ async fn request_filter(
     match do_request_filter(handler, validator).await {
         Ok(success) => {
             if expose_headers {
-                expose_claims(handler, &success.result.token);
+                expose_claims(handler, &success.token);
             }
             Flow::Continue(())
         }
         Err(error) => {
-            log_error(&error);
-            Flow::Break(error_response(&error))
+            Flow::Break(introspection_error_response(&error))
         }
     }
 }

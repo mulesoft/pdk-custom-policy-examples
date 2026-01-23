@@ -120,64 +120,6 @@ async fn invalid_auth_value() -> anyhow::Result<()> {
     Ok(())
 }
 
-#[pdk_test]
-async fn token_from_query_parameter() -> anyhow::Result<()> {
-    // Configure the upstream service
-    let upstream_config = HttpMockConfig::builder().port(80).hostname("mock").build();
-
-    // Configure a Flex service
-    let policy_config = PolicyConfig::builder()
-        .name(POLICY_NAME)
-        .configuration(serde_json::json!({
-                    "introspectionService": "http://mock/auth",
-                    "introspectionPath": "/introspect",
-                    "authorizationValue": "Basic YWRtaW46YWRtaW4=",
-                    "expiresInAttribute": "exp",
-                    "validatedTokenTTL": 600,
-                    "authenticationTimeout": 10000,
-                    "exposeHeaders": true,
-                    "scopes": "read write",
-                    "scopeValidationCriteria": "AND",
-                    "maxCacheEntries": 10000
-        }))
-        .build();
-
-    // Configure Flex Gateway
-    let flex_config = flex_config(&upstream_config, policy_config);
-
-    // Compose the services
-    let composite = setup_services(flex_config, upstream_config).await?;
-
-    // Get a handle to the Flex service
-    let flex: Flex = composite.service_by_hostname("local-flex")?;
-
-    // Get a handle to the upstream service
-    let upstream =
-        MockServer::connect_async(composite.service_by_hostname::<HttpMock>("mock")?.socket())
-            .await;
-
-    // Mock upstream service interactions
-    mock_backend_path(&upstream).await;
-
-    // Mock authorization service interactions
-    mock_auth_server_path(&upstream).await;
-
-    // Get an external URL to point the Flex service
-    let flex_url = flex.external_url(FLEX_PORT).unwrap();
-
-    match request_query_param(format!("{flex_url}/hello").as_str(), VALID_TOKEN).await {
-        Ok(response) => assert_response(response, StatusCode::ACCEPTED, "World!").await,
-        Err(err) => {
-            panic!("Error: {:?}", err)
-        }
-    }
-
-    let response = request_query_param(format!("{flex_url}/hello").as_str(), INVALID_TOKEN).await?;
-    assert_response(response, StatusCode::UNAUTHORIZED, "{\"error\":\"Token has been revoked.\"}").await;
-
-    Ok(())
-}
-
 async fn mock_auth_server_path(upstream: &MockServer) {
     upstream
         .mock_async(|when, then| {
@@ -242,11 +184,6 @@ async fn setup_services(
         .with_service(upstream_config)
         .build()
         .await
-}
-
-async fn request_query_param(url: &str, token: &str) -> Result<Response, Error> {
-    let query = vec![("access_token", token)];
-    reqwest::Client::new().get(url).query(&query).send().await
 }
 
 async fn request(url: &str, token: &str) -> Result<Response, Error> {
