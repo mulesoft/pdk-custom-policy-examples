@@ -2302,7 +2302,7 @@ checksum = "57c0d7b74b563b49d38dae00a0c37d4d6de9b432382b2892f0574ddcae73fd0a"
 
 [[package]]
 name = "pdk"
-version = "1.7.0-rc.0"
+version = "1.7.0-alpha.0"
 dependencies = [
  "pdk-cache-lib",
  "pdk-classy",
@@ -2321,7 +2321,7 @@ dependencies = [
 
 [[package]]
 name = "pdk-cache-lib"
-version = "1.7.0-rc.0"
+version = "1.7.0-alpha.0"
 dependencies = [
  "bincode",
  "cfg-if",
@@ -2333,7 +2333,7 @@ dependencies = [
 
 [[package]]
 name = "pdk-classy"
-version = "1.7.0-rc.0"
+version = "1.7.0-alpha.0"
 dependencies = [
  "bincode",
  "futures",
@@ -2350,7 +2350,7 @@ dependencies = [
 
 [[package]]
 name = "pdk-contracts-lib"
-version = "1.7.0-rc.0"
+version = "1.7.0-alpha.0"
 dependencies = [
  "base64 0.22.1",
  "const_format",
@@ -2367,7 +2367,7 @@ dependencies = [
 
 [[package]]
 name = "pdk-core"
-version = "1.7.0-rc.0"
+version = "1.7.0-alpha.0"
 dependencies = [
  "anyhow",
  "log",
@@ -2386,7 +2386,7 @@ dependencies = [
 
 [[package]]
 name = "pdk-cors-lib"
-version = "1.7.0-rc.0"
+version = "1.7.0-alpha.0"
 dependencies = [
  "derive_builder",
  "log",
@@ -2400,7 +2400,7 @@ dependencies = [
 
 [[package]]
 name = "pdk-data-storage-lib"
-version = "1.7.0-rc.0"
+version = "1.7.0-alpha.0"
 dependencies = [
  "base64 0.22.1",
  "bincode",
@@ -2413,7 +2413,7 @@ dependencies = [
 
 [[package]]
 name = "pdk-flex-abi"
-version = "1.7.0-rc.0"
+version = "1.7.0-alpha.0"
 dependencies = [
  "anyhow",
  "pdk-core",
@@ -2424,7 +2424,7 @@ dependencies = [
 
 [[package]]
 name = "pdk-ip-filter-lib"
-version = "1.7.0-rc.0"
+version = "1.7.0-alpha.0"
 dependencies = [
  "anyhow",
  "ipnet",
@@ -2434,7 +2434,7 @@ dependencies = [
 
 [[package]]
 name = "pdk-jwt-lib"
-version = "1.7.0-rc.0"
+version = "1.7.0-alpha.0"
 dependencies = [
  "base64 0.13.1",
  "cfg-if",
@@ -2457,7 +2457,7 @@ dependencies = [
 
 [[package]]
 name = "pdk-lock-lib"
-version = "1.7.0-rc.0"
+version = "1.7.0-alpha.0"
 dependencies = [
  "bincode",
  "pdk-core",
@@ -2465,7 +2465,7 @@ dependencies = [
 
 [[package]]
 name = "pdk-macros"
-version = "1.7.0-rc.0"
+version = "1.7.0-alpha.0"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -2474,7 +2474,7 @@ dependencies = [
 
 [[package]]
 name = "pdk-pel"
-version = "1.7.0-rc.0"
+version = "1.7.0-alpha.0"
 dependencies = [
  "base64 0.22.1",
  "getrandom 0.2.16",
@@ -2485,11 +2485,11 @@ dependencies = [
 
 [[package]]
 name = "pdk-proxy-wasm-stub"
-version = "1.7.0-rc.0"
+version = "1.7.0-alpha.0"
 
 [[package]]
 name = "pdk-rate-limit-lib"
-version = "1.7.0-rc.0"
+version = "1.7.0-alpha.0"
 dependencies = [
  "base64 0.22.1",
  "bincode",
@@ -2503,7 +2503,7 @@ dependencies = [
 
 [[package]]
 name = "pdk-script"
-version = "1.7.0-rc.0"
+version = "1.7.0-alpha.0"
 dependencies = [
  "log",
  "num-traits",
@@ -2519,7 +2519,7 @@ dependencies = [
 
 [[package]]
 name = "pdk-test"
-version = "1.7.0-rc.0"
+version = "1.7.0-alpha.0"
 dependencies = [
  "async-trait",
  "bollard",
@@ -2542,7 +2542,7 @@ dependencies = [
 
 [[package]]
 name = "pdk-test-macros"
-version = "1.7.0-rc.0"
+version = "1.7.0-alpha.0"
 dependencies = [
  "proc-macro2",
  "quote",
