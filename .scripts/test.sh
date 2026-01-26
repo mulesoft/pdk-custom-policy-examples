@@ -8,7 +8,8 @@ for f in *; do
         echo "Testing '$f' policy example";
         cd "$f";
         cp $1 ./tests/common/registration.yaml
-        make setup && make test;
+        make setup && make build;
+        cargo test -- --nocapture --test-threads 1
         rm ./tests/common/registration.yaml
         cd ..;
     fi
