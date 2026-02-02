@@ -1,8 +1,8 @@
-# IP Filter Policy
+# JWT Generation Policy
 
 This creates a JWT and returns it as the response of the incoming request.
 
-To learn more about JWT generation, see [IP Filtering](https://docs.mulesoft.com/pdk/latest/policies-pdk-configure-features-jwt-generation).
+To learn more about JWT generation, see [JWT Generation](https://docs.mulesoft.com/pdk/latest/policies-pdk-configure-features-jwt-generation).
 
 ## Policy Configuration
 
