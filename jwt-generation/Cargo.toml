@@ -13,13 +13,13 @@ definition_asset_id = "jwt-generation"
 implementation_asset_id = "jwt-generation-flex"
 
 [dependencies]
-pdk = { path = "/Users/jatadia/Documents/repositories/peregrine/mgw-policy-development-kit/pdk" }
+pdk = { git = "https://github.com/mulesoft-emu/mgw-policy-development-kit.git", tag = "1.7.0-rc.0"}
 serde = { version = "1.0", features = ["derive"] }
 serde_json = { version = "1.0", default-features = false, features = ["alloc"] }
 anyhow = "1.0"
 
 [dev-dependencies]
-pdk-test = { path = "/Users/jatadia/Documents/repositories/peregrine/mgw-policy-development-kit/pdk-test" }
+pdk-test = { git = "https://github.com/mulesoft-emu/mgw-policy-development-kit.git", tag = "1.7.0-rc.0"}
 httpmock = "0.6"
 reqwest = "0.11"
 
