@@ -13,7 +13,7 @@ definition_asset_id = "oauth-2-token-introspection"
 implementation_asset_id = "oauth-2-token-introspection-flex"
 
 [dependencies]
-pdk = { path="/Users/pgarrett/mule/pdk-bondi/mgw-policy-development-kit/pdk" }
+pdk = { git = "https://github.com/mulesoft-emu/mgw-policy-development-kit.git", tag = "1.7.0-rc.0"}
 serde = { version = "1.0", features = ["derive"] }
 serde_json = { version = "1.0", default-features = false, features = ["alloc"] }
 anyhow = "1.0"
@@ -22,7 +22,7 @@ url = "2.2"
 serde_urlencoded = "0.7.1"
 
 [dev-dependencies]
-pdk-test = { path="/Users/pgarrett/mule/pdk-bondi/mgw-policy-development-kit/pdk-test" }
+pdk-test = { git = "https://github.com/mulesoft-emu/mgw-policy-development-kit.git", tag = "1.7.0-rc.0"}
 httpmock = "0.6"
 reqwest = "0.11"
 
