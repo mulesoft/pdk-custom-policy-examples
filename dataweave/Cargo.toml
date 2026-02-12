@@ -13,13 +13,13 @@ definition_asset_id = "dataweave"
 implementation_asset_id = "dataweave-flex"
 
 [dependencies]
-pdk = { version = "1.6.0" }
+pdk = { version = "1.7.0" }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = { version = "1.0", default-features = false, features = ["alloc"] }
 anyhow = "1.0"
 
 [dev-dependencies]
-pdk-test = { version = "1.6.0" }
+pdk-test = { version = "1.7.0" }
 httpmock = "0.6"
 reqwest = "0.11"
 

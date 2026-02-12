@@ -53,7 +53,7 @@ build-asset-files: $(DEFINITION_SRC_GCL_PATH)
 
 .PHONY: install-cargo-anypoint
 install-cargo-anypoint:
-	cargo install cargo-anypoint@1.6.0
+	cargo install cargo-anypoint@1.7.0
 
 .PHONY: show-policy-ref-name
 show-policy-ref-name:
