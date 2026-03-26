@@ -23,3 +23,6 @@ anyhow = { workspace = true }
 mime = { workspace = true }
 regex = "1.11.1"
 thiserror = "1.0"
+
+[dev-dependencies]
+pdk-unit = { workspace = true }

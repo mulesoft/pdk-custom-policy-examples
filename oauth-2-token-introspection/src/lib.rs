@@ -3,10 +3,13 @@ mod generated;
 
 use anyhow::{anyhow, Result};
 
+use crate::generated::config::Config;
 use pdk::hl::*;
 use pdk::logger::{debug, error, trace, warn};
-use pdk::token_introspection::{IntrospectionError, IntrospectionResult, ParsedToken, ScopesValidator, TokenValidator, TokenValidatorBuilder, ValidationError};
-use crate::generated::config::Config;
+use pdk::token_introspection::{
+    IntrospectionError, IntrospectionResult, ParsedToken, ScopesValidator, TokenValidator,
+    TokenValidatorBuilder, ValidationError,
+};
 
 const AUTHORIZATION_HEADER: &str = "authorization";
 const ACCESS_TOKEN_PARAM: &str = "access_token";
@@ -304,4 +307,102 @@ async fn configure(
     let filter = on_request(|rs| request_filter(rs, expose_headers, &validator));
     launcher.launch(filter).await?;
     Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use pdk_unit::{UnitHttpRequest, UnitHttpResponse, UnitTestBuilder};
+    use serde_json::json;
+
+    fn active_introspection_backend(_: UnitHttpRequest) -> UnitHttpResponse {
+        UnitHttpResponse::new(200)
+            .with_body(json!({"active": true, "sub": "user1", "scope": "read write"}).to_string())
+    }
+
+    fn inactive_introspection_backend(_: UnitHttpRequest) -> UnitHttpResponse {
+        UnitHttpResponse::new(200).with_body(json!({"active": false}).to_string())
+    }
+
+    fn config() -> String {
+        json!({
+            "introspectionService": "http://introspection",
+            "introspectionPath": "/introspect",
+            "authorizationValue": "Basic dGVzdDp0ZXN0",
+            "expiration": 300,
+            "expiredTokenTtl": 0,
+            "expiresInAttribute": "exp",
+            "validatedTokenTTL": 60,
+            "authenticationTimeout": 5000,
+            "maxCacheEntries": 100,
+            "exposeHeaders": false,
+            "scopeValidationCriteria": "OR"
+        })
+        .to_string()
+    }
+
+    #[test]
+    fn valid_bearer_token_passes_through() {
+        let mut tester = UnitTestBuilder::default()
+            .with_config(config())
+            .with_http_upstream_from_authority("introspection", active_introspection_backend)
+            .with_entrypoint(crate::configure);
+
+        let response = tester.request_full(
+            UnitHttpRequest::get().with_header("authorization", "Bearer valid-token"),
+        );
+
+        assert_eq!(response.status_code(), 200);
+    }
+
+    #[test]
+    fn valid_query_token_passes_through() {
+        let mut tester = UnitTestBuilder::default()
+            .with_config(config())
+            .with_http_upstream_from_authority("introspection", active_introspection_backend)
+            .with_entrypoint(crate::configure);
+
+        let response =
+            tester.request_full(UnitHttpRequest::get().with_path("/?access_token=valid-token"));
+
+        assert_eq!(response.status_code(), 200);
+    }
+
+    #[test]
+    fn inactive_token_returns_401() {
+        let mut tester = UnitTestBuilder::default()
+            .with_config(config())
+            .with_http_upstream_from_authority("introspection", inactive_introspection_backend)
+            .with_entrypoint(crate::configure);
+
+        let response = tester.request_full(
+            UnitHttpRequest::get().with_header("authorization", "Bearer inactive-token"),
+        );
+
+        assert_eq!(response.status_code(), 401);
+    }
+
+    #[test]
+    fn missing_token_returns_400() {
+        let mut tester = UnitTestBuilder::default()
+            .with_config(config())
+            .with_http_upstream_from_authority("introspection", active_introspection_backend)
+            .with_entrypoint(crate::configure);
+
+        let response = tester.request_full(UnitHttpRequest::get());
+
+        assert_eq!(response.status_code(), 400);
+    }
+
+    #[test]
+    fn invalid_authorization_header_returns_400() {
+        let mut tester = UnitTestBuilder::default()
+            .with_config(config())
+            .with_http_upstream_from_authority("introspection", active_introspection_backend)
+            .with_entrypoint(crate::configure);
+
+        let response = tester
+            .request_full(UnitHttpRequest::get().with_header("authorization", "NotBearer token"));
+
+        assert_eq!(response.status_code(), 400);
+    }
 }

@@ -126,3 +126,203 @@ async fn configure(launcher: Launcher, Configuration(bytes): Configuration) -> R
     launcher.launch(filter).await?;
     Ok(())
 }
+
+#[cfg(test)]
+mod tests {
+    use pdk_unit::{
+        TraceBackend, UnitHttpMessage, UnitHttpRequest, UnitHttpResponse, UnitTestBuilder,
+    };
+    use serde_json::json;
+    use std::rc::Rc;
+
+    fn config(action: &str) -> String {
+        json!({ "action": action }).to_string()
+    }
+
+    fn tasks_send_body(text: &str) -> String {
+        json!({
+            "jsonrpc": "2.0",
+            "method": "tasks/send",
+            "id": 1,
+            "params": {
+                "id": "task-1",
+                "message": {
+                    "role": "user",
+                    "parts": [{"type": "text", "text": text}]
+                }
+            }
+        })
+        .to_string()
+    }
+
+    #[test]
+    fn clean_message_passes_through() {
+        let backend = Rc::new(TraceBackend::new(UnitHttpResponse::new(200)));
+        let mut tester = UnitTestBuilder::default()
+            .with_config(config("Reject"))
+            .with_backend(Rc::clone(&backend))
+            .with_entrypoint(crate::configure);
+
+        let response = tester.request_full(
+            UnitHttpRequest::post()
+                .with_header("content-type", "application/json")
+                .with_body(tasks_send_body("Hello, how are you?")),
+        );
+
+        assert_eq!(response.status_code(), 200);
+        let req = backend.next().unwrap();
+        let body: serde_json::Value = serde_json::from_slice(req.body()).unwrap();
+        assert_eq!(
+            body["params"]["message"]["parts"][0]["text"],
+            "Hello, how are you?"
+        );
+    }
+
+    #[test]
+    fn email_in_message_is_rejected() {
+        let mut tester = UnitTestBuilder::default()
+            .with_config(config("Reject"))
+            .with_entrypoint(crate::configure);
+
+        let response = tester.request_full(
+            UnitHttpRequest::post()
+                .with_header("content-type", "application/json")
+                .with_body(tasks_send_body("My email is john.doe@example.com")),
+        );
+
+        assert_eq!(response.status_code(), 401);
+    }
+
+    #[test]
+    fn ssn_in_message_is_rejected() {
+        let mut tester = UnitTestBuilder::default()
+            .with_config(config("Reject"))
+            .with_entrypoint(crate::configure);
+
+        let response = tester.request_full(
+            UnitHttpRequest::post()
+                .with_header("content-type", "application/json")
+                .with_body(tasks_send_body("My SSN is 123-45-6789")),
+        );
+
+        assert_eq!(response.status_code(), 401);
+    }
+
+    #[test]
+    fn credit_card_in_message_is_rejected() {
+        let mut tester = UnitTestBuilder::default()
+            .with_config(config("Reject"))
+            .with_entrypoint(crate::configure);
+
+        let response = tester.request_full(
+            UnitHttpRequest::post()
+                .with_header("content-type", "application/json")
+                .with_body(tasks_send_body("Pay with 4111 1111 1111 1111")),
+        );
+
+        assert_eq!(response.status_code(), 401);
+    }
+
+    #[test]
+    fn pii_with_warn_action_passes_through() {
+        let backend = Rc::new(TraceBackend::new(UnitHttpResponse::new(200)));
+        let mut tester = UnitTestBuilder::default()
+            .with_config(config("Warn"))
+            .with_backend(Rc::clone(&backend))
+            .with_entrypoint(crate::configure);
+
+        let response = tester.request_full(
+            UnitHttpRequest::post()
+                .with_header("content-type", "application/json")
+                .with_body(tasks_send_body("My email is john.doe@example.com")),
+        );
+
+        assert_eq!(response.status_code(), 200);
+        let req = backend.next().unwrap();
+        let body: serde_json::Value = serde_json::from_slice(req.body()).unwrap();
+        assert_eq!(body["method"], "tasks/send");
+    }
+
+    #[test]
+    fn get_request_passes_through() {
+        let mut tester = UnitTestBuilder::default()
+            .with_config(config("Reject"))
+            .with_entrypoint(crate::configure);
+
+        let response = tester.request_full(UnitHttpRequest::get().with_path("/api/tasks"));
+
+        assert_eq!(response.status_code(), 200);
+    }
+
+    #[test]
+    fn post_without_content_type_passes_through() {
+        let backend = Rc::new(TraceBackend::new(UnitHttpResponse::new(200)));
+        let mut tester = UnitTestBuilder::default()
+            .with_config(config("Reject"))
+            .with_backend(Rc::clone(&backend))
+            .with_entrypoint(crate::configure);
+
+        let response = tester.request_full(
+            UnitHttpRequest::post().with_body(tasks_send_body("My email is john.doe@example.com")),
+        );
+
+        assert_eq!(response.status_code(), 200);
+    }
+
+    #[test]
+    fn non_send_task_method_skips_pii_detection() {
+        let backend = Rc::new(TraceBackend::new(UnitHttpResponse::new(200)));
+        let mut tester = UnitTestBuilder::default()
+            .with_config(config("Reject"))
+            .with_backend(Rc::clone(&backend))
+            .with_entrypoint(crate::configure);
+
+        let body = json!({
+            "jsonrpc": "2.0",
+            "method": "tasks/get",
+            "id": 1,
+            "params": {"id": "task-1"}
+        })
+        .to_string();
+
+        let response = tester.request_full(
+            UnitHttpRequest::post()
+                .with_header("content-type", "application/json")
+                .with_body(body),
+        );
+
+        assert_eq!(response.status_code(), 200);
+        let req = backend.next().unwrap();
+        let backend_body: serde_json::Value = serde_json::from_slice(req.body()).unwrap();
+        assert_eq!(backend_body["method"], "tasks/get");
+    }
+
+    #[test]
+    fn send_subscribe_with_pii_is_rejected() {
+        let mut tester = UnitTestBuilder::default()
+            .with_config(config("Reject"))
+            .with_entrypoint(crate::configure);
+
+        let body = json!({
+            "jsonrpc": "2.0",
+            "method": "tasks/sendSubscribe",
+            "id": 1,
+            "params": {
+                "id": "task-1",
+                "message": {
+                    "role": "user",
+                    "parts": [{"type": "text", "text": "Contact me at 555-867-5309"}]
+                }
+            }
+        })
+        .to_string();
+
+        let response = tester.request_full(
+            UnitHttpRequest::post()
+                .with_header("content-type", "application/json")
+                .with_body(body),
+        );
+
+        assert_eq!(response.status_code(), 401);
+    }
+}

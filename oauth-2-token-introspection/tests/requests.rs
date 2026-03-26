@@ -2,14 +2,14 @@
 
 mod common;
 
+use common::*;
 use httpmock::MockServer;
-use pdk_test::{pdk_test, TestComposite, TestError};
 use pdk_test::port::Port;
-use pdk_test::services::flex::{ApiConfig, FlexConfig, Flex, PolicyConfig};
-use pdk_test::services::httpmock::{HttpMockConfig, HttpMock};
+use pdk_test::services::flex::{ApiConfig, Flex, FlexConfig, PolicyConfig};
+use pdk_test::services::httpmock::{HttpMock, HttpMockConfig};
+use pdk_test::{pdk_test, TestComposite, TestError};
 use reqwest::{Error, Response, StatusCode};
 use serde_json::json;
-use common::*;
 
 const FLEX_PORT: Port = 8081;
 const VALID_TOKEN: &str = "valid";
@@ -64,7 +64,12 @@ async fn token_from_header() -> anyhow::Result<()> {
     assert_response(response, StatusCode::ACCEPTED, "World!").await;
 
     let response = request(format!("{flex_url}/hello").as_str(), INVALID_TOKEN).await?;
-    assert_response(response, StatusCode::UNAUTHORIZED, "{\"error\":\"Token has been revoked.\"}").await;
+    assert_response(
+        response,
+        StatusCode::UNAUTHORIZED,
+        "{\"error\":\"Token has been revoked.\"}",
+    )
+    .await;
 
     Ok(())
 }
@@ -115,7 +120,12 @@ async fn invalid_auth_value() -> anyhow::Result<()> {
     let flex_url = flex.external_url(FLEX_PORT).unwrap();
 
     let response = request(format!("{flex_url}/hello").as_str(), VALID_TOKEN).await?;
-    assert_response(response, StatusCode::UNAUTHORIZED, "{\"error\":\"Token has been revoked.\"}").await;
+    assert_response(
+        response,
+        StatusCode::UNAUTHORIZED,
+        "{\"error\":\"Token has been revoked.\"}",
+    )
+    .await;
 
     Ok(())
 }
@@ -173,7 +183,12 @@ async fn token_from_query_parameter() -> anyhow::Result<()> {
     }
 
     let response = request_query_param(format!("{flex_url}/hello").as_str(), INVALID_TOKEN).await?;
-    assert_response(response, StatusCode::UNAUTHORIZED, "{\"error\":\"Token has been revoked.\"}").await;
+    assert_response(
+        response,
+        StatusCode::UNAUTHORIZED,
+        "{\"error\":\"Token has been revoked.\"}",
+    )
+    .await;
 
     Ok(())
 }
@@ -184,7 +199,8 @@ async fn mock_auth_server_path(upstream: &MockServer) {
             when.path("/introspect")
                 .header("Authorization", "Basic YWRtaW46YWRtaW4=")
                 .body(serde_urlencoded::to_string([("token", VALID_TOKEN)]).unwrap());
-            then.status(200).json_body(json!({"active": true, "scope": "read write"}));
+            then.status(200)
+                .json_body(json!({"active": true, "scope": "read write"}));
         })
         .await;
 

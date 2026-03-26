@@ -111,3 +111,130 @@ async fn configure(launcher: Launcher, Configuration(bytes): Configuration) -> R
 
     Ok(())
 }
+
+#[cfg(test)]
+mod tests {
+    use pdk_unit::{UnitHttpRequest, UnitTestBuilder};
+    use serde_json::json;
+
+    fn config_with_template(allow_untemplated: bool) -> String {
+        json!({
+            "allowUntemplatedRequests": allow_untemplated,
+            "templates": [
+                {
+                    "name": "greeting",
+                    "template": "Hello, {{name}}! You are {{age}} years old."
+                }
+            ]
+        })
+        .to_string()
+    }
+
+    #[test]
+    fn valid_template_request_passes_through() {
+        let mut tester = UnitTestBuilder::default()
+            .with_config(config_with_template(false))
+            .with_entrypoint(crate::configure);
+
+        let body = json!({
+            "prompt": "{template://greeting}",
+            "properties": {"name": "Alice", "age": "30"}
+        })
+        .to_string();
+
+        let response = tester.request_full(UnitHttpRequest::post().with_body(body));
+
+        assert_eq!(response.status_code(), 200);
+    }
+
+    #[test]
+    fn request_without_body_passes_through() {
+        let mut tester = UnitTestBuilder::default()
+            .with_config(config_with_template(false))
+            .with_entrypoint(crate::configure);
+
+        let response = tester.request_full(UnitHttpRequest::post());
+
+        assert_eq!(response.status_code(), 200);
+    }
+
+    #[test]
+    fn prompt_without_template_tag_passes_through() {
+        let mut tester = UnitTestBuilder::default()
+            .with_config(config_with_template(false))
+            .with_entrypoint(crate::configure);
+
+        let body = json!({
+            "prompt": "just a plain prompt",
+            "properties": {}
+        })
+        .to_string();
+
+        let response = tester.request_full(UnitHttpRequest::post().with_body(body));
+
+        assert_eq!(response.status_code(), 200);
+    }
+
+    #[test]
+    fn unknown_template_with_allow_untemplated_passes_through() {
+        let mut tester = UnitTestBuilder::default()
+            .with_config(config_with_template(true))
+            .with_entrypoint(crate::configure);
+
+        let body = json!({
+            "prompt": "{template://unknown}",
+            "properties": {}
+        })
+        .to_string();
+
+        let response = tester.request_full(UnitHttpRequest::post().with_body(body));
+
+        assert_eq!(response.status_code(), 200);
+    }
+
+    #[test]
+    fn unknown_template_without_allow_untemplated_returns_400() {
+        let mut tester = UnitTestBuilder::default()
+            .with_config(config_with_template(false))
+            .with_entrypoint(crate::configure);
+
+        let body = json!({
+            "prompt": "{template://unknown}",
+            "properties": {}
+        })
+        .to_string();
+
+        let response = tester.request_full(UnitHttpRequest::post().with_body(body));
+
+        assert_eq!(response.status_code(), 400);
+    }
+
+    #[test]
+    fn invalid_json_body_returns_400() {
+        let mut tester = UnitTestBuilder::default()
+            .with_config(config_with_template(false))
+            .with_entrypoint(crate::configure);
+
+        let response =
+            tester.request_full(UnitHttpRequest::post().with_body("not valid json at all"));
+
+        assert_eq!(response.status_code(), 400);
+    }
+
+    #[test]
+    fn template_with_partial_variables_passes_through() {
+        let mut tester = UnitTestBuilder::default()
+            .with_config(config_with_template(false))
+            .with_entrypoint(crate::configure);
+
+        let body = json!({
+            "prompt": "{template://greeting}",
+            "properties": {"name": "Bob"}
+        })
+        .to_string();
+
+        let response = tester.request_full(UnitHttpRequest::post().with_body(body));
+
+        assert_eq!(response.status_code(), 200);
+    }
+}

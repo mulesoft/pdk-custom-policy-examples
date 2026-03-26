@@ -84,3 +84,94 @@ async fn configure(
     launcher.launch(filter).await?;
     Ok(())
 }
+
+#[cfg(test)]
+mod tests {
+    use pdk_unit::{UnitHttpRequest, UnitTestBuilder};
+    use serde_json::json;
+
+    fn config(maximum_tokens: u64, time_period_ms: u64) -> String {
+        json!({
+            "maximumTokens": maximum_tokens,
+            "timePeriodInMilliseconds": time_period_ms
+        })
+        .to_string()
+    }
+
+    fn completion_body(content: &str) -> String {
+        json!({
+            "model": "gpt-4",
+            "messages": [{"role": "user", "content": content}]
+        })
+        .to_string()
+    }
+
+    #[test]
+    fn request_within_token_limit_passes() {
+        let mut tester = UnitTestBuilder::default()
+            .with_config(config(100, 60000))
+            .with_entrypoint(crate::configure);
+
+        // "this has four tokens" = 4 tokens, well within limit
+        let response = tester.request_full(
+            UnitHttpRequest::post().with_body(completion_body("this has four tokens")),
+        );
+
+        assert_eq!(response.status_code(), 200);
+    }
+
+    #[test]
+    fn request_exceeding_token_limit_returns_403() {
+        let mut tester = UnitTestBuilder::default()
+            .with_config(config(1, 60000))
+            .with_entrypoint(crate::configure);
+
+        // "this has four tokens" = 4 tokens, exceeds limit of 1
+        let response = tester.request_full(
+            UnitHttpRequest::post().with_body(completion_body("this has four tokens")),
+        );
+
+        assert_eq!(response.status_code(), 403);
+    }
+
+    #[test]
+    fn request_without_body_passes() {
+        let mut tester = UnitTestBuilder::default()
+            .with_config(config(1, 60000))
+            .with_entrypoint(crate::configure);
+
+        let response = tester.request_full(UnitHttpRequest::post());
+
+        assert_eq!(response.status_code(), 200);
+    }
+
+    #[test]
+    fn invalid_json_body_returns_400() {
+        let mut tester = UnitTestBuilder::default()
+            .with_config(config(100, 60000))
+            .with_entrypoint(crate::configure);
+
+        let response = tester.request_full(UnitHttpRequest::post().with_body("not valid json"));
+
+        assert_eq!(response.status_code(), 400);
+    }
+
+    #[test]
+    fn cumulative_requests_exceeding_limit_returns_403() {
+        let mut tester = UnitTestBuilder::default()
+            .with_config(config(5, 60000))
+            .with_entrypoint(crate::configure);
+
+        // "this has four tokens" = 4 tokens, fits in limit of 5
+        let first = tester.request_full(
+            UnitHttpRequest::post().with_body(completion_body("this has four tokens")),
+        );
+        assert_eq!(first.status_code(), 200);
+
+        // second request pushes cumulative count over 5
+        let second = tester.request_full(
+            UnitHttpRequest::post().with_body(completion_body("this has four tokens")),
+        );
+        assert_eq!(second.status_code(), 403);
+    }
+}
