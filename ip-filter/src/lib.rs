@@ -72,3 +72,80 @@ async fn configure(launcher: Launcher, Configuration(bytes): Configuration) -> R
 
     Ok(())
 }
+
+#[cfg(test)]
+mod tests {
+    use pdk_unit::{UnitHttpRequest, UnitTestBuilder};
+    use serde_json::json;
+
+    #[test]
+    fn blocked_ip_is_rejected() {
+        let mut tester = UnitTestBuilder::default()
+            .with_config(
+                json!({
+                    "ipHeader": "x-forwarded-for",
+                    "ipsBlocked": ["192.168.1.1"]
+                })
+                .to_string(),
+            )
+            .with_entrypoint(crate::configure);
+
+        let response = tester
+            .request_full(UnitHttpRequest::get().with_header("x-forwarded-for", "192.168.1.1"));
+
+        assert_eq!(response.status_code(), 403);
+    }
+
+    #[test]
+    fn allowed_ip_passes_through() {
+        let mut tester = UnitTestBuilder::default()
+            .with_config(
+                json!({
+                    "ipHeader": "x-forwarded-for",
+                    "ipsAllowed": ["10.0.0.0/8"]
+                })
+                .to_string(),
+            )
+            .with_entrypoint(crate::configure);
+
+        let response =
+            tester.request_full(UnitHttpRequest::get().with_header("x-forwarded-for", "10.0.0.1"));
+
+        assert_eq!(response.status_code(), 200);
+    }
+
+    #[test]
+    fn ip_not_in_allowlist_is_rejected() {
+        let mut tester = UnitTestBuilder::default()
+            .with_config(
+                json!({
+                    "ipHeader": "x-forwarded-for",
+                    "ipsAllowed": ["10.0.0.0/8"]
+                })
+                .to_string(),
+            )
+            .with_entrypoint(crate::configure);
+
+        let response = tester
+            .request_full(UnitHttpRequest::get().with_header("x-forwarded-for", "192.168.1.1"));
+
+        assert_eq!(response.status_code(), 403);
+    }
+
+    #[test]
+    fn missing_ip_header_passes_through() {
+        let mut tester = UnitTestBuilder::default()
+            .with_config(
+                json!({
+                    "ipHeader": "x-forwarded-for",
+                    "ipsBlocked": ["192.168.1.1"]
+                })
+                .to_string(),
+            )
+            .with_entrypoint(crate::configure);
+
+        let response = tester.request_full(UnitHttpRequest::get());
+
+        assert_eq!(response.status_code(), 200);
+    }
+}

@@ -7,7 +7,7 @@ use std::cell::RefCell;
 use std::collections::HashMap;
 use std::hash::Hash;
 use std::ops::{Deref, DerefMut};
-use std::time::{Duration, SystemTime};
+use std::time::Duration;
 
 use pdk::hl::timer::{Clock, Timer};
 use pdk::hl::*;
@@ -69,10 +69,6 @@ impl Serialize for Metrics {
         S: Serializer,
     {
         let data = self.data.borrow();
-        let timestamp = SystemTime::now()
-            .duration_since(SystemTime::UNIX_EPOCH)
-            .unwrap_or_default()
-            .as_secs();
         let mut method_count: HashMap<&str, u64> = HashMap::new();
         let mut status_count: HashMap<u32, u64> = HashMap::new();
         for ((method, status), count) in data.deref() {
@@ -82,7 +78,6 @@ impl Serialize for Metrics {
 
         let mut s = serializer.serialize_struct("Metrics", 3)?;
         s.serialize_field("node", &self.node)?;
-        s.serialize_field("timestamp", &timestamp)?;
         s.serialize_field("methods", &method_count)?;
         s.serialize_field("status_codes", &status_count)?;
 
@@ -210,4 +205,95 @@ async fn configure(
     // Propagate the error of the launcher
     joined.0?;
     Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use pdk_unit::{
+        Backend, TraceBackend, UnitHttpMessage, UnitHttpRequest, UnitHttpResponse, UnitTestBuilder,
+    };
+    use serde_json::json;
+    use std::cell::RefCell;
+    use std::rc::Rc;
+    use std::time::Duration;
+
+    pub struct MetricsBackend {
+        count: RefCell<u32>,
+        reject_until: u32,
+    }
+
+    impl MetricsBackend {
+        pub fn new(reject_until: u32) -> Self {
+            Self {
+                count: RefCell::new(0),
+                reject_until,
+            }
+        }
+    }
+
+    impl Backend for MetricsBackend {
+        fn call(&self, _req: UnitHttpRequest) -> UnitHttpResponse {
+            let count = *self.count.borrow();
+            self.count.replace(count + 1);
+            if count < self.reject_until {
+                UnitHttpResponse::new(503)
+            } else {
+                UnitHttpResponse::new(202)
+            }
+        }
+    }
+
+    fn config() -> String {
+        json!({
+            "metricsSink": "http://metrics-sink",
+            "pushFrequency": 60,
+            "maxRetries": 3
+        })
+        .to_string()
+    }
+
+    #[test]
+    fn metrics_sent_to_backend() {
+        let metric_server = Rc::new(TraceBackend::new(MetricsBackend::new(0)));
+
+        let mut tester = UnitTestBuilder::default()
+            .with_config(config())
+            .with_http_upstream_from_authority("metrics-sink", Rc::clone(&metric_server))
+            .with_entrypoint(crate::configure);
+
+        let response = tester.request_full(UnitHttpRequest::get());
+        assert_eq!(response.status_code(), 200);
+
+        assert!(metric_server.next().is_none());
+
+        tester.sleep(Duration::from_secs(120));
+
+        let sent = metric_server.next().unwrap();
+        assert!(String::from_utf8_lossy(sent.body())
+            .contains("\"methods\":{\"get\":1},\"status_codes\":{\"200\":1}"));
+        assert!(metric_server.next().is_none());
+    }
+
+    #[test]
+    fn metric_sent_retries() {
+        let metric_server = Rc::new(TraceBackend::new(MetricsBackend::new(1)));
+
+        let mut tester = UnitTestBuilder::default()
+            .with_config(config())
+            .with_http_upstream_from_authority("metrics-sink", Rc::clone(&metric_server))
+            .with_entrypoint(crate::configure);
+
+        let response = tester.request_full(UnitHttpRequest::get());
+        assert_eq!(response.status_code(), 200);
+
+        assert!(metric_server.next().is_none());
+
+        tester.sleep(Duration::from_secs(120));
+
+        let sent = metric_server.next().unwrap();
+        assert!(String::from_utf8_lossy(sent.body())
+            .contains("\"methods\":{\"get\":1},\"status_codes\":{\"200\":1}"));
+        assert!(String::from_utf8_lossy(sent.body())
+            .contains("\"methods\":{\"get\":1},\"status_codes\":{\"200\":1}"));
+    }
 }

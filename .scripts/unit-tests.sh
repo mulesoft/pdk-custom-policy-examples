@@ -5,10 +5,9 @@ root=$(pwd)
 for f in $(find . | grep '.*Cargo.toml'); do
     f=$(dirname "$f")
     if [ -d "$f" ]; then
-        echo "Building '$f' policy example";
+        echo "Running unit tests for '$f'.";
         cd "$f";
-        make setup;
-        make build;
+        RUST_BACKTRACE=1 cargo test --lib || exit 1;
         cd "$root";
     fi
 done

@@ -98,3 +98,155 @@ async fn configure(launcher: Launcher, Configuration(bytes): Configuration) -> R
 
     Ok(())
 }
+
+#[cfg(test)]
+mod tests {
+    use pdk_unit::{UnitHttpRequest, UnitTestBuilder};
+    use serde_json::json;
+
+    fn config_with_filters(filters: serde_json::Value) -> String {
+        json!({ "filters": filters }).to_string()
+    }
+
+    fn omit_email_config() -> String {
+        config_with_filters(json!([
+            {
+                "pattern": r"[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}",
+                "omitInsteadOfBlocking": true
+            }
+        ]))
+    }
+
+    fn block_phone_config() -> String {
+        config_with_filters(json!([
+            {
+                "pattern": r"(\+?\d{1,3})?[-.\s]?\(?\d{2,4}\)?[-.\s]?\d{3,4}[-.\s]?\d{4}",
+                "omitInsteadOfBlocking": false
+            }
+        ]))
+    }
+
+    fn no_filters_config() -> String {
+        config_with_filters(json!([]))
+    }
+
+    #[test]
+    fn clean_request_passes_through() {
+        let mut tester = UnitTestBuilder::default()
+            .with_config(omit_email_config())
+            .with_entrypoint(crate::configure);
+
+        let body = json!({
+            "model": "gpt-4",
+            "messages": [
+                {"role": "user", "content": "What is the weather today?"}
+            ]
+        })
+        .to_string();
+
+        let response = tester.request_full(UnitHttpRequest::post().with_body(body));
+
+        assert_eq!(response.status_code(), 200);
+    }
+
+    #[test]
+    fn message_with_email_is_omitted() {
+        let mut tester = UnitTestBuilder::default()
+            .with_config(omit_email_config())
+            .with_entrypoint(crate::configure);
+
+        let body = json!({
+            "model": "gpt-4",
+            "messages": [
+                {"role": "user", "content": "My email is user@example.com"},
+                {"role": "user", "content": "What is the weather today?"}
+            ]
+        })
+        .to_string();
+
+        let response = tester.request_full(UnitHttpRequest::post().with_body(body));
+
+        assert_eq!(response.status_code(), 200);
+    }
+
+    #[test]
+    fn message_with_blocked_pattern_returns_403() {
+        let mut tester = UnitTestBuilder::default()
+            .with_config(block_phone_config())
+            .with_entrypoint(crate::configure);
+
+        let body = json!({
+            "model": "gpt-4",
+            "messages": [
+                {"role": "user", "content": "Call me at +1-212-456-7890"}
+            ]
+        })
+        .to_string();
+
+        let response = tester.request_full(UnitHttpRequest::post().with_body(body));
+
+        assert_eq!(response.status_code(), 403);
+    }
+
+    #[test]
+    fn request_without_body_passes_through() {
+        let mut tester = UnitTestBuilder::default()
+            .with_config(omit_email_config())
+            .with_entrypoint(crate::configure);
+
+        let response = tester.request_full(UnitHttpRequest::post());
+
+        assert_eq!(response.status_code(), 200);
+    }
+
+    #[test]
+    fn invalid_json_body_returns_400() {
+        let mut tester = UnitTestBuilder::default()
+            .with_config(omit_email_config())
+            .with_entrypoint(crate::configure);
+
+        let response = tester.request_full(UnitHttpRequest::post().with_body("not valid json"));
+
+        assert_eq!(response.status_code(), 400);
+    }
+
+    #[test]
+    fn no_filters_passes_all_content() {
+        let mut tester = UnitTestBuilder::default()
+            .with_config(no_filters_config())
+            .with_entrypoint(crate::configure);
+
+        let body = json!({
+            "model": "gpt-4",
+            "messages": [
+                {"role": "user", "content": "My email is user@example.com and phone +1-212-456-7890"}
+            ]
+        })
+        .to_string();
+
+        let response = tester.request_full(UnitHttpRequest::post().with_body(body));
+
+        assert_eq!(response.status_code(), 200);
+    }
+
+    #[test]
+    fn multiple_messages_with_mixed_content_omits_matching() {
+        let mut tester = UnitTestBuilder::default()
+            .with_config(omit_email_config())
+            .with_entrypoint(crate::configure);
+
+        let body = json!({
+            "model": "gpt-4",
+            "messages": [
+                {"role": "system", "content": "You are a helpful assistant."},
+                {"role": "user", "content": "Contact pii@example.com for support."},
+                {"role": "user", "content": "What is the capital of France?"}
+            ]
+        })
+        .to_string();
+
+        let response = tester.request_full(UnitHttpRequest::post().with_body(body));
+
+        assert_eq!(response.status_code(), 200);
+    }
+}

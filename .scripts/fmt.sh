@@ -5,10 +5,9 @@ root=$(pwd)
 for f in $(find . | grep '.*Cargo.toml'); do
     f=$(dirname "$f")
     if [ -d "$f" ]; then
-        echo "Building '$f' policy example";
+        echo "Formatting '$f'.";
         cd "$f";
-        make setup;
-        make build;
+        cargo fmt;
         cd "$root";
     fi
 done

@@ -259,3 +259,41 @@ async fn configure(
     launcher.launch(filter).await?;
     Ok(())
 }
+
+#[cfg(test)]
+mod tests {
+    use pdk_unit::{UnitHttpRequest, UnitTestBuilder};
+    use serde_json::json;
+
+    fn config() -> String {
+        json!({
+            "start_hour": 0,
+            "end_hour": 23,
+            "max_cached_values": 100
+        })
+        .to_string()
+    }
+
+    #[test]
+    fn request_passes_through_on_cache_miss() {
+        let mut tester = UnitTestBuilder::default()
+            .with_config(config())
+            .with_entrypoint(crate::configure);
+
+        let response = tester.request_full(UnitHttpRequest::get().with_path("/api/resource"));
+
+        assert_eq!(response.status_code(), 200);
+    }
+
+    #[test]
+    fn second_request_to_same_path_is_served() {
+        let mut tester = UnitTestBuilder::default()
+            .with_config(config())
+            .with_entrypoint(crate::configure);
+
+        tester.request_full(UnitHttpRequest::get().with_path("/api/resource"));
+        let response = tester.request_full(UnitHttpRequest::get().with_path("/api/resource"));
+
+        assert_eq!(response.status_code(), 200);
+    }
+}

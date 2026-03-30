@@ -244,3 +244,67 @@ async fn configure(
 
     Ok(())
 }
+
+#[cfg(test)]
+mod tests {
+    use pdk_unit::{UnitHttpRequest, UnitTestBuilder};
+    use serde_json::json;
+
+    fn local_config() -> String {
+        json!({
+            "storage_type": "local",
+            "namespace": "test-ns",
+            "max_retries": 3,
+            "ttl_seconds": 60
+        })
+        .to_string()
+    }
+
+    #[test]
+    fn get_stats_returns_200() {
+        let mut tester = UnitTestBuilder::default()
+            .with_config(local_config())
+            .with_entrypoint(crate::configure);
+
+        let response = tester.request_full(UnitHttpRequest::get().with_path("/stats"));
+
+        assert_eq!(response.status_code(), 200);
+    }
+
+    #[test]
+    fn delete_stats_returns_200() {
+        let mut tester = UnitTestBuilder::default()
+            .with_config(local_config())
+            .with_entrypoint(crate::configure);
+
+        let response = tester.request_full(UnitHttpRequest::delete().with_path("/stats"));
+
+        assert_eq!(response.status_code(), 200);
+    }
+
+    #[test]
+    fn client_request_with_id_header_passes_through() {
+        let mut tester = UnitTestBuilder::default()
+            .with_config(local_config())
+            .with_entrypoint(crate::configure);
+
+        let response = tester.request_full(
+            UnitHttpRequest::get()
+                .with_path("/api/resource")
+                .with_header("x-client-id", "client-abc"),
+        );
+
+        assert_eq!(response.status_code(), 200);
+    }
+
+    #[test]
+    fn client_request_without_id_header_returns_400() {
+        let mut tester = UnitTestBuilder::default()
+            .with_config(local_config())
+            .with_entrypoint(crate::configure);
+
+        let response = tester.request_full(UnitHttpRequest::get().with_path("/api/resource"));
+
+        assert_eq!(response.status_code(), 400);
+    }
+}
