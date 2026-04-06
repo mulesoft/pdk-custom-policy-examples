@@ -92,7 +92,7 @@ make run
 
 
 ```shell
-curl "http://localhost:8081"
+curl -v "http://localhost:8081"
 ```
 
 To see spike behavior, execute consecutive requests with 200 status code until exceeding the configured limit. After that, the gateway responds with HTTP 429.
