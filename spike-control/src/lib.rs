@@ -22,10 +22,8 @@ async fn request_filter(
 ) -> Flow<()> {
     let _ = state.into_headers_state().await;
 
-    let with_retry = config.max_attempts > 0;
-
     match handler
-        .is_allowed(BUCKET_ID, ROUTE_KEY, 1, with_retry)
+        .is_allowed(BUCKET_ID, ROUTE_KEY, 1, config.max_attempts > 0)
         .await
     {
         Ok(_) => Flow::Continue(()),
@@ -41,41 +39,40 @@ async fn configure(
     clock: Clock,
     spike_control: SpikeControlBuilder,
 ) -> Result<()> {
-    let config: Config = serde_json::from_slice(&bytes).map_err(|e| {
+    let config: Config = serde_json::from_slice(&bytes).map_err(|err| {
         anyhow!(
-            "Failed to parse configuration '{}': {e}",
-            String::from_utf8_lossy(&bytes)
+            "Failed to parse configuration '{}'. Cause: {}",
+            String::from_utf8_lossy(&bytes),
+            err
         )
     })?;
-
-    if config.requests <= 0 || config.millis <= 0 {
-        return Err(anyhow!("configuration requires positive `requests` and `millis`"));
-    }
-
-    let ticker = Rc::new(clock.period(Duration::from_millis(100)));
 
     let delay_ms = config.delay.max(0) as u64;
     let max_retries = config.max_attempts.max(0) as u32;
 
-    let handler = spike_control
+    let mut inst = spike_control
         .new("spike-control-example".to_string())
-        .with_ticker(ticker)
         .with_bucket(
             BUCKET_ID.to_string(),
             vec![Tier {
-                requests: config.requests as u64,
-                period_in_millis: config.millis as u64,
+                requests: config.requests.max(0) as u64,
+                period_in_millis: config.millis.max(0) as u64,
             }],
-        )
-        .with_retry(delay_ms, max_retries)
-        .build()
-        .map_err(|e| anyhow!("SpikeControlBuilder::build failed: {e}"))?;
+        );
 
-    launcher
-        .launch(on_request(|state| {
-            request_filter(state, &handler, &config)
-        }))
-        .await?;
+    if max_retries > 0 {
+        inst = inst
+            .with_ticker(Rc::new(clock.period(Duration::from_millis(100))))
+            .with_retry(delay_ms, max_retries);
+    }
+
+    let handler = inst
+        .build()
+        .map_err(|e| anyhow!("failed to build spike control: {e}"))?;
+
+    let filter = on_request(|state| request_filter(state, &handler, &config));
+    launcher.launch(filter).await?;
+
     Ok(())
 }
 

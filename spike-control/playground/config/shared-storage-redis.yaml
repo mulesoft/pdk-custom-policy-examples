@@ -3,8 +3,8 @@
 apiVersion: gateway.mulesoft.com/v1alpha1
 kind: Configuration
 metadata:
-  name: logging-config
+  name: shared-storage-redis
 spec:
-  logging:
-    runtimeLogs:
-      logLevel: debug
+  sharedStorage:
+    redis:
+      address: redis:6379
