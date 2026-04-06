@@ -1,6 +1,6 @@
 # Copyright 2023 Salesforce, Inc. All rights reserved.
 [package]
-name = "multi_instance_rate_limiting"
+name = "spike_control"
 version = "1.0.0"
 rust-version = "1.88.0"
 edition = "2018"
