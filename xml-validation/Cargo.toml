@@ -1,0 +1,29 @@
+# Copyright 2023 Salesforce, Inc. All rights reserved.
+[package]
+name = "xml_validation"
+version = "1.0.0"
+rust-version = "1.88.0"
+edition = "2018"
+resolver = "2"
+
+[package.metadata.anypoint]
+group_id = "edce8390-cbc6-4b53-af21-b1991d7a14bc"
+definition_asset_id = "xml-validation"
+implementation_asset_id = "xml-validation-flex"
+
+[dependencies]
+pdk = { git = "https://github.com/mulesoft-emu/mgw-policy-development-kit.git", rev = "5f36f18c0adef4591ff5a09602ec4e0849b767b4" }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = { version = "1.0", default-features = false, features = ["alloc"] }
+anyhow = "1.0"
+
+[dev-dependencies]
+pdk-unit = { git = "https://github.com/mulesoft-emu/mgw-policy-development-kit.git", rev = "5f36f18c0adef4591ff5a09602ec4e0849b767b4" }
+
+[lib]
+crate-type = ["cdylib"]
+
+[profile.release]
+lto = true
+opt-level = 'z'
+strip = "debuginfo"

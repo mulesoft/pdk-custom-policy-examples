@@ -1,0 +1,35 @@
+# Copyright 2023 Salesforce, Inc. All rights reserved.
+version: "3.3"
+
+services:
+  local-flex-1:
+    image: mulesoft/flex-gateway:1.10.0
+    ports:
+      - 8081:8081
+    volumes:
+      - ./config:/usr/local/share/mulesoft/flex-gateway/conf.d/
+    depends_on:
+      - redis
+    environment:
+      - FLEX_INSTANCE_ID=flex-1
+
+  local-flex-2:
+    image: mulesoft/flex-gateway:1.10.0
+    ports:
+      - 8082:8081
+    volumes:
+      - ./config:/usr/local/share/mulesoft/flex-gateway/conf.d/
+    depends_on:
+      - redis
+    environment:
+      - FLEX_INSTANCE_ID=flex-2
+
+  backend:
+    image: kennethreitz/httpbin
+    ports:
+      - 8080:80
+
+  redis:
+    image: redis:7.2-alpine
+    ports:
+      - 6379:6379
