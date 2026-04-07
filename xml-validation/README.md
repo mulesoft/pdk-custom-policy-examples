@@ -6,14 +6,14 @@ To learn more about building policies with the PDK, see the [PDK documentation](
 
 XML Validation policy implementation:
 
-1. The policy intercepts each incoming request. If there is **no body** (for example a `GET`), validation is skipped and the request proceeds to the upstream service.
-2. If a body is present, the policy reads the **streaming** payload and validates it as XML.
+1. The policy intercepts each incoming request. If there is no body (for example a `GET`), validation is skipped and the request proceeds to the upstream service.
+2. If a body is present, the policy reads the streaming payload and validates it as XML.
 3. If validation succeeds, the request proceeds to the upstream service.
-4. If the document is malformed or violates a configured limit, the policy responds with **HTTP 400**.
+4. If the document is malformed or violates a configured limit, the policy responds with HTTP 400.
 
 ## Policy Configuration
 
-The policy accepts the following parameters. All are **optional**; omit a property, use `null`, or use **`0`** to mean *no limit* for that constraint. If every limit is disabled, only **malformed** XML is rejected.
+The policy accepts the following parameters. All are optional; omit a property, use `null`, or use `0` to mean no limit for that constraint. If every limit is disabled, only malformed XML is rejected.
 
 - `maxDepth` (optional): Maximum element nesting depth.
 - `maxAttributeCount` (optional): Maximum number of attributes on a single element.
@@ -21,6 +21,8 @@ The policy accepts the following parameters. All are **optional**; omit a proper
 - `maxTextLength` (optional): Maximum length of text content inside an element.
 - `maxAttributeLength` (optional): Maximum length of an attribute value.
 - `maxCommentLength` (optional): Maximum length of an XML comment.
+
+To learn more about XML validation, see [Configuring XML Validation](https://docs.mulesoft.com/pdk/latest/policies-pdk-configure-features-xml-validation).
 
 ## Test the Policy
 
