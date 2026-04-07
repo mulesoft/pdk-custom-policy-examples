@@ -17,28 +17,22 @@ To learn more about spike control, see [Configuring Spike Control](https://docs.
 
 ## Test the Policy
 
-Test the policy using unit tests, integration tests, or the policy playground.
+Test the policy using unit tests or the policy playground.
 
-To find the prereqs for using either environment and to learn more about either environment, see:
+To find the prereqs and to learn more, see:
 
-* [Writing Integration Tests](https://docs.mulesoft.com/pdk/latest/policies-pdk-integration-tests).
+* [Writing Integration Tests](https://docs.mulesoft.com/pdk/latest/policies-pdk-integration-tests)
 * [Debug Policies With the PDK Playground](https://docs.mulesoft.com/pdk/latest/policies-pdk-debug-local).
 
 ### Unit tests
+
+This example contains unit tests in `src/lib.rs`.
 
 ```shell
 cargo test --lib
 ```
 
-### Integration tests
-
-This example contains an [integration test](./tests/requests.rs). The test uses the policy implementation name from `target/policy-ref-name.txt`, which `make build` generates together with the WASM and implementation GCL. Use `make test` so the full build runs before Docker-based tests.
-
-To begin testing:
-
-1. Add `registration.yaml` in the `./tests/config` folder.
-
-2. Execute the `test` command:
+To build the WASM and run all crate tests (as defined in the Makefile):
 
 ```shell
 make test
@@ -54,7 +48,7 @@ To test the policy in the playground:
 make build
 ```
 
-2. Configure `playground/config/api.yaml` as follows (set `policyRef.name` to the value printed by `make show-policy-ref-name`; `make run` overwrites it automatically):
+2. Configure the `playground/config/api.yaml` as follows:
 
 ```yaml
 # Copyright 2023 Salesforce, Inc. All rights reserved.
@@ -94,7 +88,7 @@ make run
 
 
 ```shell
-curl -v "http://localhost:8081"
+curl -i "http://localhost:8081"
 ```
 
 To see spike behavior, execute consecutive requests with 200 status code until exceeding the configured limit. After that, the gateway responds with HTTP 429.
