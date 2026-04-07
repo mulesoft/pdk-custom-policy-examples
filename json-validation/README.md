@@ -18,11 +18,11 @@ To learn more about JSON validation, see [Configuring JSON Validation](https://d
 
 ## Test the Policy
 
-Test the policy using unit tests, integration tests, or the policy playground.
+Test the policy using unit tests or the policy playground.
 
-To find the prereqs for using either environment and to learn more about either environment, see:
+To find the prereqs and to learn more, see:
 
-* [Writing Integration Tests](https://docs.mulesoft.com/pdk/latest/policies-pdk-integration-tests).
+* [Writing Integration Tests](https://docs.mulesoft.com/pdk/latest/policies-pdk-integration-tests)
 * [Debug Policies With the PDK Playground](https://docs.mulesoft.com/pdk/latest/policies-pdk-debug-local).
 
 ### Unit tests
@@ -47,7 +47,7 @@ To test the policy in the playground:
 make build
 ```
 
-2. Configure `playground/config/api.yaml` as follows (set `policyRef.name` to the value printed by `make show-policy-ref-name`; `make run` overwrites it automatically):
+2. Configure the `playground/config/api.yaml` as follows:
 
 ```yaml
 # Copyright 2023 Salesforce, Inc. All rights reserved.
