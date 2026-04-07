@@ -1,4 +1,4 @@
-# XML Validation Policy
+# XML Validation Policy Example
 
 This policy validates incoming request bodies as well-formed XML and can enforce optional structural limits (depth, attributes, children, text length, and so on) using the PDK XML validator library on the request body stream.
 
@@ -28,9 +28,9 @@ To learn more about XML validation, see [Configuring XML Validation](https://doc
 
 Test the policy using unit tests or the policy playground.
 
-To find the prereqs for using either environment and to learn more about either environment, see:
+To find the prereqs and to learn more, see:
 
-* [Writing Integration Tests](https://docs.mulesoft.com/pdk/latest/policies-pdk-integration-tests).
+* [Writing Integration Tests](https://docs.mulesoft.com/pdk/latest/policies-pdk-integration-tests)
 * [Debug Policies With the PDK Playground](https://docs.mulesoft.com/pdk/latest/policies-pdk-debug-local).
 
 ### Unit tests
@@ -99,15 +99,15 @@ make run
 
 ```shell
 # POST with valid XML should succeed
-curl -X POST "http://localhost:8081/" \
+curl -i -X POST "http://localhost:8081/" \
   -H "Content-Type: application/xml" \
   -d '<note><to>you</to><body>hello</body></note>'
 
 # POST with malformed XML should return 400
-curl -X POST "http://localhost:8081/" \
+curl -i -X POST "http://localhost:8081/" \
   -H "Content-Type: application/xml" \
   -d '<note><to></note>'
 
-# GET without body should succeed; validation is skipped
-curl "http://localhost:8081/"
+# GET without body should succeed, validation is skipped
+curl -i "http://localhost:8081/"
 ```

@@ -8,8 +8,6 @@ services:
       - 8081:8081
     volumes:
       - ./config:/usr/local/share/mulesoft/flex-gateway/conf.d/
-    depends_on:
-      - redis
     environment:
       - FLEX_INSTANCE_ID=flex-1
 
@@ -19,8 +17,6 @@ services:
       - 8082:8081
     volumes:
       - ./config:/usr/local/share/mulesoft/flex-gateway/conf.d/
-    depends_on:
-      - redis
     environment:
       - FLEX_INSTANCE_ID=flex-2
 
@@ -28,8 +24,3 @@ services:
     image: kennethreitz/httpbin
     ports:
       - 8080:80
-
-  redis:
-    image: redis:7.2-alpine
-    ports:
-      - 6379:6379
