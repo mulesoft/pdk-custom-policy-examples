@@ -1,8 +1,10 @@
-# Spike Control Policy
+# Spike Control Policy Example
 
 Use the Spike Control Policy as an example of how to limit how many requests reach the backend in a time window, with optional delays and retries when the limit is reached.
 
 Spike limits apply per worker. For example, if you set `requests` to `100` and the gateway runs two workers, up to 200 requests can be served during the window (behavior follows the runtime).
+
+## Policy Configuration
 
 The policy takes the following parameters:
 
@@ -30,7 +32,7 @@ cargo test --lib
 
 ### Integration tests
 
-This example contains an [integration test](./tests/requests.rs). The test uses the policy implementation name from `target/policy-ref-name.txt`, which **`make build`** generates together with the WASM and implementation GCL. Use **`make test`** so the full build runs before Docker-based tests.
+This example contains an [integration test](./tests/requests.rs). The test uses the policy implementation name from `target/policy-ref-name.txt`, which `make build` generates together with the WASM and implementation GCL. Use `make test` so the full build runs before Docker-based tests.
 
 To begin testing:
 
