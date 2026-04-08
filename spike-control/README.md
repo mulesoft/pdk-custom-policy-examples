@@ -1,44 +1,47 @@
 # Spike Control Policy Example
 
-Use the Spike Control Policy as an example of how to limit how many requests reach the backend in a time window, with optional delays and retries when the limit is reached.
+This policy limits how many requests reach the backend in a time window, with optional delays and retries when the limit is reached.
+
+To learn more about spike control, see [Configuring Spike Control](https://docs.mulesoft.com/pdk/latest/policies-pdk-configure-features-spike-control).
+
+Spike Control policy implementation:
+
+1. Each incoming request is evaluated against a per-bucket quota for the configured time window.
+2. If the request is within quota, it proceeds to the upstream service.
+3. If the quota is exceeded and `maxAttempts` is zero, the policy responds immediately (for example HTTP 429).
+4. If `maxAttempts` is greater than zero, the policy can delay and retry according to `delay` and `maxAttempts`.
 
 Spike limits apply per worker. For example, if you set `requests` to `100` and the gateway runs two workers, up to 200 requests can be served during the window (behavior follows the runtime).
 
 ## Policy Configuration
 
-The policy takes the following parameters:
+The policy accepts the following parameters:
 
-* `requests`: The number of requests that can reach the backend in the given time window.
-* `millis`: The duration in milliseconds of the time window.
-* `maxAttempts`: The maximum number of throttling attempts before the request is rejected (use `0` to reject immediately when over quota, with no queue).
-* `delay`: The delay in milliseconds between each throttled attempt when `maxAttempts` is greater than zero.
-
-To learn more about spike control, see [Configuring Spike Control](https://docs.mulesoft.com/pdk/latest/policies-pdk-configure-features-spike-control).
+- requests: The number of requests that can reach the backend in the given time window.
+- millis: The duration in milliseconds of the time window.
+- maxAttempts: The maximum number of throttling attempts before the request is rejected (use `0` to reject immediately when over quota, with no queue).
+- delay: The delay in milliseconds between each throttled attempt when `maxAttempts` is greater than zero.
 
 ## Test the Policy
 
 Test the policy using unit tests or the policy playground.
 
-To find the prereqs and to learn more, see:
+To find the prereqs for using either environment and to learn more about either environment, see:
 
-* [Writing Integration Tests](https://docs.mulesoft.com/pdk/latest/policies-pdk-integration-tests)
+* [Writing Integration Tests](https://docs.mulesoft.com/pdk/latest/policies-pdk-integration-tests).
 * [Debug Policies With the PDK Playground](https://docs.mulesoft.com/pdk/latest/policies-pdk-debug-local).
 
 ### Unit tests
 
-This example contains unit tests in `src/lib.rs`.
+This example contains [unit tests](./src/lib.rs) to simplify its testing.
 
-```shell
-cargo test --lib
-```
-
-To build the WASM and run all crate tests (as defined in the Makefile):
+To begin testing execute the `test` command:
 
 ```shell
 make test
 ```
 
-### Playground testing
+### Playground Testing
 
 To test the policy in the playground:
 
@@ -76,16 +79,15 @@ spec:
         delay: 500
 ```
 
-3. Place `registration.yaml` in `playground/config`.
+3. Configure a Flex Gateway instance to debug the policy by placing a `registration.yaml` file in `playground/config`.
 
-4. Run the gateway:
+4. Run the `run` command to start the Flex Gateway instance:
 
 ```shell
 make run
 ```
 
-5. Send requests to the Flex Gateway.
-
+5. Send requests to the Flex Gateway:
 
 ```shell
 curl -i "http://localhost:8081"

@@ -1,37 +1,40 @@
 # JSON Validation Policy Example
 
-Use the JSON Validation Policy as an example of how to validate incoming request bodies as JSON and optionally enforce structural limits (nesting depth, array length, object size, string and key lengths) using the PDK JSON validator library.
+This policy validates incoming request bodies as JSON and optionally enforces structural limits (nesting depth, array length, object size, string and key lengths) using the PDK JSON validator library.
 
-Requests without a body skip validation and are forwarded upstream. When a body is present, the policy buffers the payload, validates it and returns HTTP 400 if the JSON is invalid or exceeds a configured limit; otherwise the request continues to the backend.
+To learn more about JSON validation, see [Configuring JSON Validation](https://docs.mulesoft.com/pdk/latest/policies-pdk-configure-features-json-validation).
+
+JSON Validation policy implementation:
+
+1. If the request has no body, validation is skipped and the request proceeds to the upstream service.
+2. If a body is present, the policy buffers the payload and validates it as JSON.
+3. If validation succeeds, the request proceeds to the upstream service.
+4. If the JSON is invalid or exceeds a configured limit, the policy responds with HTTP 400.
 
 ## Policy Configuration
 
-The policy takes the following parameters. All are optional: omit a field, use `null`, or use 0 for no limit on that constraint. With every limit disabled, only invalid JSON syntax is rejected.
+The policy accepts the following parameters. All are optional: omit a field, use `null`, or use 0 for no limit on that constraint. With every limit disabled, only invalid JSON syntax is rejected.
 
-* `maxDepth`: Maximum nesting depth of JSON objects and arrays.
-* `maxArrayLength`: Maximum number of elements in a JSON array.
-* `maxStringLength`: Maximum length of JSON string values.
-* `maxObjectEntries`: Maximum number of entries in a JSON object.
-* `maxKeyLength`: Maximum length of object key names.
-
-To learn more about JSON validation, see [Configuring JSON Validation](https://docs.mulesoft.com/pdk/latest/policies-pdk-configure-features-json-validation).
+- maxDepth (optional): Maximum nesting depth of JSON objects and arrays.
+- maxArrayLength (optional): Maximum number of elements in a JSON array.
+- maxStringLength (optional): Maximum length of JSON string values.
+- maxObjectEntries (optional): Maximum number of entries in a JSON object.
+- maxKeyLength (optional): Maximum length of object key names.
 
 ## Test the Policy
 
 Test the policy using unit tests or the policy playground.
 
-To find the prereqs and to learn more, see:
+To find the prereqs for using either environment and to learn more about either environment, see:
 
-* [Writing Integration Tests](https://docs.mulesoft.com/pdk/latest/policies-pdk-integration-tests)
+* [Writing Integration Tests](https://docs.mulesoft.com/pdk/latest/policies-pdk-integration-tests).
 * [Debug Policies With the PDK Playground](https://docs.mulesoft.com/pdk/latest/policies-pdk-debug-local).
 
 ### Unit tests
 
-```shell
-cargo test --lib
-```
+This example contains [unit tests](./src/lib.rs) to simplify its testing.
 
-To build the WASM and run all crate tests (as defined in the Makefile):
+To begin testing execute the `test` command:
 
 ```shell
 make test
@@ -76,15 +79,15 @@ spec:
         maxKeyLength: 256
 ```
 
-3. Place `registration.yaml` in `playground/config`.
+3. Configure a Flex Gateway instance to debug the policy by placing a `registration.yaml` file in `playground/config`.
 
-4. Run the gateway:
+4. Run the `run` command to start the Flex Gateway instance:
 
 ```shell
 make run
 ```
 
-5. Send requests to the Flex Gateway.
+5. Send requests to test the JSON validation:
 
 ```shell
 # POST with valid JSON should succeed
