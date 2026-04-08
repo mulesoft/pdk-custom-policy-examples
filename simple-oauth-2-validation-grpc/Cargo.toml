@@ -4,6 +4,7 @@ name = "simple_oauth_2_validation_grpc"
 version = "1.0.1"
 rust-version = "1.88.0"
 edition = "2018"
+resolver = "2"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
@@ -13,7 +14,7 @@ definition_asset_id = "simple-oauth-2-validation-grpc"
 implementation_asset_id = "simple-oauth-2-validation-grpc-flex"
 
 [dependencies]
-pdk = { git = "https://github.com/mulesoft-emu/mgw-policy-development-kit.git", rev = "fd446f581fc9d274c858a4555d01c3172366f71a" }
+pdk = { git = "https://github.com/mulesoft-emu/mgw-policy-development-kit.git", rev = "3f68121a86b35cf9d607f02c581d31bb20b924e5" }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = { version = "1.0", default-features = false, features = ["alloc"] }
 serde_urlencoded = "0.7.0"
@@ -24,8 +25,8 @@ protobuf = "3.5.0"
 protobuf-codegen = "3.5.0"
 
 [dev-dependencies]
-pdk-test = { git = "https://github.com/mulesoft-emu/mgw-policy-development-kit.git", rev = "fd446f581fc9d274c858a4555d01c3172366f71a" }
-pdk-unit = { git = "https://github.com/mulesoft-emu/mgw-policy-development-kit.git", rev = "fd446f581fc9d274c858a4555d01c3172366f71a" }
+pdk-test = { git = "https://github.com/mulesoft-emu/mgw-policy-development-kit.git", rev = "3f68121a86b35cf9d607f02c581d31bb20b924e5" }
+pdk-unit = { git = "https://github.com/mulesoft-emu/mgw-policy-development-kit.git", rev = "3f68121a86b35cf9d607f02c581d31bb20b924e5" }
 httpmock = "0.6"
 reqwest = { version = "0.11", features = ["json"] }
 env_logger = "0.11.3"

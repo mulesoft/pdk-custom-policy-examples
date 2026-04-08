@@ -81,21 +81,22 @@ async fn configure(launcher: Launcher, Configuration(bytes): Configuration) -> R
 
 #[cfg(test)]
 mod tests {
+    use super::*;
     use pdk_unit::{TraceBackend, UnitHttpRequest, UnitHttpResponse, UnitTestBuilder};
     use serde_json::json;
     use std::rc::Rc;
 
-    fn empty_config() -> String {
+    fn default_config() -> String {
         json!({}).to_string()
     }
 
     #[test]
-    fn get_without_body_reaches_backend() {
+    fn test_get_without_body_reaches_backend() {
         let backend = Rc::new(TraceBackend::new(UnitHttpResponse::new(200)));
         let mut tester = UnitTestBuilder::default()
-            .with_config(empty_config())
+            .with_config(default_config())
             .with_backend(Rc::clone(&backend))
-            .with_entrypoint(crate::configure);
+            .with_entrypoint(configure);
 
         assert_eq!(
             tester.request_full(UnitHttpRequest::get()).status_code(),
@@ -105,12 +106,12 @@ mod tests {
     }
 
     #[test]
-    fn post_valid_json_reaches_backend() {
+    fn test_post_valid_json_reaches_backend() {
         let backend = Rc::new(TraceBackend::new(UnitHttpResponse::new(200)));
         let mut tester = UnitTestBuilder::default()
-            .with_config(empty_config())
+            .with_config(default_config())
             .with_backend(Rc::clone(&backend))
-            .with_entrypoint(crate::configure);
+            .with_entrypoint(configure);
 
         let response = tester.request_full(
             UnitHttpRequest::post()
@@ -122,19 +123,16 @@ mod tests {
     }
 
     #[test]
-    fn post_invalid_json_returns_400_and_does_not_call_backend() {
+    fn test_post_invalid_json_returns_400_and_does_not_call_backend() {
         let backend = Rc::new(TraceBackend::new(UnitHttpResponse::new(200)));
         let mut tester = UnitTestBuilder::default()
-            .with_config(empty_config())
+            .with_config(default_config())
             .with_backend(Rc::clone(&backend))
-            .with_entrypoint(crate::configure);
+            .with_entrypoint(configure);
 
         let response = tester.request_full(
             UnitHttpRequest::post()
                 .with_header("Content-Type", "application/json")
-                // Invalid structure: `]` cannot follow a value inside an object. (Truncated
-                // objects like `{"a":1` can be treated as valid-in-progress by the PDK
-                // validator; trailing commas in objects are also accepted.)
                 .with_body(r#"{"a":1]"#),
         );
         assert_eq!(response.status_code(), 400);
@@ -142,12 +140,12 @@ mod tests {
     }
 
     #[test]
-    fn max_depth_violation_returns_400() {
+    fn test_max_depth_violation_returns_400() {
         let backend = Rc::new(TraceBackend::new(UnitHttpResponse::new(200)));
         let mut tester = UnitTestBuilder::default()
             .with_config(json!({ "maxDepth": 2 }).to_string())
             .with_backend(Rc::clone(&backend))
-            .with_entrypoint(crate::configure);
+            .with_entrypoint(configure);
 
         let response =
             tester.request_full(UnitHttpRequest::post().with_body(r#"{"a":{"b":{"c":1}}}"#));
