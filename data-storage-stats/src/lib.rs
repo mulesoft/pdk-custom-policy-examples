@@ -266,7 +266,7 @@ mod tests {
             .with_config(local_config())
             .with_entrypoint(crate::configure);
 
-        let response = tester.request_full(UnitHttpRequest::get().with_path("/stats"));
+        let response = tester.request(UnitHttpRequest::get().with_path("/stats"));
 
         assert_eq!(response.status_code(), 200);
     }
@@ -277,7 +277,7 @@ mod tests {
             .with_config(local_config())
             .with_entrypoint(crate::configure);
 
-        let response = tester.request_full(UnitHttpRequest::delete().with_path("/stats"));
+        let response = tester.request(UnitHttpRequest::delete().with_path("/stats"));
 
         assert_eq!(response.status_code(), 200);
     }
@@ -288,7 +288,7 @@ mod tests {
             .with_config(local_config())
             .with_entrypoint(crate::configure);
 
-        let response = tester.request_full(
+        let response = tester.request(
             UnitHttpRequest::get()
                 .with_path("/api/resource")
                 .with_header("x-client-id", "client-abc"),
@@ -303,7 +303,7 @@ mod tests {
             .with_config(local_config())
             .with_entrypoint(crate::configure);
 
-        let response = tester.request_full(UnitHttpRequest::get().with_path("/api/resource"));
+        let response = tester.request(UnitHttpRequest::get().with_path("/api/resource"));
 
         assert_eq!(response.status_code(), 400);
     }

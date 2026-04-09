@@ -236,7 +236,7 @@ mod tests {
             .with_config(config(true))
             .with_entrypoint(crate::configure);
 
-        let response = tester.request_full(UnitHttpRequest::get().with_path("/api/tasks"));
+        let response = tester.request(UnitHttpRequest::get().with_path("/api/tasks"));
 
         assert_eq!(response.status_code(), 200);
     }
@@ -247,7 +247,7 @@ mod tests {
             .with_config(config(true))
             .with_entrypoint(crate::configure);
 
-        let response = tester.request_full(UnitHttpRequest::post().with_body(tasks_send_body()));
+        let response = tester.request(UnitHttpRequest::post().with_body(tasks_send_body()));
 
         assert_eq!(response.status_code(), 200);
     }
@@ -258,7 +258,7 @@ mod tests {
             .with_config(config(true))
             .with_entrypoint(crate::configure);
 
-        let response = tester.request_full(
+        let response = tester.request(
             UnitHttpRequest::post()
                 .with_header("content-type", "application/json")
                 .with_body(tasks_send_body()),
@@ -280,7 +280,7 @@ mod tests {
         })
         .to_string();
 
-        let response = tester.request_full(
+        let response = tester.request(
             UnitHttpRequest::post()
                 .with_header("content-type", "application/json")
                 .with_body(body),
@@ -295,7 +295,7 @@ mod tests {
             .with_config(config(true))
             .with_entrypoint(crate::configure);
 
-        let response = tester.request_full(
+        let response = tester.request(
             UnitHttpRequest::post()
                 .with_header("content-type", "application/json")
                 .with_body("not valid json"),
@@ -317,7 +317,7 @@ mod tests {
         })
         .to_string();
 
-        let response = tester.request_full(
+        let response = tester.request(
             UnitHttpRequest::post()
                 .with_header("content-type", "application/json")
                 .with_body(body),
@@ -339,7 +339,7 @@ mod tests {
         })
         .to_string();
 
-        let response = tester.request_full(
+        let response = tester.request(
             UnitHttpRequest::post()
                 .with_header("content-type", "application/json")
                 .with_body(body),
@@ -354,7 +354,7 @@ mod tests {
             .with_config(config(true))
             .with_entrypoint(crate::configure);
 
-        let response = tester.request_full(
+        let response = tester.request(
             UnitHttpRequest::post()
                 .with_header("content-type", "text/plain")
                 .with_body("tasks/unknown invalid body"),
@@ -386,7 +386,7 @@ mod tests {
             .with_entrypoint(crate::configure);
 
         let response =
-            tester.request_full(UnitHttpRequest::get().with_path("/.well-known/agent.json"));
+            tester.request(UnitHttpRequest::get().with_path("/.well-known/agent.json"));
 
         assert_eq!(response.status_code(), 200);
         let body: serde_json::Value = serde_json::from_slice(response.body()).unwrap();
@@ -405,7 +405,7 @@ mod tests {
             .with_entrypoint(crate::configure);
 
         let response =
-            tester.request_full(UnitHttpRequest::get().with_path("/.well-known/agent.json"));
+            tester.request(UnitHttpRequest::get().with_path("/.well-known/agent.json"));
 
         assert_eq!(response.status_code(), 200);
     }
@@ -423,7 +423,7 @@ mod tests {
             .with_backend(Rc::clone(&backend))
             .with_entrypoint(crate::configure);
 
-        let response = tester.request_full(UnitHttpRequest::get().with_path("/api/tasks"));
+        let response = tester.request(UnitHttpRequest::get().with_path("/api/tasks"));
 
         assert_eq!(response.status_code(), 200);
         let body: serde_json::Value = serde_json::from_slice(response.body()).unwrap();

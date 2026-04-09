@@ -1,0 +1,231 @@
+========== ip-filter ==========
+(node:14454) Error Plugin: anypoint-cli-v4-public: could not find package.json with {
+  type: 'core',
+  root: '/opt/homebrew/lib/node_modules/anypoint-cli-v4-public',
+  name: 'anypoint-cli-designcenter-plugin'
+}
+module: @oclif/core@1.26.1
+task: loadPlugins
+plugin: anypoint-cli-v4-public
+root: /opt/homebrew/lib/node_modules/anypoint-cli-v4-public
+See more details with DEBUG=*
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:14476) Error Plugin: anypoint-cli-v4-public: could not find package.json with {
+  type: 'core',
+  root: '/opt/homebrew/lib/node_modules/anypoint-cli-v4-public',
+  name: 'anypoint-cli-designcenter-plugin'
+}
+module: @oclif/core@1.26.1
+task: loadPlugins
+plugin: anypoint-cli-v4-public
+root: /opt/homebrew/lib/node_modules/anypoint-cli-v4-public
+See more details with DEBUG=*
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:14490) Error Plugin: anypoint-cli-v4-public: could not find package.json with {
+  type: 'core',
+  root: '/opt/homebrew/lib/node_modules/anypoint-cli-v4-public',
+  name: 'anypoint-cli-designcenter-plugin'
+}
+module: @oclif/core@1.26.1
+task: loadPlugins
+plugin: anypoint-cli-v4-public
+root: /opt/homebrew/lib/node_modules/anypoint-cli-v4-public
+See more details with DEBUG=*
+(Use `node --trace-warnings ...` to show where the warning was created)
+Generating target/definition/exchange.json... ✅
+Generating target/definition/gcl_src.yaml... ✅
+Generating target/definition/gcl.yaml... ✅
+Generating target/definition/metadata.yaml... ✅
+Generating target/definition/schema.json... ✅
+Generating target/asset/definition.zip... ✅
+Generating target/definition-dev/exchange.json... ✅
+Generating target/definition-dev/gcl_src.yaml... ✅
+Generating target/definition-dev/gcl.yaml... ✅
+Generating target/definition-dev/metadata.yaml... ✅
+Generating target/definition-dev/schema.json... ✅
+Generating target/asset/definition-dev.zip... ✅
+cargo:rerun-if-changed=definition/gcl.yaml
+(node:14502) Error Plugin: anypoint-cli-v4-public: could not find package.json with {
+  type: 'core',
+  root: '/opt/homebrew/lib/node_modules/anypoint-cli-v4-public',
+  name: 'anypoint-cli-designcenter-plugin'
+}
+module: @oclif/core@1.26.1
+task: loadPlugins
+plugin: anypoint-cli-v4-public
+root: /opt/homebrew/lib/node_modules/anypoint-cli-v4-public
+See more details with DEBUG=*
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:14524) Error Plugin: anypoint-cli-v4-public: could not find package.json with {
+  type: 'core',
+  root: '/opt/homebrew/lib/node_modules/anypoint-cli-v4-public',
+  name: 'anypoint-cli-designcenter-plugin'
+}
+module: @oclif/core@1.26.1
+task: loadPlugins
+plugin: anypoint-cli-v4-public
+root: /opt/homebrew/lib/node_modules/anypoint-cli-v4-public
+See more details with DEBUG=*
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:14525) Error Plugin: anypoint-cli-v4-public: could not find package.json with {
+  type: 'core',
+  root: '/opt/homebrew/lib/node_modules/anypoint-cli-v4-public',
+  name: 'anypoint-cli-designcenter-plugin'
+}
+module: @oclif/core@1.26.1
+task: loadPlugins
+plugin: anypoint-cli-v4-public
+root: /opt/homebrew/lib/node_modules/anypoint-cli-v4-public
+See more details with DEBUG=*
+(Use `node --trace-warnings ...` to show where the warning was created)
+   Compiling icu_properties v2.2.0
+   Compiling icu_normalizer v2.2.0
+   Compiling ppv-lite86 v0.2.21
+   Compiling half v2.7.1
+   Compiling tokio v1.51.1
+error: Only features sync,macros,io-util,rt,time are supported on wasm.
+   --> /Users/mpanetta/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tokio-1.51.1/src/lib.rs:478:1
+    |
+478 | compile_error!("Only features sync,macros,io-util,rt,time are supported on wasm.");
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+   Compiling rand_chacha v0.3.1
+   Compiling ciborium-ll v0.2.2
+   Compiling ciborium v0.2.2
+   Compiling rand v0.8.5
+   Compiling idna_adapter v1.2.1
+   Compiling idna v1.1.0
+   Compiling num-bigint-dig v0.8.6
+   Compiling url v2.5.8
+   Compiling pdk-script v1.8.0-rc.0 (https://github.com/mulesoft-emu/mgw-policy-development-kit.git?rev=7f561a6148de8ff81cd9ef936ddec5e97fb76b26#7f561a61)
+   Compiling rsa v0.9.10
+   Compiling rsa v0.7.2
+   Compiling pdk-core v1.8.0-rc.0 (https://github.com/mulesoft-emu/mgw-policy-development-kit.git?rev=7f561a6148de8ff81cd9ef936ddec5e97fb76b26#7f561a61)
+   Compiling jwt-simple v0.11.9
+   Compiling jwt-compact v0.8.0
+error: could not compile `tokio` (lib) due to 1 previous error
+warning: build failed, waiting for other jobs to finish...
+make: *** [build] Error 101
+
+========== spike ==========
+(node:23247) Error Plugin: anypoint-cli-v4-public: could not find package.json with {
+  type: 'core',
+  root: '/opt/homebrew/lib/node_modules/anypoint-cli-v4-public',
+  name: 'anypoint-cli-designcenter-plugin'
+}
+module: @oclif/core@1.26.1
+task: loadPlugins
+plugin: anypoint-cli-v4-public
+root: /opt/homebrew/lib/node_modules/anypoint-cli-v4-public
+See more details with DEBUG=*
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:23259) Error Plugin: anypoint-cli-v4-public: could not find package.json with {
+  type: 'core',
+  root: '/opt/homebrew/lib/node_modules/anypoint-cli-v4-public',
+  name: 'anypoint-cli-designcenter-plugin'
+}
+module: @oclif/core@1.26.1
+task: loadPlugins
+plugin: anypoint-cli-v4-public
+root: /opt/homebrew/lib/node_modules/anypoint-cli-v4-public
+See more details with DEBUG=*
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:23271) Error Plugin: anypoint-cli-v4-public: could not find package.json with {
+  type: 'core',
+  root: '/opt/homebrew/lib/node_modules/anypoint-cli-v4-public',
+  name: 'anypoint-cli-designcenter-plugin'
+}
+module: @oclif/core@1.26.1
+task: loadPlugins
+plugin: anypoint-cli-v4-public
+root: /opt/homebrew/lib/node_modules/anypoint-cli-v4-public
+See more details with DEBUG=*
+(Use `node --trace-warnings ...` to show where the warning was created)
+Generating target/definition/exchange.json... ✅
+Generating target/definition/gcl_src.yaml... ✅
+Generating target/definition/gcl.yaml... ✅
+Generating target/definition/metadata.yaml... ✅
+Generating target/definition/schema.json... ✅
+Generating target/asset/definition.zip... ✅
+Generating target/definition-dev/exchange.json... ✅
+Generating target/definition-dev/gcl_src.yaml... ✅
+Generating target/definition-dev/gcl.yaml... ✅
+Generating target/definition-dev/metadata.yaml... ✅
+Generating target/definition-dev/schema.json... ✅
+Generating target/asset/definition-dev.zip... ✅
+cargo:rerun-if-changed=definition/gcl.yaml
+(node:23283) Error Plugin: anypoint-cli-v4-public: could not find package.json with {
+  type: 'core',
+  root: '/opt/homebrew/lib/node_modules/anypoint-cli-v4-public',
+  name: 'anypoint-cli-designcenter-plugin'
+}
+module: @oclif/core@1.26.1
+task: loadPlugins
+plugin: anypoint-cli-v4-public
+root: /opt/homebrew/lib/node_modules/anypoint-cli-v4-public
+See more details with DEBUG=*
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:23295) Error Plugin: anypoint-cli-v4-public: could not find package.json with {
+  type: 'core',
+  root: '/opt/homebrew/lib/node_modules/anypoint-cli-v4-public',
+  name: 'anypoint-cli-designcenter-plugin'
+}
+module: @oclif/core@1.26.1
+task: loadPlugins
+plugin: anypoint-cli-v4-public
+root: /opt/homebrew/lib/node_modules/anypoint-cli-v4-public
+See more details with DEBUG=*
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:23309) Error Plugin: anypoint-cli-v4-public: could not find package.json with {
+  type: 'core',
+  root: '/opt/homebrew/lib/node_modules/anypoint-cli-v4-public',
+  name: 'anypoint-cli-designcenter-plugin'
+}
+module: @oclif/core@1.26.1
+task: loadPlugins
+plugin: anypoint-cli-v4-public
+root: /opt/homebrew/lib/node_modules/anypoint-cli-v4-public
+See more details with DEBUG=*
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:23347) Error Plugin: anypoint-cli-v4-public: could not find package.json with {
+  type: 'core',
+  root: '/opt/homebrew/lib/node_modules/anypoint-cli-v4-public',
+  name: 'anypoint-cli-designcenter-plugin'
+}
+module: @oclif/core@1.26.1
+task: loadPlugins
+plugin: anypoint-cli-v4-public
+root: /opt/homebrew/lib/node_modules/anypoint-cli-v4-public
+See more details with DEBUG=*
+(Use `node --trace-warnings ...` to show where the warning was created)
+   Compiling spike v1.0.0 (/Users/mpanetta/PDK/github/pdk-custom-policy-examples/spike)
+    Finished `release` profile [optimized] target(s) in 3.60s
+   Compiling spike v1.0.0 (/Users/mpanetta/PDK/github/pdk-custom-policy-examples/spike)
+error[E0599]: no method named `poll` found for struct `UnitHttpResponse` in the current scope
+   --> src/lib.rs:170:22
+    |
+170 |         assert!(!req.poll().is_ready());
+    |                      ^^^^ method not found in `UnitHttpResponse`
+
+error[E0599]: no method named `poll` found for struct `UnitHttpResponse` in the current scope
+   --> src/lib.rs:173:22
+    |
+173 |         assert!(!req.poll().is_ready());
+    |                      ^^^^ method not found in `UnitHttpResponse`
+
+error[E0599]: no method named `poll` found for struct `UnitHttpResponse` in the current scope
+   --> src/lib.rs:176:22
+    |
+176 |         assert!(!req.poll().is_ready());
+    |                      ^^^^ method not found in `UnitHttpResponse`
+
+error[E0599]: no method named `poll` found for struct `UnitHttpResponse` in the current scope
+   --> src/lib.rs:179:37
+    |
+179 |         let Poll::Ready(resp) = req.poll() else {
+    |                                     ^^^^ method not found in `UnitHttpResponse`
+
+For more information about this error, try `rustc --explain E0599`.
+error: could not compile `spike` (lib test) due to 4 previous errors
+make: *** [test] Error 101
+

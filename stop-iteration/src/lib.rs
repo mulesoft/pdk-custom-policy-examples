@@ -109,7 +109,7 @@ mod tests {
             .with_config(config)
             .with_entrypoint(configure);
 
-        let response = tester.request_full(
+        let response = tester.request(
             UnitHttpRequest::post()
                 .with_path("/test")
                 .with_body(b"request-body"),
@@ -137,7 +137,7 @@ mod tests {
             .with_config(config)
             .with_entrypoint(configure);
 
-        let response = tester.request_full(
+        let response = tester.request(
             UnitHttpRequest::post()
                 .with_path("/api/data")
                 .with_body(b"original-body"),
@@ -168,7 +168,7 @@ mod tests {
             .with_config(config)
             .with_entrypoint(configure);
 
-        let response = tester.request_full(UnitHttpRequest::get().with_path("/test"));
+        let response = tester.request(UnitHttpRequest::get().with_path("/test"));
 
         assert_eq!(response.status_code(), 200);
         // Should add stop-iteration header
@@ -195,7 +195,7 @@ mod tests {
             .with_config(config)
             .with_entrypoint(configure);
 
-        let response = tester.request_full(
+        let response = tester.request(
             UnitHttpRequest::post()
                 .with_path("/api/test")
                 .with_body(b"test-data"),

@@ -17,15 +17,19 @@ spec:
     requests:
       type: integer
       description: Maximum requests allowed per time window.
+      minimum: 1
     millis:
       type: integer
       description: Length of the time window in milliseconds.
+      minimum: 1
     delay:
       type: integer
-      description: Delay between queue retry attempts when over limit (milliseconds).
+      description: Delay in milliseconds between queue retry attempts when over the limit.
+      minimum: 0
     maxAttempts:
       type: integer
-      description: Maximum queue/retry attempts when over limit (0 disables queuing).
+      description: Maximum queue or retry attempts when over the limit (0 disables queuing).
+      minimum: 0
   required:
     - requests
     - millis

@@ -122,7 +122,7 @@ mod tests {
             )
             .with_entrypoint(crate::configure);
 
-        let response = tester.request_full(UnitHttpRequest::get());
+        let response = tester.request(UnitHttpRequest::get());
 
         assert_eq!(response.status_code(), 200);
     }
@@ -141,13 +141,13 @@ mod tests {
             )
             .with_entrypoint(crate::configure);
 
-        tester.request_full(UnitHttpRequest::get());
-        let response = tester.request_full(UnitHttpRequest::get());
+        tester.request(UnitHttpRequest::get());
+        let response = tester.request(UnitHttpRequest::get());
 
         assert_eq!(response.status_code(), 429);
 
         tester.sleep(Duration::from_millis(60001));
-        let response = tester.request_full(UnitHttpRequest::get());
+        let response = tester.request(UnitHttpRequest::get());
         assert_eq!(response.status_code(), 200);
     }
 
@@ -165,7 +165,7 @@ mod tests {
             )
             .with_entrypoint(crate::configure);
 
-        tester.request_full(UnitHttpRequest::get());
+        tester.request(UnitHttpRequest::get());
         let mut req = tester.request(UnitHttpRequest::get());
         assert!(!req.poll().is_ready());
 
@@ -196,8 +196,8 @@ mod tests {
             )
             .with_entrypoint(crate::configure);
 
-        tester.request_full(UnitHttpRequest::get());
-        let response = tester.request_full(UnitHttpRequest::get());
+        tester.request(UnitHttpRequest::get());
+        let response = tester.request(UnitHttpRequest::get());
         assert_eq!(response.status_code(), 200);
     }
 
@@ -215,8 +215,8 @@ mod tests {
             )
             .with_entrypoint(crate::configure);
 
-        tester.request_full(UnitHttpRequest::get());
-        let response = tester.request_full(UnitHttpRequest::get());
+        tester.request(UnitHttpRequest::get());
+        let response = tester.request(UnitHttpRequest::get());
         assert_eq!(response.status_code(), 429);
     }
 }

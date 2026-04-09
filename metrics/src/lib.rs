@@ -261,7 +261,7 @@ mod tests {
             .with_http_upstream_from_authority("metrics-sink", Rc::clone(&metric_server))
             .with_entrypoint(crate::configure);
 
-        let response = tester.request_full(UnitHttpRequest::get());
+        let response = tester.request(UnitHttpRequest::get());
         assert_eq!(response.status_code(), 200);
 
         assert!(metric_server.next().is_none());
@@ -283,7 +283,7 @@ mod tests {
             .with_http_upstream_from_authority("metrics-sink", Rc::clone(&metric_server))
             .with_entrypoint(crate::configure);
 
-        let response = tester.request_full(UnitHttpRequest::get());
+        let response = tester.request(UnitHttpRequest::get());
         assert_eq!(response.status_code(), 200);
 
         assert!(metric_server.next().is_none());

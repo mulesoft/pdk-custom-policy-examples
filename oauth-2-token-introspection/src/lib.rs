@@ -347,7 +347,7 @@ mod tests {
             .with_http_upstream_from_authority("introspection", active_introspection_backend)
             .with_entrypoint(crate::configure);
 
-        let response = tester.request_full(
+        let response = tester.request(
             UnitHttpRequest::get().with_header("authorization", "Bearer valid-token"),
         );
 
@@ -362,7 +362,7 @@ mod tests {
             .with_entrypoint(crate::configure);
 
         let response =
-            tester.request_full(UnitHttpRequest::get().with_path("/?access_token=valid-token"));
+            tester.request(UnitHttpRequest::get().with_path("/?access_token=valid-token"));
 
         assert_eq!(response.status_code(), 200);
     }
@@ -374,7 +374,7 @@ mod tests {
             .with_http_upstream_from_authority("introspection", inactive_introspection_backend)
             .with_entrypoint(crate::configure);
 
-        let response = tester.request_full(
+        let response = tester.request(
             UnitHttpRequest::get().with_header("authorization", "Bearer inactive-token"),
         );
 
@@ -388,7 +388,7 @@ mod tests {
             .with_http_upstream_from_authority("introspection", active_introspection_backend)
             .with_entrypoint(crate::configure);
 
-        let response = tester.request_full(UnitHttpRequest::get());
+        let response = tester.request(UnitHttpRequest::get());
 
         assert_eq!(response.status_code(), 400);
     }
@@ -401,7 +401,7 @@ mod tests {
             .with_entrypoint(crate::configure);
 
         let response = tester
-            .request_full(UnitHttpRequest::get().with_header("authorization", "NotBearer token"));
+            .request(UnitHttpRequest::get().with_header("authorization", "NotBearer token"));
 
         assert_eq!(response.status_code(), 400);
     }

@@ -80,7 +80,7 @@ mod tests {
     fn valid_subject_sets_name_and_email_headers() {
         let mut tester = UnitTestBuilder::default().with_entrypoint(crate::configure);
 
-        let response = tester.request_full(UnitHttpRequest::get().with_property(
+        let response = tester.request(UnitHttpRequest::get().with_property(
             vec!["connection", "subject_peer_certificate"],
             "CN=Alice,emailAddress=alice@example.com",
         ));
@@ -92,7 +92,7 @@ mod tests {
     fn missing_subject_returns_401() {
         let mut tester = UnitTestBuilder::default().with_entrypoint(crate::configure);
 
-        let response = tester.request_full(UnitHttpRequest::get());
+        let response = tester.request(UnitHttpRequest::get());
 
         assert_eq!(response.status_code(), 401);
     }
@@ -101,7 +101,7 @@ mod tests {
     fn subject_missing_email_returns_401() {
         let mut tester = UnitTestBuilder::default().with_entrypoint(crate::configure);
 
-        let response = tester.request_full(
+        let response = tester.request(
             UnitHttpRequest::get()
                 .with_property(vec!["connection", "subject_peer_certificate"], "CN=Alice"),
         );
@@ -113,7 +113,7 @@ mod tests {
     fn subject_missing_cn_returns_401() {
         let mut tester = UnitTestBuilder::default().with_entrypoint(crate::configure);
 
-        let response = tester.request_full(UnitHttpRequest::get().with_property(
+        let response = tester.request(UnitHttpRequest::get().with_property(
             vec!["connection", "subject_peer_certificate"],
             "emailAddress=alice@example.com",
         ));

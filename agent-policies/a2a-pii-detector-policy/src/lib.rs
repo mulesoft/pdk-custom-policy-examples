@@ -163,7 +163,7 @@ mod tests {
             .with_backend(Rc::clone(&backend))
             .with_entrypoint(crate::configure);
 
-        let response = tester.request_full(
+        let response = tester.request(
             UnitHttpRequest::post()
                 .with_header("content-type", "application/json")
                 .with_body(tasks_send_body("Hello, how are you?")),
@@ -184,7 +184,7 @@ mod tests {
             .with_config(config("Reject"))
             .with_entrypoint(crate::configure);
 
-        let response = tester.request_full(
+        let response = tester.request(
             UnitHttpRequest::post()
                 .with_header("content-type", "application/json")
                 .with_body(tasks_send_body("My email is john.doe@example.com")),
@@ -199,7 +199,7 @@ mod tests {
             .with_config(config("Reject"))
             .with_entrypoint(crate::configure);
 
-        let response = tester.request_full(
+        let response = tester.request(
             UnitHttpRequest::post()
                 .with_header("content-type", "application/json")
                 .with_body(tasks_send_body("My SSN is 123-45-6789")),
@@ -214,7 +214,7 @@ mod tests {
             .with_config(config("Reject"))
             .with_entrypoint(crate::configure);
 
-        let response = tester.request_full(
+        let response = tester.request(
             UnitHttpRequest::post()
                 .with_header("content-type", "application/json")
                 .with_body(tasks_send_body("Pay with 4111 1111 1111 1111")),
@@ -231,7 +231,7 @@ mod tests {
             .with_backend(Rc::clone(&backend))
             .with_entrypoint(crate::configure);
 
-        let response = tester.request_full(
+        let response = tester.request(
             UnitHttpRequest::post()
                 .with_header("content-type", "application/json")
                 .with_body(tasks_send_body("My email is john.doe@example.com")),
@@ -249,7 +249,7 @@ mod tests {
             .with_config(config("Reject"))
             .with_entrypoint(crate::configure);
 
-        let response = tester.request_full(UnitHttpRequest::get().with_path("/api/tasks"));
+        let response = tester.request(UnitHttpRequest::get().with_path("/api/tasks"));
 
         assert_eq!(response.status_code(), 200);
     }
@@ -262,7 +262,7 @@ mod tests {
             .with_backend(Rc::clone(&backend))
             .with_entrypoint(crate::configure);
 
-        let response = tester.request_full(
+        let response = tester.request(
             UnitHttpRequest::post().with_body(tasks_send_body("My email is john.doe@example.com")),
         );
 
@@ -285,7 +285,7 @@ mod tests {
         })
         .to_string();
 
-        let response = tester.request_full(
+        let response = tester.request(
             UnitHttpRequest::post()
                 .with_header("content-type", "application/json")
                 .with_body(body),
@@ -317,7 +317,7 @@ mod tests {
         })
         .to_string();
 
-        let response = tester.request_full(
+        let response = tester.request(
             UnitHttpRequest::post()
                 .with_header("content-type", "application/json")
                 .with_body(body),

@@ -121,7 +121,7 @@ mod tests {
             .with_entrypoint(crate::configure);
 
         let response = tester
-            .request_full(UnitHttpRequest::get().with_header("origin", "https://example.com"));
+            .request(UnitHttpRequest::get().with_header("origin", "https://example.com"));
 
         assert_eq!(response.status_code(), 200);
     }
@@ -132,7 +132,7 @@ mod tests {
             .with_config(config_with_origin("https://example.com"))
             .with_entrypoint(crate::configure);
 
-        let response = tester.request_full(
+        let response = tester.request(
             UnitHttpRequest::options()
                 .with_header("origin", "https://example.com")
                 .with_header("access-control-request-method", "GET"),
@@ -147,7 +147,7 @@ mod tests {
             .with_config(config_with_origin("https://example.com"))
             .with_entrypoint(crate::configure);
 
-        let response = tester.request_full(UnitHttpRequest::get());
+        let response = tester.request(UnitHttpRequest::get());
 
         assert_eq!(response.status_code(), 200);
     }

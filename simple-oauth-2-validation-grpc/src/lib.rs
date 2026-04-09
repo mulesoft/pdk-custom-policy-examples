@@ -236,7 +236,7 @@ mod tests {
             .with_grpc_upstream_from_authority("grpc-auth:4770", AuthBackend::new(true))
             .with_entrypoint(crate::configure);
 
-        let response = tester.request_full(
+        let response = tester.request(
             UnitHttpRequest::get().with_header("authorization", "Bearer valid-token"),
         );
 
@@ -250,7 +250,7 @@ mod tests {
             .with_grpc_upstream_from_authority("grpc-auth:4770", AuthBackend::new(false))
             .with_entrypoint(crate::configure);
 
-        let response = tester.request_full(
+        let response = tester.request(
             UnitHttpRequest::get().with_header("authorization", "Bearer inactive-token"),
         );
 
@@ -265,7 +265,7 @@ mod tests {
             .with_entrypoint(crate::configure);
 
         let response = tester
-            .request_full(UnitHttpRequest::get().with_header("authorization", "Bearer some-token"));
+            .request(UnitHttpRequest::get().with_header("authorization", "Bearer some-token"));
 
         assert_eq!(response.status_code(), 500);
     }
@@ -277,7 +277,7 @@ mod tests {
             .with_grpc_upstream_from_authority("grpc-auth:4770", AuthBackend::new(true))
             .with_entrypoint(crate::configure);
 
-        let response = tester.request_full(UnitHttpRequest::get());
+        let response = tester.request(UnitHttpRequest::get());
 
         assert_eq!(response.status_code(), 401);
     }

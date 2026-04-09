@@ -106,7 +106,7 @@ mod tests {
             .with_config(json!({"expression": dw2pel("vars.defaultId")}).to_string())
             .with_entrypoint(crate::configure);
 
-        let response = tester.request_full(UnitHttpRequest::get());
+        let response = tester.request(UnitHttpRequest::get());
 
         assert_eq!(response.status_code(), 200);
         assert_eq!(response.body(), br#"{"result":"hardcoded"}"#);
@@ -118,7 +118,7 @@ mod tests {
             .with_config(json!({"expression": dw2pel("vars.version")}).to_string())
             .with_entrypoint(crate::configure);
 
-        let response = tester.request_full(UnitHttpRequest::get());
+        let response = tester.request(UnitHttpRequest::get());
 
         assert_eq!(response.status_code(), 200);
         assert_eq!(response.body(), br#"{"result":"1"}"#);
@@ -133,7 +133,7 @@ mod tests {
             .with_entrypoint(crate::configure);
 
         let response =
-            tester.request_full(UnitHttpRequest::get().with_header("x-custom", "my-value"));
+            tester.request(UnitHttpRequest::get().with_header("x-custom", "my-value"));
 
         assert_eq!(response.status_code(), 200);
         assert_eq!(response.body(), br#"{"result":"my-value"}"#);

@@ -301,7 +301,7 @@ mod tests {
             .with_config(json!({"textDecorators": [], "fileDecorators": []}).to_string())
             .with_entrypoint(crate::configure);
 
-        let response = tester.request_full(UnitHttpRequest::get().with_path("/api/tasks"));
+        let response = tester.request(UnitHttpRequest::get().with_path("/api/tasks"));
 
         assert_eq!(response.status_code(), 200);
     }
@@ -315,7 +315,7 @@ mod tests {
             .with_entrypoint(crate::configure);
 
         let response =
-            tester.request_full(UnitHttpRequest::post().with_body(tasks_send_body("Hello")));
+            tester.request(UnitHttpRequest::post().with_body(tasks_send_body("Hello")));
 
         assert_eq!(response.status_code(), 200);
         let req = backend.next().unwrap();
@@ -337,7 +337,7 @@ mod tests {
             .with_backend(Rc::clone(&backend))
             .with_entrypoint(crate::configure);
 
-        let response = tester.request_full(
+        let response = tester.request(
             UnitHttpRequest::post()
                 .with_header("content-type", "application/json")
                 .with_body(tasks_send_body("Hello")),
@@ -368,7 +368,7 @@ mod tests {
             .with_backend(Rc::clone(&backend))
             .with_entrypoint(crate::configure);
 
-        let response = tester.request_full(
+        let response = tester.request(
             UnitHttpRequest::post()
                 .with_header("content-type", "application/json")
                 .with_body(tasks_send_body("Hello")),
@@ -397,7 +397,7 @@ mod tests {
             .with_backend(Rc::clone(&backend))
             .with_entrypoint(crate::configure);
 
-        let response = tester.request_full(
+        let response = tester.request(
             UnitHttpRequest::post()
                 .with_header("content-type", "application/json")
                 .with_body(tasks_send_body("Hello")),
@@ -426,7 +426,7 @@ mod tests {
             .with_backend(Rc::clone(&backend))
             .with_entrypoint(crate::configure);
 
-        let response = tester.request_full(
+        let response = tester.request(
             UnitHttpRequest::post()
                 .with_header("content-type", "application/json")
                 .with_body(tasks_send_body("Hello")),
@@ -456,7 +456,7 @@ mod tests {
             .with_backend(Rc::clone(&backend))
             .with_entrypoint(crate::configure);
 
-        let response = tester.request_full(
+        let response = tester.request(
             UnitHttpRequest::post()
                 .with_header("content-type", "application/json")
                 .with_body(tasks_send_body("Hello")),
@@ -487,7 +487,7 @@ mod tests {
             .with_backend(Rc::clone(&backend))
             .with_entrypoint(crate::configure);
 
-        let response = tester.request_full(
+        let response = tester.request(
             UnitHttpRequest::post()
                 .with_header("content-type", "application/json")
                 .with_body(tasks_send_body("Hello")),
@@ -522,7 +522,7 @@ mod tests {
         })
         .to_string();
 
-        let response = tester.request_full(
+        let response = tester.request(
             UnitHttpRequest::post()
                 .with_header("content-type", "application/json")
                 .with_body(body),

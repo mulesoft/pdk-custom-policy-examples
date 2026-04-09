@@ -144,7 +144,7 @@ AhW8CZzWMXVPOgExNZJBW65D7p/V
             .with_config(config())
             .with_entrypoint(crate::configure);
 
-        let response = tester.request_full(UnitHttpRequest::get());
+        let response = tester.request(UnitHttpRequest::get());
 
         assert_eq!(response.status_code(), 200);
         assert!(!response.body().is_empty());
@@ -156,7 +156,7 @@ AhW8CZzWMXVPOgExNZJBW65D7p/V
             .with_config(config())
             .with_entrypoint(crate::configure);
 
-        let response = tester.request_full(UnitHttpRequest::get());
+        let response = tester.request(UnitHttpRequest::get());
 
         let body = std::str::from_utf8(response.body()).unwrap();
         assert_eq!(body.split('.').count(), 3);

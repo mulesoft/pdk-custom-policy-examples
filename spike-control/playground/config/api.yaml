@@ -14,10 +14,10 @@ spec:
             destinationPath: /anything/echo/
   policies:
     - policyRef:
-        name: spike-control-v1-0-impl
+        name: spike-control-v1-0-impl # This value will be overriden during 'make run' execution
         namespace: default
       config:
-        requests: 5
-        millis: 1000
-        delay: 100
-        maxAttempts: 3
+        requests: 2
+        millis: 10000
+        maxAttempts: 0
+        delay: 0

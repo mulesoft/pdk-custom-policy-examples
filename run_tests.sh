@@ -5,8 +5,10 @@
 # Run make test for all examples
 
 PROJECT_DIR="$(pwd)"
+FAILURES_LOG="$PROJECT_DIR/failures.log"
 
 echo "PDK Custom Policy Examples tests starting..."
+: > "$FAILURES_LOG"
 
 total=0
 success=0
@@ -29,11 +31,21 @@ for dir in */; do
 
             make setup
 
-            if make test 2>&1; then
+            tmp_out="$(mktemp)"
+
+            make test 2>&1 | tee "$tmp_out"
+
+            if [[ "${PIPESTATUS[0]}" -eq 0 ]]; then
                 success=$((success + 1))
             else
                 failed=$((failed + 1))
+                {
+                    echo "========== $dir_name =========="
+                    cat "$tmp_out"
+                    echo ""
+                } >> "$FAILURES_LOG"
             fi
+            rm -f "$tmp_out"
 
             cd "$PROJECT_DIR"
         fi
@@ -42,4 +54,9 @@ done
 
 echo ""
 echo "$success/$total successful, $failed failed"
-echo "" 
+if [[ "$failed" -gt 0 ]]; then
+    echo "Errors written to $FAILURES_LOG"
+else
+    rm -f "$FAILURES_LOG"
+fi
+echo ""

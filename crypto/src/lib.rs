@@ -172,7 +172,7 @@ JkkBm8bQCWZPi2kFXOWBDfwktK1P2t+jQMfQkRAnQBpOwAgeuXs=
             .with_config(config())
             .with_entrypoint(crate::configure);
 
-        let response = tester.request_full(UnitHttpRequest::get());
+        let response = tester.request(UnitHttpRequest::get());
 
         assert_eq!(response.status_code(), 401);
     }
@@ -184,7 +184,7 @@ JkkBm8bQCWZPi2kFXOWBDfwktK1P2t+jQMfQkRAnQBpOwAgeuXs=
             .with_entrypoint(crate::configure);
 
         let response =
-            tester.request_full(UnitHttpRequest::get().with_header("nonce", "not-valid-hex"));
+            tester.request(UnitHttpRequest::get().with_header("nonce", "not-valid-hex"));
 
         assert_eq!(response.status_code(), 401);
     }
@@ -209,7 +209,7 @@ JkkBm8bQCWZPi2kFXOWBDfwktK1P2t+jQMfQkRAnQBpOwAgeuXs=
             .with_backend(UnitHttpResponse::new(200).with_body(response_body))
             .with_entrypoint(crate::configure);
 
-        let response = tester.request_full(
+        let response = tester.request(
             UnitHttpRequest::get()
                 .with_header("nonce", &nonce_header)
                 .with_body(response_body),
