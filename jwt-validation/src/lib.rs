@@ -127,7 +127,7 @@ mod tests {
             .with_config(config())
             .with_entrypoint(crate::configure);
 
-        let response = tester.request_full(
+        let response = tester.request(
             UnitHttpRequest::get().with_header("Authorization", format!("Bearer {VALID_TOKEN}")),
         );
 
@@ -140,7 +140,7 @@ mod tests {
             .with_config(config())
             .with_entrypoint(crate::configure);
 
-        let response = tester.request_full(UnitHttpRequest::get());
+        let response = tester.request(UnitHttpRequest::get());
 
         assert_eq!(response.status_code(), 401);
     }
@@ -151,7 +151,7 @@ mod tests {
             .with_config(config())
             .with_entrypoint(crate::configure);
 
-        let response = tester.request_full(
+        let response = tester.request(
             UnitHttpRequest::get().with_header("Authorization", format!("Bearer {EXPIRED_TOKEN}")),
         );
 
@@ -164,7 +164,7 @@ mod tests {
             .with_config(config())
             .with_entrypoint(crate::configure);
 
-        let response = tester.request_full(
+        let response = tester.request(
             UnitHttpRequest::get().with_header("Authorization", "Bearer invalid.jwt.token"),
         );
 

@@ -853,7 +853,7 @@ dependencies = [
 [[package]]
 name = "dw-parser"
 version = "1.8.0-rc.0"
-source = "git+https://github.com/mulesoft-emu/mgw-policy-development-kit.git?rev=fd446f581fc9d274c858a4555d01c3172366f71a#fd446f581fc9d274c858a4555d01c3172366f71a"
+source = "git+https://github.com/mulesoft-emu/mgw-policy-development-kit.git?rev=7f561a6148de8ff81cd9ef936ddec5e97fb76b26#7f561a6148de8ff81cd9ef936ddec5e97fb76b26"
 dependencies = [
  "peg",
 ]
@@ -1200,12 +1200,6 @@ name = "futures-task"
 version = "0.3.31"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "f90f7dce0722e95104fcb095585910c0977252f286e354b5e3bd38902cd99988"
-
-[[package]]
-name = "futures-timer"
-version = "3.0.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f288b0a4f20f9a56b5d1da57e2227c661b7b16168e2f72365f57b63326e29b24"
 
 [[package]]
 name = "futures-util"
@@ -2196,6 +2190,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "non-exhaustive"
+version = "0.1.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "daee4e13b993996fb01f271f3512b3d07f6bacbb64cf1edeb705d92c8a1881ff"
+
+[[package]]
 name = "num-bigint-dig"
 version = "0.8.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2380,7 +2380,7 @@ dependencies = [
 [[package]]
 name = "pdk"
 version = "1.8.0-rc.0"
-source = "git+https://github.com/mulesoft-emu/mgw-policy-development-kit.git?rev=fd446f581fc9d274c858a4555d01c3172366f71a#fd446f581fc9d274c858a4555d01c3172366f71a"
+source = "git+https://github.com/mulesoft-emu/mgw-policy-development-kit.git?rev=7f561a6148de8ff81cd9ef936ddec5e97fb76b26#7f561a6148de8ff81cd9ef936ddec5e97fb76b26"
 dependencies = [
  "pdk-cache-lib",
  "pdk-classy",
@@ -2392,18 +2392,20 @@ dependencies = [
  "pdk-ip-filter-lib",
  "pdk-json-validator-lib",
  "pdk-jwt-lib",
+ "pdk-ldap-lib",
  "pdk-lock-lib",
  "pdk-macros",
  "pdk-rate-limit-lib",
  "pdk-script",
  "pdk-spike-control-lib",
  "pdk-token-introspection-lib",
+ "pdk-xml-validator-lib",
 ]
 
 [[package]]
 name = "pdk-cache-lib"
 version = "1.8.0-rc.0"
-source = "git+https://github.com/mulesoft-emu/mgw-policy-development-kit.git?rev=fd446f581fc9d274c858a4555d01c3172366f71a#fd446f581fc9d274c858a4555d01c3172366f71a"
+source = "git+https://github.com/mulesoft-emu/mgw-policy-development-kit.git?rev=7f561a6148de8ff81cd9ef936ddec5e97fb76b26#7f561a6148de8ff81cd9ef936ddec5e97fb76b26"
 dependencies = [
  "bincode",
  "cfg-if",
@@ -2416,7 +2418,7 @@ dependencies = [
 [[package]]
 name = "pdk-classy"
 version = "1.8.0-rc.0"
-source = "git+https://github.com/mulesoft-emu/mgw-policy-development-kit.git?rev=fd446f581fc9d274c858a4555d01c3172366f71a#fd446f581fc9d274c858a4555d01c3172366f71a"
+source = "git+https://github.com/mulesoft-emu/mgw-policy-development-kit.git?rev=7f561a6148de8ff81cd9ef936ddec5e97fb76b26#7f561a6148de8ff81cd9ef936ddec5e97fb76b26"
 dependencies = [
  "bincode",
  "futures",
@@ -2434,7 +2436,7 @@ dependencies = [
 [[package]]
 name = "pdk-contracts-lib"
 version = "1.8.0-rc.0"
-source = "git+https://github.com/mulesoft-emu/mgw-policy-development-kit.git?rev=fd446f581fc9d274c858a4555d01c3172366f71a#fd446f581fc9d274c858a4555d01c3172366f71a"
+source = "git+https://github.com/mulesoft-emu/mgw-policy-development-kit.git?rev=7f561a6148de8ff81cd9ef936ddec5e97fb76b26#7f561a6148de8ff81cd9ef936ddec5e97fb76b26"
 dependencies = [
  "base64 0.22.1",
  "cfg-if",
@@ -2453,7 +2455,7 @@ dependencies = [
 [[package]]
 name = "pdk-core"
 version = "1.8.0-rc.0"
-source = "git+https://github.com/mulesoft-emu/mgw-policy-development-kit.git?rev=fd446f581fc9d274c858a4555d01c3172366f71a#fd446f581fc9d274c858a4555d01c3172366f71a"
+source = "git+https://github.com/mulesoft-emu/mgw-policy-development-kit.git?rev=7f561a6148de8ff81cd9ef936ddec5e97fb76b26#7f561a6148de8ff81cd9ef936ddec5e97fb76b26"
 dependencies = [
  "anyhow",
  "log",
@@ -2473,7 +2475,7 @@ dependencies = [
 [[package]]
 name = "pdk-cors-lib"
 version = "1.8.0-rc.0"
-source = "git+https://github.com/mulesoft-emu/mgw-policy-development-kit.git?rev=fd446f581fc9d274c858a4555d01c3172366f71a#fd446f581fc9d274c858a4555d01c3172366f71a"
+source = "git+https://github.com/mulesoft-emu/mgw-policy-development-kit.git?rev=7f561a6148de8ff81cd9ef936ddec5e97fb76b26#7f561a6148de8ff81cd9ef936ddec5e97fb76b26"
 dependencies = [
  "derive_builder",
  "log",
@@ -2488,7 +2490,7 @@ dependencies = [
 [[package]]
 name = "pdk-data-storage-lib"
 version = "1.8.0-rc.0"
-source = "git+https://github.com/mulesoft-emu/mgw-policy-development-kit.git?rev=fd446f581fc9d274c858a4555d01c3172366f71a#fd446f581fc9d274c858a4555d01c3172366f71a"
+source = "git+https://github.com/mulesoft-emu/mgw-policy-development-kit.git?rev=7f561a6148de8ff81cd9ef936ddec5e97fb76b26#7f561a6148de8ff81cd9ef936ddec5e97fb76b26"
 dependencies = [
  "base64 0.22.1",
  "bincode",
@@ -2502,7 +2504,7 @@ dependencies = [
 [[package]]
 name = "pdk-flex-abi"
 version = "1.8.0-rc.0"
-source = "git+https://github.com/mulesoft-emu/mgw-policy-development-kit.git?rev=fd446f581fc9d274c858a4555d01c3172366f71a#fd446f581fc9d274c858a4555d01c3172366f71a"
+source = "git+https://github.com/mulesoft-emu/mgw-policy-development-kit.git?rev=7f561a6148de8ff81cd9ef936ddec5e97fb76b26#7f561a6148de8ff81cd9ef936ddec5e97fb76b26"
 dependencies = [
  "anyhow",
  "pdk-core",
@@ -2514,7 +2516,7 @@ dependencies = [
 [[package]]
 name = "pdk-ip-filter-lib"
 version = "1.8.0-rc.0"
-source = "git+https://github.com/mulesoft-emu/mgw-policy-development-kit.git?rev=fd446f581fc9d274c858a4555d01c3172366f71a#fd446f581fc9d274c858a4555d01c3172366f71a"
+source = "git+https://github.com/mulesoft-emu/mgw-policy-development-kit.git?rev=7f561a6148de8ff81cd9ef936ddec5e97fb76b26#7f561a6148de8ff81cd9ef936ddec5e97fb76b26"
 dependencies = [
  "anyhow",
  "ipnet",
@@ -2525,7 +2527,7 @@ dependencies = [
 [[package]]
 name = "pdk-json-validator-lib"
 version = "1.8.0-rc.0"
-source = "git+https://github.com/mulesoft-emu/mgw-policy-development-kit.git?rev=fd446f581fc9d274c858a4555d01c3172366f71a#fd446f581fc9d274c858a4555d01c3172366f71a"
+source = "git+https://github.com/mulesoft-emu/mgw-policy-development-kit.git?rev=7f561a6148de8ff81cd9ef936ddec5e97fb76b26#7f561a6148de8ff81cd9ef936ddec5e97fb76b26"
 dependencies = [
  "anyhow",
  "itertools 0.10.5",
@@ -2536,7 +2538,7 @@ dependencies = [
 [[package]]
 name = "pdk-jwt-lib"
 version = "1.8.0-rc.0"
-source = "git+https://github.com/mulesoft-emu/mgw-policy-development-kit.git?rev=fd446f581fc9d274c858a4555d01c3172366f71a#fd446f581fc9d274c858a4555d01c3172366f71a"
+source = "git+https://github.com/mulesoft-emu/mgw-policy-development-kit.git?rev=7f561a6148de8ff81cd9ef936ddec5e97fb76b26#7f561a6148de8ff81cd9ef936ddec5e97fb76b26"
 dependencies = [
  "base64 0.13.1",
  "cfg-if",
@@ -2561,9 +2563,20 @@ dependencies = [
 ]
 
 [[package]]
+name = "pdk-ldap-lib"
+version = "1.8.0-rc.0"
+source = "git+https://github.com/mulesoft-emu/mgw-policy-development-kit.git?rev=7f561a6148de8ff81cd9ef936ddec5e97fb76b26#7f561a6148de8ff81cd9ef936ddec5e97fb76b26"
+dependencies = [
+ "base64 0.22.1",
+ "pdk-core",
+ "thiserror 1.0.69",
+ "url",
+]
+
+[[package]]
 name = "pdk-lock-lib"
 version = "1.8.0-rc.0"
-source = "git+https://github.com/mulesoft-emu/mgw-policy-development-kit.git?rev=fd446f581fc9d274c858a4555d01c3172366f71a#fd446f581fc9d274c858a4555d01c3172366f71a"
+source = "git+https://github.com/mulesoft-emu/mgw-policy-development-kit.git?rev=7f561a6148de8ff81cd9ef936ddec5e97fb76b26#7f561a6148de8ff81cd9ef936ddec5e97fb76b26"
 dependencies = [
  "bincode",
  "pdk-core",
@@ -2572,7 +2585,7 @@ dependencies = [
 [[package]]
 name = "pdk-macros"
 version = "1.8.0-rc.0"
-source = "git+https://github.com/mulesoft-emu/mgw-policy-development-kit.git?rev=fd446f581fc9d274c858a4555d01c3172366f71a#fd446f581fc9d274c858a4555d01c3172366f71a"
+source = "git+https://github.com/mulesoft-emu/mgw-policy-development-kit.git?rev=7f561a6148de8ff81cd9ef936ddec5e97fb76b26#7f561a6148de8ff81cd9ef936ddec5e97fb76b26"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -2582,7 +2595,7 @@ dependencies = [
 [[package]]
 name = "pdk-pel"
 version = "1.8.0-rc.0"
-source = "git+https://github.com/mulesoft-emu/mgw-policy-development-kit.git?rev=fd446f581fc9d274c858a4555d01c3172366f71a#fd446f581fc9d274c858a4555d01c3172366f71a"
+source = "git+https://github.com/mulesoft-emu/mgw-policy-development-kit.git?rev=7f561a6148de8ff81cd9ef936ddec5e97fb76b26#7f561a6148de8ff81cd9ef936ddec5e97fb76b26"
 dependencies = [
  "base64 0.22.1",
  "getrandom 0.2.17",
@@ -2594,12 +2607,12 @@ dependencies = [
 [[package]]
 name = "pdk-proxy-wasm-stub"
 version = "1.8.0-rc.0"
-source = "git+https://github.com/mulesoft-emu/mgw-policy-development-kit.git?rev=fd446f581fc9d274c858a4555d01c3172366f71a#fd446f581fc9d274c858a4555d01c3172366f71a"
+source = "git+https://github.com/mulesoft-emu/mgw-policy-development-kit.git?rev=7f561a6148de8ff81cd9ef936ddec5e97fb76b26#7f561a6148de8ff81cd9ef936ddec5e97fb76b26"
 
 [[package]]
 name = "pdk-rate-limit-lib"
 version = "1.8.0-rc.0"
-source = "git+https://github.com/mulesoft-emu/mgw-policy-development-kit.git?rev=fd446f581fc9d274c858a4555d01c3172366f71a#fd446f581fc9d274c858a4555d01c3172366f71a"
+source = "git+https://github.com/mulesoft-emu/mgw-policy-development-kit.git?rev=7f561a6148de8ff81cd9ef936ddec5e97fb76b26#7f561a6148de8ff81cd9ef936ddec5e97fb76b26"
 dependencies = [
  "base64 0.22.1",
  "bincode",
@@ -2614,7 +2627,7 @@ dependencies = [
 [[package]]
 name = "pdk-script"
 version = "1.8.0-rc.0"
-source = "git+https://github.com/mulesoft-emu/mgw-policy-development-kit.git?rev=fd446f581fc9d274c858a4555d01c3172366f71a#fd446f581fc9d274c858a4555d01c3172366f71a"
+source = "git+https://github.com/mulesoft-emu/mgw-policy-development-kit.git?rev=7f561a6148de8ff81cd9ef936ddec5e97fb76b26#7f561a6148de8ff81cd9ef936ddec5e97fb76b26"
 dependencies = [
  "log",
  "num-traits",
@@ -2631,9 +2644,8 @@ dependencies = [
 [[package]]
 name = "pdk-spike-control-lib"
 version = "1.8.0-rc.0"
-source = "git+https://github.com/mulesoft-emu/mgw-policy-development-kit.git?rev=fd446f581fc9d274c858a4555d01c3172366f71a#fd446f581fc9d274c858a4555d01c3172366f71a"
+source = "git+https://github.com/mulesoft-emu/mgw-policy-development-kit.git?rev=7f561a6148de8ff81cd9ef936ddec5e97fb76b26#7f561a6148de8ff81cd9ef936ddec5e97fb76b26"
 dependencies = [
- "futures-timer",
  "pdk-core",
  "pdk-rate-limit-lib",
  "thiserror 1.0.69",
@@ -2642,7 +2654,7 @@ dependencies = [
 [[package]]
 name = "pdk-test"
 version = "1.8.0-rc.0"
-source = "git+https://github.com/mulesoft-emu/mgw-policy-development-kit.git?rev=fd446f581fc9d274c858a4555d01c3172366f71a#fd446f581fc9d274c858a4555d01c3172366f71a"
+source = "git+https://github.com/mulesoft-emu/mgw-policy-development-kit.git?rev=7f561a6148de8ff81cd9ef936ddec5e97fb76b26#7f561a6148de8ff81cd9ef936ddec5e97fb76b26"
 dependencies = [
  "async-trait",
  "bollard",
@@ -2668,7 +2680,7 @@ dependencies = [
 [[package]]
 name = "pdk-test-macros"
 version = "1.8.0-rc.0"
-source = "git+https://github.com/mulesoft-emu/mgw-policy-development-kit.git?rev=fd446f581fc9d274c858a4555d01c3172366f71a#fd446f581fc9d274c858a4555d01c3172366f71a"
+source = "git+https://github.com/mulesoft-emu/mgw-policy-development-kit.git?rev=7f561a6148de8ff81cd9ef936ddec5e97fb76b26#7f561a6148de8ff81cd9ef936ddec5e97fb76b26"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -2678,7 +2690,7 @@ dependencies = [
 [[package]]
 name = "pdk-token-introspection-lib"
 version = "1.8.0-rc.0"
-source = "git+https://github.com/mulesoft-emu/mgw-policy-development-kit.git?rev=fd446f581fc9d274c858a4555d01c3172366f71a#fd446f581fc9d274c858a4555d01c3172366f71a"
+source = "git+https://github.com/mulesoft-emu/mgw-policy-development-kit.git?rev=7f561a6148de8ff81cd9ef936ddec5e97fb76b26#7f561a6148de8ff81cd9ef936ddec5e97fb76b26"
 dependencies = [
  "base64 0.22.1",
  "pdk-cache-lib",
@@ -2694,10 +2706,12 @@ dependencies = [
 [[package]]
 name = "pdk-unit"
 version = "1.8.0-rc.0"
-source = "git+https://github.com/mulesoft-emu/mgw-policy-development-kit.git?rev=fd446f581fc9d274c858a4555d01c3172366f71a#fd446f581fc9d274c858a4555d01c3172366f71a"
+source = "git+https://github.com/mulesoft-emu/mgw-policy-development-kit.git?rev=7f561a6148de8ff81cd9ef936ddec5e97fb76b26#7f561a6148de8ff81cd9ef936ddec5e97fb76b26"
 dependencies = [
+ "base64 0.22.1",
  "dw-parser",
  "hex",
+ "non-exhaustive",
  "pdk-classy",
  "pdk-core",
  "pdk-proxy-wasm-stub",
@@ -2711,11 +2725,23 @@ dependencies = [
 [[package]]
 name = "pdk-unit-macros"
 version = "1.8.0-rc.0"
-source = "git+https://github.com/mulesoft-emu/mgw-policy-development-kit.git?rev=fd446f581fc9d274c858a4555d01c3172366f71a#fd446f581fc9d274c858a4555d01c3172366f71a"
+source = "git+https://github.com/mulesoft-emu/mgw-policy-development-kit.git?rev=7f561a6148de8ff81cd9ef936ddec5e97fb76b26#7f561a6148de8ff81cd9ef936ddec5e97fb76b26"
 dependencies = [
  "proc-macro2",
  "quote",
  "syn 1.0.109",
+]
+
+[[package]]
+name = "pdk-xml-validator-lib"
+version = "1.8.0-rc.0"
+source = "git+https://github.com/mulesoft-emu/mgw-policy-development-kit.git?rev=7f561a6148de8ff81cd9ef936ddec5e97fb76b26#7f561a6148de8ff81cd9ef936ddec5e97fb76b26"
+dependencies = [
+ "pdk-classy",
+ "quick-xml",
+ "thiserror 1.0.69",
+ "tokio",
+ "tokio-util",
 ]
 
 [[package]]
@@ -3089,6 +3115,16 @@ dependencies = [
  "serde",
  "serde_json",
  "url",
+]
+
+[[package]]
+name = "quick-xml"
+version = "0.37.5"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "331e97a1af0bf59823e6eadffe373d7b27f485be8748f71471c662c1f269b7fb"
+dependencies = [
+ "memchr",
+ "tokio",
 ]
 
 [[package]]
@@ -4007,6 +4043,7 @@ checksum = "9ae9cec805b01e8fc3fd2fe289f89149a9b66dd16786abd8b19cfa7b48cb0098"
 dependencies = [
  "bytes",
  "futures-core",
+ "futures-io",
  "futures-sink",
  "pin-project-lite",
  "tokio",

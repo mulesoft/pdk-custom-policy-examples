@@ -144,7 +144,7 @@ mod tests {
         })
         .to_string();
 
-        let response = tester.request_full(UnitHttpRequest::post().with_body(body));
+        let response = tester.request(UnitHttpRequest::post().with_body(body));
 
         assert_eq!(response.status_code(), 200);
     }
@@ -164,7 +164,7 @@ mod tests {
         })
         .to_string();
 
-        let response = tester.request_full(UnitHttpRequest::post().with_body(body));
+        let response = tester.request(UnitHttpRequest::post().with_body(body));
 
         assert_eq!(response.status_code(), 200);
     }
@@ -183,7 +183,7 @@ mod tests {
         })
         .to_string();
 
-        let response = tester.request_full(UnitHttpRequest::post().with_body(body));
+        let response = tester.request(UnitHttpRequest::post().with_body(body));
 
         assert_eq!(response.status_code(), 403);
     }
@@ -194,7 +194,7 @@ mod tests {
             .with_config(omit_email_config())
             .with_entrypoint(crate::configure);
 
-        let response = tester.request_full(UnitHttpRequest::post());
+        let response = tester.request(UnitHttpRequest::post());
 
         assert_eq!(response.status_code(), 200);
     }
@@ -205,7 +205,7 @@ mod tests {
             .with_config(omit_email_config())
             .with_entrypoint(crate::configure);
 
-        let response = tester.request_full(UnitHttpRequest::post().with_body("not valid json"));
+        let response = tester.request(UnitHttpRequest::post().with_body("not valid json"));
 
         assert_eq!(response.status_code(), 400);
     }
@@ -224,7 +224,7 @@ mod tests {
         })
         .to_string();
 
-        let response = tester.request_full(UnitHttpRequest::post().with_body(body));
+        let response = tester.request(UnitHttpRequest::post().with_body(body));
 
         assert_eq!(response.status_code(), 200);
     }
@@ -245,7 +245,7 @@ mod tests {
         })
         .to_string();
 
-        let response = tester.request_full(UnitHttpRequest::post().with_body(body));
+        let response = tester.request(UnitHttpRequest::post().with_body(body));
 
         assert_eq!(response.status_code(), 200);
     }

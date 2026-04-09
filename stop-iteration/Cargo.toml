@@ -13,14 +13,14 @@ definition_asset_id = "stop-iteration"
 implementation_asset_id = "stop-iteration-flex"
 
 [dependencies]
-pdk = { git = "https://github.com/mulesoft-emu/mgw-policy-development-kit.git", rev = "7cbdf316723b27addcbe0c0d80cd7b652002abb7", package = "pdk", features = ["enable_stop_iteration"] }
+pdk = { git = "https://github.com/mulesoft-emu/mgw-policy-development-kit.git", rev = "7f561a6148de8ff81cd9ef936ddec5e97fb76b26", features = ["enable_stop_iteration"] }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = { version = "1.0", default-features = false, features = ["alloc"] }
 anyhow = "1.0"
 
 [dev-dependencies]
-pdk-test = { version = "1.7.0" }
-pdk-unit = { git = "https://github.com/mulesoft-emu/mgw-policy-development-kit.git", rev = "7cbdf316723b27addcbe0c0d80cd7b652002abb7", features = ["enable_stop_iteration"] }
+pdk-test = { git = "https://github.com/mulesoft-emu/mgw-policy-development-kit.git", rev = "7f561a6148de8ff81cd9ef936ddec5e97fb76b26" }
+pdk-unit = { git = "https://github.com/mulesoft-emu/mgw-policy-development-kit.git", rev = "7f561a6148de8ff81cd9ef936ddec5e97fb76b26", features = ["enable_stop_iteration"] }
 httpmock = "0.6"
 reqwest = "0.11"
 

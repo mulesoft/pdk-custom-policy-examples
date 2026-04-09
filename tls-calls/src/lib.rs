@@ -61,7 +61,7 @@ mod tests {
             })
             .with_entrypoint(crate::configure);
 
-        let response = tester.request_full(UnitHttpRequest::get());
+        let response = tester.request(UnitHttpRequest::get());
 
         assert_eq!(response.status_code(), 202);
         assert_eq!(String::from_utf8_lossy(response.body()), "hello");
@@ -85,7 +85,7 @@ mod tests {
             })
             .with_entrypoint(crate::configure);
 
-        let response = tester.request_full(UnitHttpRequest::get());
+        let response = tester.request(UnitHttpRequest::get());
 
         assert_eq!(response.status_code(), 503);
     }

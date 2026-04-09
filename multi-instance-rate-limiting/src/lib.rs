@@ -191,7 +191,7 @@ mod tests {
             .with_config(config())
             .with_entrypoint(crate::configure);
 
-        let response = tester.request_full(UnitHttpRequest::get());
+        let response = tester.request(UnitHttpRequest::get());
 
         assert_eq!(response.status_code(), 200);
     }
@@ -203,7 +203,7 @@ mod tests {
             .with_entrypoint(crate::configure);
 
         let response =
-            tester.request_full(UnitHttpRequest::get().with_header("x-api-key", "my-api-key"));
+            tester.request(UnitHttpRequest::get().with_header("x-api-key", "my-api-key"));
 
         assert_eq!(response.status_code(), 200);
     }
@@ -226,9 +226,9 @@ mod tests {
             )
             .with_entrypoint(crate::configure);
 
-        tester.request_full(UnitHttpRequest::get().with_header("x-api-key", "key-1"));
+        tester.request(UnitHttpRequest::get().with_header("x-api-key", "key-1"));
         let response =
-            tester.request_full(UnitHttpRequest::get().with_header("x-api-key", "key-1"));
+            tester.request(UnitHttpRequest::get().with_header("x-api-key", "key-1"));
 
         assert_eq!(response.status_code(), 429);
     }
