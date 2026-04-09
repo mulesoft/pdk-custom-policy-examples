@@ -34,7 +34,6 @@ for dir in */; do
             tmp_out="$(mktemp)"
 
             make test 2>&1 | tee "$tmp_out"
-
             if [[ "${PIPESTATUS[0]}" -eq 0 ]]; then
                 success=$((success + 1))
             else
