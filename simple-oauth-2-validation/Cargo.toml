@@ -4,6 +4,7 @@ name = "simple_oauth_2_validation"
 version = "1.0.1"
 rust-version = "1.88.0"
 edition = "2018"
+resolver = "2"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 

@@ -1,0 +1,38 @@
+---
+apiVersion: gateway.mulesoft.com/v1alpha1
+kind: Extension
+metadata:
+  labels:
+    title: JSON Validation Policy
+    description: >-
+      Validates incoming request bodies as JSON and enforces optional structural
+      limits (depth, array length, object size, string and key lengths) using
+      the PDK JSON validator library.
+    category: Custom
+    metadata/interfaceScope: api,resource
+spec:
+  extends:
+    - name: extension-definition
+      namespace: default
+  properties:
+    maxDepth:
+      type: integer
+      description: >-
+        Maximum nesting depth of JSON objects and arrays. Use 0 for no limit.
+      minimum: 0
+    maxArrayLength:
+      type: integer
+      description: Maximum number of elements in a JSON array. 0 = no limit.
+      minimum: 0
+    maxStringLength:
+      type: integer
+      description: Maximum length of JSON string values. 0 = no limit.
+      minimum: 0
+    maxObjectEntries:
+      type: integer
+      description: Maximum number of entries in a JSON object. 0 = no limit.
+      minimum: 0
+    maxKeyLength:
+      type: integer
+      description: Maximum length of object key names. 0 = no limit.
+      minimum: 0

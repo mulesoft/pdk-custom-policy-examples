@@ -37,8 +37,7 @@ build: build-asset-files ## Build the policy definition and implementation
 .PHONY: run
 run: build ## Run the policy in local flex
 	@anypoint-cli-v4 pdk log -t "warn" -m "Remember to update the config values in playground/config/api.yaml file for the policy configuration"
-	@anypoint-cli-v4 pdk patch-gcl -f playground/config/api.yaml -p "spec.policies[0].policyRef.name" -v "$(POLICY_REF_NAME)"
-	@anypoint-cli-v4 pdk patch-gcl -f playground/config/api.yaml -p "spec.policies[0].policyRef.namespace" -v "$(DEFINITION_NAMESPACE)"
+	@cargo anypoint patch-api -o playground/config/api.yaml -m $(DEFINITION_GCL_PATH) -n $(POLICY_REF_NAME) -s $(DEFINITION_NAMESPACE)
 ifeq ($(OS), Windows_NT)
 	rm -Force playground/config/custom-policies/*.yaml
 else
@@ -53,7 +52,7 @@ endif
 test: build ## Run integration tests
 	@cargo test -- --nocapture
 
-FORMAT ?=
+FORMAT     ?=
 OUTPUT_PATH ?=
 
 _COVERAGE_FORMAT = $(if $(filter json,$(FORMAT)),--json,$(if $(filter html,$(FORMAT)),--html,))
@@ -78,7 +77,7 @@ build-asset-files: $(DEFINITION_SRC_GCL_PATH)
 
 .PHONY: install-cargo-anypoint
 install-cargo-anypoint:
-	cargo install cargo-anypoint@1.6.0
+	cargo install cargo-anypoint@{{ cargo_anypoint_version | default: "1.8.0" }}
 
 .PHONY: install-llvm-cov
 install-llvm-cov:
