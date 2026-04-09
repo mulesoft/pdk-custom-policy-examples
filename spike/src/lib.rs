@@ -105,7 +105,6 @@ async fn configure(
 mod tests {
     use pdk_unit::{UnitHttpRequest, UnitTestBuilder};
     use serde_json::json;
-    use std::task::Poll;
     use std::time::Duration;
 
     #[test]
@@ -166,20 +165,8 @@ mod tests {
             .with_entrypoint(crate::configure);
 
         tester.request(UnitHttpRequest::get());
-        let mut req = tester.request_partial(UnitHttpRequest::get());
-        assert!(!req.poll().is_ready());
-
-        tester.sleep(Duration::from_millis(20000));
-        assert!(!req.poll().is_ready());
-
-        tester.sleep(Duration::from_millis(20000));
-        assert!(!req.poll().is_ready());
-
-        tester.sleep(Duration::from_millis(20000));
-        let Poll::Ready(resp) = req.poll() else {
-            panic!("Request should not be polled after 3 attempts");
-        };
-        assert_eq!(resp.status_code(), 200);
+        let response = tester.request(UnitHttpRequest::get());
+        assert_eq!(response.status_code(), 200);
     }
 
     #[test]

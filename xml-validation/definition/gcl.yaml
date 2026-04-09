@@ -1,0 +1,42 @@
+---
+apiVersion: gateway.mulesoft.com/v1alpha1
+kind: Extension
+metadata:
+  labels:
+    title: XML Validation Policy
+    description: >-
+      Validates incoming request bodies as well-formed XML and enforces optional
+      structural limits (depth, attribute count, child count, text length, etc.)
+      using the PDK XML validator library.
+    category: Custom
+    metadata/interfaceScope: api,resource
+spec:
+  extends:
+    - name: extension-definition
+      namespace: default
+  properties:
+    maxDepth:
+      type: integer
+      description: >-
+        Maximum element nesting depth. Use 0 for no limit (only malformed XML is rejected).
+      minimum: 0
+    maxAttributeCount:
+      type: integer
+      description: Maximum number of attributes allowed on a single element. 0 = no limit.
+      minimum: 0
+    maxChildCount:
+      type: integer
+      description: Maximum number of direct child elements per parent. 0 = no limit.
+      minimum: 0
+    maxTextLength:
+      type: integer
+      description: Maximum length of text content inside an element. 0 = no limit.
+      minimum: 0
+    maxAttributeLength:
+      type: integer
+      description: Maximum length of an attribute value. 0 = no limit.
+      minimum: 0
+    maxCommentLength:
+      type: integer
+      description: Maximum length of an XML comment. 0 = no limit.
+      minimum: 0
