@@ -213,7 +213,7 @@ mod tests {
             .with_http_upstream_from_authority("introspection", active_token_backend)
             .with_entrypoint(crate::configure);
 
-        let response = tester.request_full(
+        let response = tester.request(
             UnitHttpRequest::get().with_header("authorization", "Bearer valid-token"),
         );
 
@@ -227,7 +227,7 @@ mod tests {
             .with_http_upstream_from_authority("introspection", inactive_token_backend)
             .with_entrypoint(crate::configure);
 
-        let response = tester.request_full(
+        let response = tester.request(
             UnitHttpRequest::get().with_header("authorization", "Bearer inactive-token"),
         );
 
@@ -241,7 +241,7 @@ mod tests {
             .with_http_upstream_from_authority("introspection", active_token_backend)
             .with_entrypoint(crate::configure);
 
-        let response = tester.request_full(UnitHttpRequest::get());
+        let response = tester.request(UnitHttpRequest::get());
 
         assert_eq!(response.status_code(), 401);
     }

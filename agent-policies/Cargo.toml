@@ -13,8 +13,8 @@ edition = "2021"
 
 [workspace.dependencies]
 agent-core = { path = "./agent-core" }
-pdk = { git = "https://github.com/mulesoft-emu/mgw-policy-development-kit.git", rev = "fd446f581fc9d274c858a4555d01c3172366f71a" }
-pdk-unit = { git = "https://github.com/mulesoft-emu/mgw-policy-development-kit.git", rev = "fd446f581fc9d274c858a4555d01c3172366f71a" }
+pdk = { git = "https://github.com/mulesoft-emu/mgw-policy-development-kit.git", rev = "7f561a6148de8ff81cd9ef936ddec5e97fb76b26" }
+pdk-unit = { git = "https://github.com/mulesoft-emu/mgw-policy-development-kit.git", rev = "7f561a6148de8ff81cd9ef936ddec5e97fb76b26" }
 log = "0.4"
 serde =  { version = "1.0", features = ["derive"] }
 serde_json = { version = "1.0", default-features = false }

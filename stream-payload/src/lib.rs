@@ -119,7 +119,7 @@ mod tests {
             .with_entrypoint(crate::configure);
 
         let response =
-            tester.request_full(UnitHttpRequest::post().with_body("this is forbidden content"));
+            tester.request(UnitHttpRequest::post().with_body("this is forbidden content"));
 
         assert_eq!(response.status_code(), 400);
     }
@@ -137,7 +137,7 @@ mod tests {
             .with_entrypoint(crate::configure);
 
         let response =
-            tester.request_full(UnitHttpRequest::post().with_body("this is safe content"));
+            tester.request(UnitHttpRequest::post().with_body("this is safe content"));
 
         assert_eq!(response.status_code(), 200);
     }
@@ -155,7 +155,7 @@ mod tests {
             .with_entrypoint(crate::configure);
 
         let response =
-            tester.request_full(UnitHttpRequest::post().with_body("this is forbidden content"));
+            tester.request(UnitHttpRequest::post().with_body("this is forbidden content"));
 
         assert_eq!(response.status_code(), 400);
     }
@@ -172,7 +172,7 @@ mod tests {
             )
             .with_entrypoint(crate::configure);
 
-        let response = tester.request_full(UnitHttpRequest::post().with_body(""));
+        let response = tester.request(UnitHttpRequest::post().with_body(""));
 
         assert_eq!(response.status_code(), 200);
     }

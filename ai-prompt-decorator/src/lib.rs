@@ -126,7 +126,7 @@ mod tests {
             .with_backend(Rc::clone(&backend))
             .with_entrypoint(crate::configure);
 
-        let response = tester.request_full(UnitHttpRequest::post().with_body(base_body()));
+        let response = tester.request(UnitHttpRequest::post().with_body(base_body()));
 
         assert_eq!(response.status_code(), 200);
         let messages = messages_from_backend(&backend);
@@ -145,7 +145,7 @@ mod tests {
             .with_backend(Rc::clone(&backend))
             .with_entrypoint(crate::configure);
 
-        let response = tester.request_full(UnitHttpRequest::post().with_body(base_body()));
+        let response = tester.request(UnitHttpRequest::post().with_body(base_body()));
 
         assert_eq!(response.status_code(), 200);
         let messages = messages_from_backend(&backend);
@@ -166,7 +166,7 @@ mod tests {
             .with_backend(Rc::clone(&backend))
             .with_entrypoint(crate::configure);
 
-        let response = tester.request_full(UnitHttpRequest::post().with_body(base_body()));
+        let response = tester.request(UnitHttpRequest::post().with_body(base_body()));
 
         assert_eq!(response.status_code(), 200);
         let messages = messages_from_backend(&backend);
@@ -188,7 +188,7 @@ mod tests {
             .with_backend(Rc::clone(&backend))
             .with_entrypoint(crate::configure);
 
-        let response = tester.request_full(UnitHttpRequest::post().with_body(base_body()));
+        let response = tester.request(UnitHttpRequest::post().with_body(base_body()));
 
         assert_eq!(response.status_code(), 200);
         let messages = messages_from_backend(&backend);
@@ -205,7 +205,7 @@ mod tests {
             .with_config(config(json!([]), json!([])))
             .with_entrypoint(crate::configure);
 
-        let response = tester.request_full(UnitHttpRequest::post().with_body("not valid json"));
+        let response = tester.request(UnitHttpRequest::post().with_body("not valid json"));
 
         assert_eq!(response.status_code(), 400);
     }
@@ -224,7 +224,7 @@ mod tests {
             .with_backend(Rc::clone(&backend))
             .with_entrypoint(crate::configure);
 
-        let response = tester.request_full(UnitHttpRequest::post().with_body(base_body()));
+        let response = tester.request(UnitHttpRequest::post().with_body(base_body()));
 
         assert_eq!(response.status_code(), 200);
         let messages = messages_from_backend(&backend);

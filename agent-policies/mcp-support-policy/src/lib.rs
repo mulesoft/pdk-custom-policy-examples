@@ -47,7 +47,7 @@ mod tests {
             .with_config(config())
             .with_entrypoint(crate::configure);
 
-        let response = tester.request_full(UnitHttpRequest::get());
+        let response = tester.request(UnitHttpRequest::get());
 
         assert_eq!(response.status_code(), 200);
     }
@@ -58,7 +58,7 @@ mod tests {
             .with_config(config())
             .with_entrypoint(crate::configure);
 
-        let response = tester.request_full(
+        let response = tester.request(
             UnitHttpRequest::post()
                 .with_body(json!({"jsonrpc": "2.0", "method": "tools/list", "id": 1}).to_string()),
         );
@@ -72,7 +72,7 @@ mod tests {
             .with_config(config())
             .with_entrypoint(crate::configure);
 
-        let response = tester.request_full(
+        let response = tester.request(
             UnitHttpRequest::post()
                 .with_header("x-envoy-upstream-rq-timeout-ms", "5000")
                 .with_body(json!({"jsonrpc": "2.0", "method": "tools/call", "id": 2}).to_string()),

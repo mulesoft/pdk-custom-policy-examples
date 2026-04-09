@@ -160,7 +160,7 @@ mod tests {
             .with_entrypoint(crate::configure);
 
         let response =
-            tester.request_full(UnitHttpRequest::get().with_path("/api?foo=bar&other=val"));
+            tester.request(UnitHttpRequest::get().with_path("/api?foo=bar&other=val"));
 
         assert_eq!(response.status_code(), 200);
 
@@ -181,7 +181,7 @@ mod tests {
             .with_backend(Rc::clone(&backend))
             .with_entrypoint(crate::configure);
 
-        let response = tester.request_full(UnitHttpRequest::get().with_path("/api?foo=bar"));
+        let response = tester.request(UnitHttpRequest::get().with_path("/api?foo=bar"));
         assert_eq!(response.status_code(), 200);
 
         let upstream_request = backend.next().unwrap();
@@ -201,7 +201,7 @@ mod tests {
             .with_backend(Rc::clone(&backend))
             .with_entrypoint(crate::configure);
 
-        let response = tester.request_full(UnitHttpRequest::get().with_path("/api?a=1&b=2&c=3"));
+        let response = tester.request(UnitHttpRequest::get().with_path("/api?a=1&b=2&c=3"));
 
         assert_eq!(response.status_code(), 200);
 

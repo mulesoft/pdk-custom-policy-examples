@@ -91,7 +91,7 @@ mod tests {
             .with_entrypoint(crate::configure);
 
         let response = tester
-            .request_full(UnitHttpRequest::get().with_header("x-forwarded-for", "192.168.1.1"));
+            .request(UnitHttpRequest::get().with_header("x-forwarded-for", "192.168.1.1"));
 
         assert_eq!(response.status_code(), 403);
     }
@@ -109,7 +109,7 @@ mod tests {
             .with_entrypoint(crate::configure);
 
         let response =
-            tester.request_full(UnitHttpRequest::get().with_header("x-forwarded-for", "10.0.0.1"));
+            tester.request(UnitHttpRequest::get().with_header("x-forwarded-for", "10.0.0.1"));
 
         assert_eq!(response.status_code(), 200);
     }
@@ -127,7 +127,7 @@ mod tests {
             .with_entrypoint(crate::configure);
 
         let response = tester
-            .request_full(UnitHttpRequest::get().with_header("x-forwarded-for", "192.168.1.1"));
+            .request(UnitHttpRequest::get().with_header("x-forwarded-for", "192.168.1.1"));
 
         assert_eq!(response.status_code(), 403);
     }
@@ -144,7 +144,7 @@ mod tests {
             )
             .with_entrypoint(crate::configure);
 
-        let response = tester.request_full(UnitHttpRequest::get());
+        let response = tester.request(UnitHttpRequest::get());
 
         assert_eq!(response.status_code(), 200);
     }

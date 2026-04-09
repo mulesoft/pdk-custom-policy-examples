@@ -280,7 +280,7 @@ mod tests {
             .with_config(config())
             .with_entrypoint(crate::configure);
 
-        let response = tester.request_full(UnitHttpRequest::get().with_path("/api/resource"));
+        let response = tester.request(UnitHttpRequest::get().with_path("/api/resource"));
 
         assert_eq!(response.status_code(), 200);
     }
@@ -291,8 +291,8 @@ mod tests {
             .with_config(config())
             .with_entrypoint(crate::configure);
 
-        tester.request_full(UnitHttpRequest::get().with_path("/api/resource"));
-        let response = tester.request_full(UnitHttpRequest::get().with_path("/api/resource"));
+        tester.request(UnitHttpRequest::get().with_path("/api/resource"));
+        let response = tester.request(UnitHttpRequest::get().with_path("/api/resource"));
 
         assert_eq!(response.status_code(), 200);
     }
