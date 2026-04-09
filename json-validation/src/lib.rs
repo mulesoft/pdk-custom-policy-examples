@@ -98,10 +98,7 @@ mod tests {
             .with_backend(Rc::clone(&backend))
             .with_entrypoint(configure);
 
-        assert_eq!(
-            tester.request(UnitHttpRequest::get()).status_code(),
-            200
-        );
+        assert_eq!(tester.request(UnitHttpRequest::get()).status_code(), 200);
         assert!(backend.next().is_some());
     }
 
@@ -147,8 +144,7 @@ mod tests {
             .with_backend(Rc::clone(&backend))
             .with_entrypoint(configure);
 
-        let response =
-            tester.request(UnitHttpRequest::post().with_body(r#"{"a":{"b":{"c":1}}}"#));
+        let response = tester.request(UnitHttpRequest::post().with_body(r#"{"a":{"b":{"c":1}}}"#));
         assert_eq!(response.status_code(), 400);
         assert!(backend.next().is_none());
     }

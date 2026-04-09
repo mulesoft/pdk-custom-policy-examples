@@ -98,10 +98,7 @@ mod tests {
             .with_backend(Rc::clone(&backend))
             .with_entrypoint(crate::configure);
 
-        assert_eq!(
-            tester.request(UnitHttpRequest::get()).status_code(),
-            200
-        );
+        assert_eq!(tester.request(UnitHttpRequest::get()).status_code(), 200);
         assert!(backend.next().is_some());
     }
 

@@ -101,10 +101,7 @@ mod tests {
             .with_backend(Rc::clone(&backend))
             .with_entrypoint(crate::configure);
 
-        assert_eq!(
-            tester.request(UnitHttpRequest::get()).status_code(),
-            200
-        );
+        assert_eq!(tester.request(UnitHttpRequest::get()).status_code(), 200);
         assert!(backend.next().is_some());
     }
 
@@ -116,15 +113,9 @@ mod tests {
             .with_backend(Rc::clone(&backend))
             .with_entrypoint(crate::configure);
 
-        assert_eq!(
-            tester.request(UnitHttpRequest::get()).status_code(),
-            200
-        );
+        assert_eq!(tester.request(UnitHttpRequest::get()).status_code(), 200);
         assert!(backend.next().is_some());
-        assert_eq!(
-            tester.request(UnitHttpRequest::get()).status_code(),
-            429
-        );
+        assert_eq!(tester.request(UnitHttpRequest::get()).status_code(), 429);
         assert!(backend.next().is_none());
     }
 
@@ -136,20 +127,35 @@ mod tests {
             .with_backend(Rc::clone(&backend))
             .with_entrypoint(crate::configure);
 
-        assert_eq!(
-            tester.request(UnitHttpRequest::get()).status_code(),
-            200
-        );
+        assert_eq!(tester.request(UnitHttpRequest::get()).status_code(), 200);
         let _ = backend.next();
-        assert_eq!(
-            tester.request(UnitHttpRequest::get()).status_code(),
-            429
-        );
+        assert_eq!(tester.request(UnitHttpRequest::get()).status_code(), 429);
 
         tester.sleep(Duration::from_millis(60_001));
-        assert_eq!(
-            tester.request(UnitHttpRequest::get()).status_code(),
-            200
-        );
+        assert_eq!(tester.request(UnitHttpRequest::get()).status_code(), 200);
+    }
+
+    #[test]
+    fn retry_succeeds_after_window_expires() {
+        let backend = Rc::new(TraceBackend::new(UnitHttpResponse::new(200)));
+        let mut tester = UnitTestBuilder::default()
+            .with_config(
+                json!({
+                    "requests": 1,
+                    "millis": 1000,
+                    "delay": 500,
+                    "maxAttempts": 3
+                })
+                .to_string(),
+            )
+            .with_backend(Rc::clone(&backend))
+            .with_entrypoint(crate::configure);
+
+        assert_eq!(tester.request(UnitHttpRequest::get()).status_code(), 200);
+        assert!(backend.next().is_some());
+
+        let response = tester.request(UnitHttpRequest::get());
+        assert_eq!(response.status_code(), 200);
+        assert!(backend.next().is_some());
     }
 }
