@@ -50,7 +50,7 @@ async fn configure(
     let delay_ms = config.delay.max(0) as u64;
     let max_retries = config.max_attempts.max(0) as u32;
 
-    let mut inst = spike_control
+    let mut builder = spike_control
         .new("spike-control-example".to_string())
         .with_bucket(
             BUCKET_ID.to_string(),
@@ -61,12 +61,12 @@ async fn configure(
         );
 
     if max_retries > 0 {
-        inst = inst
+        builder = builder
             .with_ticker(Rc::new(clock.period(Duration::from_millis(100))))
             .with_retry(delay_ms, max_retries);
     }
 
-    let handler = inst
+    let handler = builder
         .build()
         .map_err(|e| anyhow!("failed to build spike control: {e}"))?;
 

@@ -49,8 +49,8 @@ async fn request_filter(state: RequestState, config: &Config) -> Flow<()> {
     }
 
     let mut validator = validator_from_config(config);
-    let outcome = validator.validate_chunk(&buf, true);
-    match outcome {
+    let result = validator.validate_chunk(&buf, true);
+    match result {
         Ok(ValidationResult::Complete) => Flow::Continue(()),
         Ok(ValidationResult::Incomplete) | Err(_) => Flow::Break(Response::new(400)),
     }
