@@ -33,6 +33,8 @@ async fn request_filter(request_state: RequestState, config: &Config) -> Flow<()
             state
                 .handler()
                 .set_header("x-modified-body", &modified_body);
+        } else {
+            state.handler().set_header("Content-Length", &modified_body.len().to_string());
         }
     }
 

@@ -14,7 +14,7 @@ spec:
             destinationPath: /anything/echo/
   policies:
     - policyRef:
-        name: xml-validation-v1-0-impl # This value will be overriden during 'make run' execution
+        name: xml-validation-flex-v1-0 # This value will be overriden during 'make run' execution
         namespace: default
       config:
         maxDepth: 32
