@@ -113,9 +113,8 @@ mod tests {
             .with_entrypoint(crate::configure);
 
         // "this has four tokens" = 4 tokens, well within limit
-        let response = tester.request(
-            UnitHttpRequest::post().with_body(completion_body("this has four tokens")),
-        );
+        let response = tester
+            .request(UnitHttpRequest::post().with_body(completion_body("this has four tokens")));
 
         assert_eq!(response.status_code(), 200);
     }
@@ -127,9 +126,8 @@ mod tests {
             .with_entrypoint(crate::configure);
 
         // "this has four tokens" = 4 tokens, exceeds limit of 1
-        let response = tester.request(
-            UnitHttpRequest::post().with_body(completion_body("this has four tokens")),
-        );
+        let response = tester
+            .request(UnitHttpRequest::post().with_body(completion_body("this has four tokens")));
 
         assert_eq!(response.status_code(), 403);
     }
@@ -163,15 +161,13 @@ mod tests {
             .with_entrypoint(crate::configure);
 
         // "this has four tokens" = 4 tokens, fits in limit of 5
-        let first = tester.request(
-            UnitHttpRequest::post().with_body(completion_body("this has four tokens")),
-        );
+        let first = tester
+            .request(UnitHttpRequest::post().with_body(completion_body("this has four tokens")));
         assert_eq!(first.status_code(), 200);
 
         // second request pushes cumulative count over 5
-        let second = tester.request(
-            UnitHttpRequest::post().with_body(completion_body("this has four tokens")),
-        );
+        let second = tester
+            .request(UnitHttpRequest::post().with_body(completion_body("this has four tokens")));
         assert_eq!(second.status_code(), 403);
     }
 }

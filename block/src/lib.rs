@@ -255,8 +255,8 @@ mod tests {
             .with_http_upstream_from_authority("blocklist", blocklist_backend)
             .with_entrypoint(crate::configure);
 
-        let response = tester
-            .request(UnitHttpRequest::get().with_header("x-forwarded-for", "172.16.0.1"));
+        let response =
+            tester.request(UnitHttpRequest::get().with_header("x-forwarded-for", "172.16.0.1"));
 
         assert_eq!(response.status_code(), 403);
     }
@@ -270,8 +270,8 @@ mod tests {
 
         tester.tick();
 
-        let response = tester
-            .request(UnitHttpRequest::get().with_header("x-forwarded-for", "172.16.0.1"));
+        let response =
+            tester.request(UnitHttpRequest::get().with_header("x-forwarded-for", "172.16.0.1"));
 
         assert_eq!(response.status_code(), 200);
     }
@@ -299,8 +299,8 @@ mod tests {
 
         tester.tick();
 
-        let response = tester
-            .request(UnitHttpRequest::get().with_header("x-forwarded-for", "192.168.1.1"));
+        let response =
+            tester.request(UnitHttpRequest::get().with_header("x-forwarded-for", "192.168.1.1"));
 
         assert_eq!(response.status_code(), 403);
     }

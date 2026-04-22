@@ -120,8 +120,8 @@ mod tests {
             .with_config(config_with_origin("https://example.com"))
             .with_entrypoint(crate::configure);
 
-        let response = tester
-            .request(UnitHttpRequest::get().with_header("origin", "https://example.com"));
+        let response =
+            tester.request(UnitHttpRequest::get().with_header("origin", "https://example.com"));
 
         assert_eq!(response.status_code(), 200);
     }

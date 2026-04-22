@@ -215,8 +215,7 @@ mod tests {
             .with_config(config_with_template(false))
             .with_entrypoint(crate::configure);
 
-        let response =
-            tester.request(UnitHttpRequest::post().with_body("not valid json at all"));
+        let response = tester.request(UnitHttpRequest::post().with_body("not valid json at all"));
 
         assert_eq!(response.status_code(), 400);
     }

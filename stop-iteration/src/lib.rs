@@ -34,7 +34,9 @@ async fn request_filter(request_state: RequestState, config: &Config) -> Flow<()
                 .handler()
                 .set_header("x-modified-body", &modified_body);
         } else {
-            state.handler().set_header("Content-Length", &modified_body.len().to_string());
+            state
+                .handler()
+                .set_header("Content-Length", &modified_body.len().to_string());
         }
     }
 
@@ -72,7 +74,7 @@ async fn configure(launcher: Launcher, Configuration(bytes): Configuration) -> R
         )
     })?;
     let filter = on_request(|rs| request_filter(rs, &config))
-                    .on_response(|res| response_filter(res, &config));
+        .on_response(|res| response_filter(res, &config));
     launcher.launch(filter).await?;
     Ok(())
 }
@@ -80,7 +82,9 @@ async fn configure(launcher: Launcher, Configuration(bytes): Configuration) -> R
 #[cfg(test)]
 mod tests {
     use super::*;
-    use pdk_unit::{TraceBackend, UnitHttpMessage, UnitHttpRequest, UnitHttpResponse, UnitTestBuilder};
+    use pdk_unit::{
+        TraceBackend, UnitHttpMessage, UnitHttpRequest, UnitHttpResponse, UnitTestBuilder,
+    };
     use serde_json::json;
     use std::rc::Rc;
 
@@ -153,7 +157,11 @@ mod tests {
 
         // Check that body was modified
         let body = String::from_utf8_lossy(backend_request.body());
-        assert!(body.starts_with("REQ-"), "Expected body to start with 'REQ-', got: {}", body);
+        assert!(
+            body.starts_with("REQ-"),
+            "Expected body to start with 'REQ-', got: {}",
+            body
+        );
     }
 
     #[test]
@@ -211,7 +219,11 @@ mod tests {
 
         // Check request body was modified
         let req_body = String::from_utf8_lossy(backend_request.body());
-        assert!(req_body.starts_with("PREFIX-"), "Expected body to start with 'PREFIX-', got: {}", req_body);
+        assert!(
+            req_body.starts_with("PREFIX-"),
+            "Expected body to start with 'PREFIX-', got: {}",
+            req_body
+        );
 
         // Response modification: header added
         assert_eq!(

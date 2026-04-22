@@ -136,8 +136,7 @@ mod tests {
             )
             .with_entrypoint(crate::configure);
 
-        let response =
-            tester.request(UnitHttpRequest::post().with_body("this is safe content"));
+        let response = tester.request(UnitHttpRequest::post().with_body("this is safe content"));
 
         assert_eq!(response.status_code(), 200);
     }

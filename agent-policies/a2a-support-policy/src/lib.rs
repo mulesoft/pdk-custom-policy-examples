@@ -385,8 +385,7 @@ mod tests {
             .with_backend(Rc::clone(&backend))
             .with_entrypoint(crate::configure);
 
-        let response =
-            tester.request(UnitHttpRequest::get().with_path("/.well-known/agent.json"));
+        let response = tester.request(UnitHttpRequest::get().with_path("/.well-known/agent.json"));
 
         assert_eq!(response.status_code(), 200);
         let body: serde_json::Value = serde_json::from_slice(response.body()).unwrap();
@@ -404,8 +403,7 @@ mod tests {
             .with_backend(Rc::clone(&backend))
             .with_entrypoint(crate::configure);
 
-        let response =
-            tester.request(UnitHttpRequest::get().with_path("/.well-known/agent.json"));
+        let response = tester.request(UnitHttpRequest::get().with_path("/.well-known/agent.json"));
 
         assert_eq!(response.status_code(), 200);
     }

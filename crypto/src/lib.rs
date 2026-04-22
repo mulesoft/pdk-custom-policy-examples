@@ -183,8 +183,7 @@ JkkBm8bQCWZPi2kFXOWBDfwktK1P2t+jQMfQkRAnQBpOwAgeuXs=
             .with_config(config())
             .with_entrypoint(crate::configure);
 
-        let response =
-            tester.request(UnitHttpRequest::get().with_header("nonce", "not-valid-hex"));
+        let response = tester.request(UnitHttpRequest::get().with_header("nonce", "not-valid-hex"));
 
         assert_eq!(response.status_code(), 401);
     }

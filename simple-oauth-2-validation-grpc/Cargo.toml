@@ -14,7 +14,7 @@ definition_asset_id = "simple-oauth-2-validation-grpc"
 implementation_asset_id = "simple-oauth-2-validation-grpc-flex"
 
 [dependencies]
-pdk = { git = "https://github.com/mulesoft-emu/mgw-policy-development-kit.git", rev = "7f561a6148de8ff81cd9ef936ddec5e97fb76b26" }
+pdk = { version = "1.8.0" }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = { version = "1.0", default-features = false, features = ["alloc"] }
 serde_urlencoded = "0.7.0"
@@ -25,8 +25,8 @@ protobuf = "3.5.0"
 protobuf-codegen = "3.5.0"
 
 [dev-dependencies]
-pdk-test = { git = "https://github.com/mulesoft-emu/mgw-policy-development-kit.git", rev = "7f561a6148de8ff81cd9ef936ddec5e97fb76b26" }
-pdk-unit = { git = "https://github.com/mulesoft-emu/mgw-policy-development-kit.git", rev = "7f561a6148de8ff81cd9ef936ddec5e97fb76b26" }
+pdk-test = { version = "1.8.0" }
+pdk-unit = { version = "1.8.0" }
 httpmock = "0.6"
 reqwest = { version = "0.11", features = ["json"] }
 env_logger = "0.11.3"
