@@ -16,7 +16,7 @@ implementation_asset_id = "a-two-a-prompt-decorator-wasm"
 
 [dependencies]
 agent-core = {workspace = true}
-pdk = { git = "https://github.com/mulesoft-emu/mgw-policy-development-kit.git", rev = "7f561a6148de8ff81cd9ef936ddec5e97fb76b26" }
+pdk = { workspace = true }
 serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true, features = ["alloc","raw_value"] }
 anyhow = { workspace = true }

@@ -227,8 +227,7 @@ mod tests {
             .with_entrypoint(crate::configure);
 
         tester.request(UnitHttpRequest::get().with_header("x-api-key", "key-1"));
-        let response =
-            tester.request(UnitHttpRequest::get().with_header("x-api-key", "key-1"));
+        let response = tester.request(UnitHttpRequest::get().with_header("x-api-key", "key-1"));
 
         assert_eq!(response.status_code(), 429);
     }

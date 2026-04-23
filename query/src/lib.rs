@@ -159,8 +159,7 @@ mod tests {
             .with_backend(Rc::clone(&backend))
             .with_entrypoint(crate::configure);
 
-        let response =
-            tester.request(UnitHttpRequest::get().with_path("/api?foo=bar&other=val"));
+        let response = tester.request(UnitHttpRequest::get().with_path("/api?foo=bar&other=val"));
 
         assert_eq!(response.status_code(), 200);
 

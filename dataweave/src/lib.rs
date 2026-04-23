@@ -132,8 +132,7 @@ mod tests {
             )
             .with_entrypoint(crate::configure);
 
-        let response =
-            tester.request(UnitHttpRequest::get().with_header("x-custom", "my-value"));
+        let response = tester.request(UnitHttpRequest::get().with_header("x-custom", "my-value"));
 
         assert_eq!(response.status_code(), 200);
         assert_eq!(response.body(), br#"{"result":"my-value"}"#);

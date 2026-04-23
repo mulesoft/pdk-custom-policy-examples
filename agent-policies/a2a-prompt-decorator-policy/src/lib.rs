@@ -314,8 +314,7 @@ mod tests {
             .with_backend(Rc::clone(&backend))
             .with_entrypoint(crate::configure);
 
-        let response =
-            tester.request(UnitHttpRequest::post().with_body(tasks_send_body("Hello")));
+        let response = tester.request(UnitHttpRequest::post().with_body(tasks_send_body("Hello")));
 
         assert_eq!(response.status_code(), 200);
         let req = backend.next().unwrap();

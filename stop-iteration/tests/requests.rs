@@ -3,10 +3,10 @@
 mod common;
 
 use httpmock::MockServer;
-use pdk_test::{pdk_test, TestComposite};
 use pdk_test::port::Port;
-use pdk_test::services::flex::{ApiConfig, FlexConfig, Flex, PolicyConfig};
-use pdk_test::services::httpmock::{HttpMockConfig, HttpMock};
+use pdk_test::services::flex::{ApiConfig, Flex, FlexConfig, PolicyConfig};
+use pdk_test::services::httpmock::{HttpMock, HttpMockConfig};
+use pdk_test::{pdk_test, TestComposite};
 
 use common::*;
 
@@ -48,10 +48,7 @@ async fn test_stop_iteration_modifies_response() -> anyhow::Result<()> {
         .version("1.12.0")
         .hostname("local-flex")
         .with_api(api_config)
-        .config_mounts([
-            (POLICY_DIR, "policy"),
-            (COMMON_CONFIG_DIR, "common"),
-        ])
+        .config_mounts([(POLICY_DIR, "policy"), (COMMON_CONFIG_DIR, "common")])
         .build();
 
     // Compose the services
@@ -68,10 +65,12 @@ async fn test_stop_iteration_modifies_response() -> anyhow::Result<()> {
 
     // Create a MockServer and mock the backend response
     let mock_server = MockServer::connect_async(httpmock.socket()).await;
-    mock_server.mock_async(|when, then| {
-        when.path_contains("/hello");
-        then.status(200).body("original-body");
-    }).await;
+    mock_server
+        .mock_async(|when, then| {
+            when.path_contains("/hello");
+            then.status(200).body("original-body");
+        })
+        .await;
 
     // Make a request through Flex
     let response = reqwest::get(format!("{flex_url}/hello")).await?;
@@ -81,7 +80,10 @@ async fn test_stop_iteration_modifies_response() -> anyhow::Result<()> {
 
     // Check that the response header was added
     assert_eq!(
-        response.headers().get("x-stop-iteration").and_then(|v| v.to_str().ok()),
+        response
+            .headers()
+            .get("x-stop-iteration")
+            .and_then(|v| v.to_str().ok()),
         Some("response-modified")
     );
 
