@@ -141,3 +141,75 @@ async fn configure(launcher: Launcher, Configuration(bytes): Configuration) -> R
     launcher.launch(filter).await?;
     Ok(())
 }
+
+#[cfg(test)]
+mod tests {
+    use pdk_unit::{
+        TraceBackend, UnitHttpMessage, UnitHttpRequest, UnitHttpResponse, UnitTestBuilder,
+    };
+    use serde_json::json;
+    use std::rc::Rc;
+
+    #[test]
+    fn query_param_forwarded_as_header() {
+        let backend = Rc::new(TraceBackend::new(UnitHttpResponse::new(200)));
+
+        let mut tester = UnitTestBuilder::default()
+            .with_config(json!({"query": ["foo"]}).to_string())
+            .with_backend(Rc::clone(&backend))
+            .with_entrypoint(crate::configure);
+
+        let response = tester.request(UnitHttpRequest::get().with_path("/api?foo=bar&other=val"));
+
+        assert_eq!(response.status_code(), 200);
+
+        let upstream_request = backend.next().unwrap();
+        assert_eq!(upstream_request.header("x-query-foo"), Some("bar"));
+        assert_eq!(
+            upstream_request.header(":path"),
+            Some("/api?removed=foo&other=val")
+        );
+    }
+
+    #[test]
+    fn missing_query_param_sets_undefined_header() {
+        let backend = Rc::new(TraceBackend::new(UnitHttpResponse::new(200)));
+
+        let mut tester = UnitTestBuilder::default()
+            .with_config(json!({"query": ["missing"]}).to_string())
+            .with_backend(Rc::clone(&backend))
+            .with_entrypoint(crate::configure);
+
+        let response = tester.request(UnitHttpRequest::get().with_path("/api?foo=bar"));
+        assert_eq!(response.status_code(), 200);
+
+        let upstream_request = backend.next().unwrap();
+        assert_eq!(
+            upstream_request.header("x-query-missing"),
+            Some("Undefined")
+        );
+        assert_eq!(upstream_request.header(":path"), Some("/api?foo=bar"));
+    }
+
+    #[test]
+    fn multiple_query_params_forwarded() {
+        let backend = Rc::new(TraceBackend::new(UnitHttpResponse::new(200)));
+
+        let mut tester = UnitTestBuilder::default()
+            .with_config(json!({"query": ["a", "b"]}).to_string())
+            .with_backend(Rc::clone(&backend))
+            .with_entrypoint(crate::configure);
+
+        let response = tester.request(UnitHttpRequest::get().with_path("/api?a=1&b=2&c=3"));
+
+        assert_eq!(response.status_code(), 200);
+
+        let upstream_request = backend.next().unwrap();
+        assert_eq!(upstream_request.header("x-query-a"), Some("1"));
+        assert_eq!(upstream_request.header("x-query-b"), Some("2"));
+        assert_eq!(
+            upstream_request.header(":path"),
+            Some("/api?removed=a&removed=b&c=3")
+        );
+    }
+}

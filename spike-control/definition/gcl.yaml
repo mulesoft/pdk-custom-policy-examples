@@ -1,0 +1,37 @@
+---
+apiVersion: gateway.mulesoft.com/v1alpha1
+kind: Extension
+metadata:
+  labels:
+    title: Spike Control Policy
+    description: >-
+      Limits how many requests reach the backend in a time window, with optional
+      delays and retries when the limit is reached.
+    category: Custom
+    metadata/interfaceScope: api,resource
+spec:
+  extends:
+    - name: extension-definition
+      namespace: default
+  properties:
+    requests:
+      type: integer
+      description: Maximum requests allowed per time window.
+      minimum: 1
+    millis:
+      type: integer
+      description: Length of the time window in milliseconds.
+      minimum: 1
+    delay:
+      type: integer
+      description: Delay in milliseconds between queue retry attempts when over the limit.
+      minimum: 0
+    maxAttempts:
+      type: integer
+      description: Maximum queue or retry attempts when over the limit (0 disables queuing).
+      minimum: 0
+  required:
+    - requests
+    - millis
+    - delay
+    - maxAttempts

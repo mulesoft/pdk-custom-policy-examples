@@ -29,8 +29,8 @@ impl<'a> State<'a> {
     }
 
     /// Check if the request is allowed to reach the backend.
-    pub fn allowed(&self) -> bool {
-        let now = SystemTime::now();
+    pub fn allowed(&self, timer: &Timer) -> bool {
+        let now = timer.now();
         let mut reqs = self.requests.borrow_mut();
 
         // Discards requests that have fallen out of the sliding window.
@@ -51,9 +51,9 @@ impl<'a> State<'a> {
 
 /// Wrap the sleep function to log how many millis were actually slept.
 async fn logged_sleep(timer: &Timer, duration: Duration) -> bool {
-    let init = SystemTime::now();
+    let init = timer.now();
     let slept = timer.sleep(duration).await;
-    let end = SystemTime::now();
+    let end = timer.now();
     logger::debug!(
         "Slept for {} millis.",
         end.duration_since(init).unwrap().as_millis()
@@ -65,7 +65,7 @@ async fn logged_sleep(timer: &Timer, duration: Duration) -> bool {
 async fn request_filter(timer: &Timer, state: &State<'_>, config: &Config) -> Flow<()> {
     let mut retries = 0;
     // We check if the request is allowed.
-    while !state.allowed() {
+    while !state.allowed(timer) {
         if retries + 1 > config.max_attempts // Check if the maximum amount of retries was reached
             || !logged_sleep(timer, Duration::from_millis(config.delay as u64)).await
         // Wait for the specified time
@@ -99,4 +99,111 @@ async fn configure(
         .launch(on_request(|| request_filter(&timer, &state, &config)))
         .await?;
     Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use pdk_unit::{UnitHttpRequest, UnitTestBuilder};
+    use serde_json::json;
+    use std::time::Duration;
+
+    #[test]
+    fn request_within_limit_passes_through() {
+        let mut tester = UnitTestBuilder::default()
+            .with_config(
+                json!({
+                    "requests": 5,
+                    "millis": 1000,
+                    "delay": 100,
+                    "maxAttempts": 3
+                })
+                .to_string(),
+            )
+            .with_entrypoint(crate::configure);
+
+        let response = tester.request(UnitHttpRequest::get());
+
+        assert_eq!(response.status_code(), 200);
+    }
+
+    #[test]
+    fn requests_exceeding_limit_return_429() {
+        let mut tester = UnitTestBuilder::default()
+            .with_config(
+                json!({
+                    "requests": 1,
+                    "millis": 60000,
+                    "delay": 0,
+                    "maxAttempts": 0
+                })
+                .to_string(),
+            )
+            .with_entrypoint(crate::configure);
+
+        tester.request(UnitHttpRequest::get());
+        let response = tester.request(UnitHttpRequest::get());
+
+        assert_eq!(response.status_code(), 429);
+
+        tester.sleep(Duration::from_millis(60001));
+        let response = tester.request(UnitHttpRequest::get());
+        assert_eq!(response.status_code(), 200);
+    }
+
+    #[test]
+    fn requests_exceeding_limit_re_attempts_after_delay() {
+        let mut tester = UnitTestBuilder::default()
+            .with_config(
+                json!({
+                    "requests": 1,
+                    "millis": 59999,
+                    "delay": 20000,
+                    "maxAttempts": 3
+                })
+                .to_string(),
+            )
+            .with_entrypoint(crate::configure);
+
+        tester.request(UnitHttpRequest::get());
+        let response = tester.request(UnitHttpRequest::get());
+        assert_eq!(response.status_code(), 200);
+    }
+
+    #[test]
+    fn requests_exceeding_limit_re_attempts() {
+        let mut tester = UnitTestBuilder::default()
+            .with_config(
+                json!({
+                    "requests": 1,
+                    "millis": 59999,
+                    "delay": 20000,
+                    "maxAttempts": 3
+                })
+                .to_string(),
+            )
+            .with_entrypoint(crate::configure);
+
+        tester.request(UnitHttpRequest::get());
+        let response = tester.request(UnitHttpRequest::get());
+        assert_eq!(response.status_code(), 200);
+    }
+
+    #[test]
+    fn requests_exceeding_limit_re_attempts_429() {
+        let mut tester = UnitTestBuilder::default()
+            .with_config(
+                json!({
+                    "requests": 1,
+                    "millis": 59999,
+                    "delay": 20000,
+                    "maxAttempts": 1
+                })
+                .to_string(),
+            )
+            .with_entrypoint(crate::configure);
+
+        tester.request(UnitHttpRequest::get());
+        let response = tester.request(UnitHttpRequest::get());
+        assert_eq!(response.status_code(), 429);
+    }
 }

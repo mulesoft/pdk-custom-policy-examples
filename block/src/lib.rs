@@ -229,3 +229,79 @@ async fn configure(
     joined.0?;
     Ok(())
 }
+
+#[cfg(test)]
+mod tests {
+    use pdk_unit::{dw2pel, UnitHttpRequest, UnitHttpResponse, UnitTestBuilder};
+    use serde_json::json;
+
+    fn blocklist_backend(_: UnitHttpRequest) -> UnitHttpResponse {
+        UnitHttpResponse::new(200).with_body("192.168.1.1/32\n10.0.0.1/32\n")
+    }
+
+    fn config() -> String {
+        json!({
+            "source": "http://blocklist",
+            "ip": dw2pel("attributes.headers['x-forwarded-for']"),
+            "frequency": 60
+        })
+        .to_string()
+    }
+
+    #[test]
+    fn request_before_fetch_are_blocked() {
+        let mut tester = UnitTestBuilder::default()
+            .with_config(config())
+            .with_http_upstream_from_authority("blocklist", blocklist_backend)
+            .with_entrypoint(crate::configure);
+
+        let response =
+            tester.request(UnitHttpRequest::get().with_header("x-forwarded-for", "172.16.0.1"));
+
+        assert_eq!(response.status_code(), 403);
+    }
+
+    #[test]
+    fn request_with_non_blocked_ip_passes_through() {
+        let mut tester = UnitTestBuilder::default()
+            .with_config(config())
+            .with_http_upstream_from_authority("blocklist", blocklist_backend)
+            .with_entrypoint(crate::configure);
+
+        tester.tick();
+
+        let response =
+            tester.request(UnitHttpRequest::get().with_header("x-forwarded-for", "172.16.0.1"));
+
+        assert_eq!(response.status_code(), 200);
+    }
+
+    #[test]
+    fn request_without_ip_header_is_blocked() {
+        let mut tester = UnitTestBuilder::default()
+            .with_config(config())
+            .with_http_upstream_from_authority("blocklist", blocklist_backend)
+            .with_entrypoint(crate::configure);
+
+        tester.tick();
+
+        let response = tester.request(UnitHttpRequest::get());
+
+        assert_eq!(response.status_code(), 403);
+    }
+
+    #[test]
+    fn request_with_listed_ip_is_blocked() {
+        let mut tester = UnitTestBuilder::default()
+            .with_config(config())
+            .with_http_upstream_from_authority("blocklist", blocklist_backend)
+            .with_entrypoint(crate::configure);
+
+        tester.tick();
+
+        let response =
+            tester.request(UnitHttpRequest::get().with_header("x-forwarded-for", "192.168.1.1"));
+
+        assert_eq!(response.status_code(), 403);
+    }
+}

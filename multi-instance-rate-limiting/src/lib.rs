@@ -165,3 +165,70 @@ async fn configure(
 
     Ok(())
 }
+
+#[cfg(test)]
+mod tests {
+    use pdk_unit::{UnitHttpRequest, UnitTestBuilder};
+    use serde_json::json;
+
+    fn config() -> String {
+        json!({
+            "api_key_rate_limit": {
+                "requests_per_window": 10,
+                "window_size_seconds": 60
+            },
+            "user_id_rate_limit": {
+                "requests_per_window": 5,
+                "window_size_seconds": 60
+            }
+        })
+        .to_string()
+    }
+
+    #[test]
+    fn request_without_rate_limit_headers_passes() {
+        let mut tester = UnitTestBuilder::default()
+            .with_config(config())
+            .with_entrypoint(crate::configure);
+
+        let response = tester.request(UnitHttpRequest::get());
+
+        assert_eq!(response.status_code(), 200);
+    }
+
+    #[test]
+    fn request_with_api_key_within_limit_passes() {
+        let mut tester = UnitTestBuilder::default()
+            .with_config(config())
+            .with_entrypoint(crate::configure);
+
+        let response =
+            tester.request(UnitHttpRequest::get().with_header("x-api-key", "my-api-key"));
+
+        assert_eq!(response.status_code(), 200);
+    }
+
+    #[test]
+    fn request_exceeding_api_key_rate_limit_returns_429() {
+        let mut tester = UnitTestBuilder::default()
+            .with_config(
+                json!({
+                    "api_key_rate_limit": {
+                        "requests_per_window": 1,
+                        "window_size_seconds": 60
+                    },
+                    "user_id_rate_limit": {
+                        "requests_per_window": 100,
+                        "window_size_seconds": 60
+                    }
+                })
+                .to_string(),
+            )
+            .with_entrypoint(crate::configure);
+
+        tester.request(UnitHttpRequest::get().with_header("x-api-key", "key-1"));
+        let response = tester.request(UnitHttpRequest::get().with_header("x-api-key", "key-1"));
+
+        assert_eq!(response.status_code(), 429);
+    }
+}

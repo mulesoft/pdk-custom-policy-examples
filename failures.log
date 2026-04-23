@@ -1,0 +1,162 @@
+========== ai-basic-token-rate-limiting ==========
+env: node: No such file or directory
+env: node: No such file or directory
+env: node: No such file or directory
+make: *** [build-asset-files] Error 127
+
+========== ai-prompt-decorator ==========
+env: node: No such file or directory
+env: node: No such file or directory
+env: node: No such file or directory
+make: *** [build-asset-files] Error 127
+
+========== ai-prompt-guard ==========
+env: node: No such file or directory
+env: node: No such file or directory
+env: node: No such file or directory
+make: *** [build-asset-files] Error 127
+
+========== ai-prompt-template ==========
+env: node: No such file or directory
+env: node: No such file or directory
+env: node: No such file or directory
+make: *** [build-asset-files] Error 127
+
+========== block ==========
+env: node: No such file or directory
+env: node: No such file or directory
+env: node: No such file or directory
+make: *** [build-asset-files] Error 127
+
+========== certs ==========
+env: node: No such file or directory
+env: node: No such file or directory
+env: node: No such file or directory
+make: *** [build-asset-files] Error 127
+
+========== cors-validation ==========
+env: node: No such file or directory
+env: node: No such file or directory
+env: node: No such file or directory
+make: *** [build-asset-files] Error 127
+
+========== crypto ==========
+env: node: No such file or directory
+env: node: No such file or directory
+env: node: No such file or directory
+make: *** [build-asset-files] Error 127
+
+========== data-caching ==========
+env: node: No such file or directory
+env: node: No such file or directory
+env: node: No such file or directory
+make: *** [build-asset-files] Error 127
+
+========== data-storage-stats ==========
+env: node: No such file or directory
+env: node: No such file or directory
+env: node: No such file or directory
+make: *** [build-asset-files] Error 127
+
+========== dataweave ==========
+env: node: No such file or directory
+env: node: No such file or directory
+env: node: No such file or directory
+make: *** [build-asset-files] Error 127
+
+========== ip-filter ==========
+env: node: No such file or directory
+env: node: No such file or directory
+env: node: No such file or directory
+make: *** [build-asset-files] Error 127
+
+========== json-validation ==========
+env: node: No such file or directory
+env: node: No such file or directory
+env: node: No such file or directory
+make: *** [build-asset-files] Error 127
+
+========== jwt-generation ==========
+env: node: No such file or directory
+env: node: No such file or directory
+env: node: No such file or directory
+make: *** [build-asset-files] Error 127
+
+========== jwt-validation ==========
+env: node: No such file or directory
+env: node: No such file or directory
+env: node: No such file or directory
+make: *** [build-asset-files] Error 127
+
+========== metrics ==========
+env: node: No such file or directory
+env: node: No such file or directory
+env: node: No such file or directory
+make: *** [build-asset-files] Error 127
+
+========== multi-instance-rate-limiting ==========
+env: node: No such file or directory
+env: node: No such file or directory
+env: node: No such file or directory
+make: *** [build-asset-files] Error 127
+
+========== oauth-2-token-introspection ==========
+env: node: No such file or directory
+env: node: No such file or directory
+env: node: No such file or directory
+make: *** [build-asset-files] Error 127
+
+========== query ==========
+env: node: No such file or directory
+env: node: No such file or directory
+env: node: No such file or directory
+make: *** [build-asset-files] Error 127
+
+========== simple-oauth-2-validation-grpc ==========
+env: node: No such file or directory
+env: node: No such file or directory
+env: node: No such file or directory
+make: *** [build-asset-files] Error 127
+
+========== simple-oauth-2-validation ==========
+env: node: No such file or directory
+env: node: No such file or directory
+env: node: No such file or directory
+make: *** [build-asset-files] Error 127
+
+========== spike-control ==========
+env: node: No such file or directory
+env: node: No such file or directory
+env: node: No such file or directory
+make: *** [build-asset-files] Error 127
+
+========== spike ==========
+env: node: No such file or directory
+env: node: No such file or directory
+env: node: No such file or directory
+make: *** [build-asset-files] Error 127
+
+========== stop-iteration ==========
+env: node: No such file or directory
+env: node: No such file or directory
+env: node: No such file or directory
+make: *** [build-asset-files] Error 127
+
+========== stream-payload ==========
+env: node: No such file or directory
+env: node: No such file or directory
+env: node: No such file or directory
+make: *** [build-asset-files] Error 127
+
+========== tls-calls ==========
+env: node: No such file or directory
+env: node: No such file or directory
+env: node: No such file or directory
+make: *** [build-asset-files] Error 127
+
+========== xml-validation ==========
+env: node: No such file or directory
+env: node: No such file or directory
+env: node: No such file or directory
+make: *** [build-asset-files] Error 127
+

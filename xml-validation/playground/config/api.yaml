@@ -1,0 +1,25 @@
+# Copyright 2023 Salesforce, Inc. All rights reserved.
+---
+apiVersion: gateway.mulesoft.com/v1alpha1
+kind: ApiInstance
+metadata:
+  name: ingress-http
+spec:
+  address: http://0.0.0.0:8081
+  services:
+    upstream:
+      address: http://backend
+      routes:
+        - config:
+            destinationPath: /anything/echo/
+  policies:
+    - policyRef:
+        name: xml-validation-flex-v1-0 # This value will be overriden during 'make run' execution
+        namespace: default
+      config:
+        maxDepth: 32
+        maxAttributeCount: 32
+        maxChildCount: 256
+        maxTextLength: 65536
+        maxAttributeLength: 2048
+        maxCommentLength: 4096

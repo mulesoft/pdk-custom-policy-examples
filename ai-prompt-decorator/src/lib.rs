@@ -89,3 +89,148 @@ async fn configure(launcher: Launcher, Configuration(bytes): Configuration) -> R
 
     Ok(())
 }
+
+#[cfg(test)]
+mod tests {
+    use pdk_unit::{
+        TraceBackend, UnitHttpMessage, UnitHttpRequest, UnitHttpResponse, UnitTestBuilder,
+    };
+    use serde_json::json;
+    use std::rc::Rc;
+
+    fn config(prepend: serde_json::Value, append: serde_json::Value) -> String {
+        json!({ "prepend": prepend, "append": append }).to_string()
+    }
+
+    fn base_body() -> String {
+        json!({
+            "model": "gpt-4",
+            "messages": [
+                {"role": "user", "content": "Hello!"}
+            ]
+        })
+        .to_string()
+    }
+
+    fn messages_from_backend(backend: &TraceBackend<UnitHttpResponse>) -> serde_json::Value {
+        let req = backend.next().unwrap();
+        let body: serde_json::Value = serde_json::from_slice(req.body()).unwrap();
+        body["messages"].clone()
+    }
+
+    #[test]
+    fn clean_request_passes_through() {
+        let backend = Rc::new(TraceBackend::new(UnitHttpResponse::new(200)));
+        let mut tester = UnitTestBuilder::default()
+            .with_config(config(json!([]), json!([])))
+            .with_backend(Rc::clone(&backend))
+            .with_entrypoint(crate::configure);
+
+        let response = tester.request(UnitHttpRequest::post().with_body(base_body()));
+
+        assert_eq!(response.status_code(), 200);
+        let messages = messages_from_backend(&backend);
+        assert_eq!(messages[0]["role"], "user");
+        assert_eq!(messages[0]["content"], "Hello!");
+    }
+
+    #[test]
+    fn prepend_messages_are_added() {
+        let backend = Rc::new(TraceBackend::new(UnitHttpResponse::new(200)));
+        let mut tester = UnitTestBuilder::default()
+            .with_config(config(
+                json!([{"role": "system", "content": "You are a helpful assistant."}]),
+                json!([]),
+            ))
+            .with_backend(Rc::clone(&backend))
+            .with_entrypoint(crate::configure);
+
+        let response = tester.request(UnitHttpRequest::post().with_body(base_body()));
+
+        assert_eq!(response.status_code(), 200);
+        let messages = messages_from_backend(&backend);
+        assert_eq!(messages[0]["role"], "system");
+        assert_eq!(messages[0]["content"], "You are a helpful assistant.");
+        assert_eq!(messages[1]["role"], "user");
+        assert_eq!(messages[1]["content"], "Hello!");
+    }
+
+    #[test]
+    fn append_messages_are_added() {
+        let backend = Rc::new(TraceBackend::new(UnitHttpResponse::new(200)));
+        let mut tester = UnitTestBuilder::default()
+            .with_config(config(
+                json!([]),
+                json!([{"role": "user", "content": "Remember to be concise."}]),
+            ))
+            .with_backend(Rc::clone(&backend))
+            .with_entrypoint(crate::configure);
+
+        let response = tester.request(UnitHttpRequest::post().with_body(base_body()));
+
+        assert_eq!(response.status_code(), 200);
+        let messages = messages_from_backend(&backend);
+        let messages = messages.as_array().unwrap();
+        assert_eq!(
+            messages.last().unwrap()["content"],
+            "Remember to be concise."
+        );
+    }
+
+    #[test]
+    fn prepend_and_append_both_applied() {
+        let backend = Rc::new(TraceBackend::new(UnitHttpResponse::new(200)));
+        let mut tester = UnitTestBuilder::default()
+            .with_config(config(
+                json!([{"role": "system", "content": "System prompt."}]),
+                json!([{"role": "user", "content": "Closing message."}]),
+            ))
+            .with_backend(Rc::clone(&backend))
+            .with_entrypoint(crate::configure);
+
+        let response = tester.request(UnitHttpRequest::post().with_body(base_body()));
+
+        assert_eq!(response.status_code(), 200);
+        let messages = messages_from_backend(&backend);
+        let messages = messages.as_array().unwrap();
+        assert_eq!(messages.len(), 3);
+        assert_eq!(messages[0]["content"], "System prompt.");
+        assert_eq!(messages[1]["content"], "Hello!");
+        assert_eq!(messages[2]["content"], "Closing message.");
+    }
+
+    #[test]
+    fn invalid_json_body_returns_400() {
+        let mut tester = UnitTestBuilder::default()
+            .with_config(config(json!([]), json!([])))
+            .with_entrypoint(crate::configure);
+
+        let response = tester.request(UnitHttpRequest::post().with_body("not valid json"));
+
+        assert_eq!(response.status_code(), 400);
+    }
+
+    #[test]
+    fn multiple_prepend_messages_preserve_order() {
+        let backend = Rc::new(TraceBackend::new(UnitHttpResponse::new(200)));
+        let mut tester = UnitTestBuilder::default()
+            .with_config(config(
+                json!([
+                    {"role": "system", "content": "First."},
+                    {"role": "system", "content": "Second."}
+                ]),
+                json!([]),
+            ))
+            .with_backend(Rc::clone(&backend))
+            .with_entrypoint(crate::configure);
+
+        let response = tester.request(UnitHttpRequest::post().with_body(base_body()));
+
+        assert_eq!(response.status_code(), 200);
+        let messages = messages_from_backend(&backend);
+        let messages = messages.as_array().unwrap();
+        assert_eq!(messages[0]["content"], "First.");
+        assert_eq!(messages[1]["content"], "Second.");
+        assert_eq!(messages[2]["content"], "Hello!");
+    }
+}

@@ -183,3 +183,64 @@ async fn configure(launcher: Launcher, Configuration(bytes): Configuration) -> R
 
     Ok(())
 }
+
+#[cfg(test)]
+mod tests {
+    use pdk_unit::{dw2pel, UnitHttpRequest, UnitHttpResponse, UnitTestBuilder};
+    use serde_json::json;
+
+    fn active_token_backend(_: UnitHttpRequest) -> UnitHttpResponse {
+        UnitHttpResponse::new(200).with_body(json!({"active": true}).to_string())
+    }
+
+    fn inactive_token_backend(_: UnitHttpRequest) -> UnitHttpResponse {
+        UnitHttpResponse::new(200).with_body(json!({"active": false}).to_string())
+    }
+
+    fn config() -> String {
+        json!({
+            "authorization": "Basic dXNlcjpwYXNz",
+            "oauthService": "http://introspection",
+            "tokenExtractor": dw2pel("attributes.headers['authorization']"),
+        })
+        .to_string()
+    }
+
+    #[test]
+    fn active_token_passes_through() {
+        let mut tester = UnitTestBuilder::default()
+            .with_config(config())
+            .with_http_upstream_from_authority("introspection", active_token_backend)
+            .with_entrypoint(crate::configure);
+
+        let response = tester
+            .request(UnitHttpRequest::get().with_header("authorization", "Bearer valid-token"));
+
+        assert_eq!(response.status_code(), 200);
+    }
+
+    #[test]
+    fn inactive_token_returns_401() {
+        let mut tester = UnitTestBuilder::default()
+            .with_config(config())
+            .with_http_upstream_from_authority("introspection", inactive_token_backend)
+            .with_entrypoint(crate::configure);
+
+        let response = tester
+            .request(UnitHttpRequest::get().with_header("authorization", "Bearer inactive-token"));
+
+        assert_eq!(response.status_code(), 401);
+    }
+
+    #[test]
+    fn missing_token_returns_401() {
+        let mut tester = UnitTestBuilder::default()
+            .with_config(config())
+            .with_http_upstream_from_authority("introspection", active_token_backend)
+            .with_entrypoint(crate::configure);
+
+        let response = tester.request(UnitHttpRequest::get());
+
+        assert_eq!(response.status_code(), 401);
+    }
+}

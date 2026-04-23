@@ -94,3 +94,47 @@ async fn configure(launcher: Launcher, Configuration(bytes): Configuration) -> R
     launcher.launch(filter).await?;
     Ok(())
 }
+
+#[cfg(test)]
+mod tests {
+    use pdk_unit::{dw2pel, UnitHttpMessage, UnitHttpRequest, UnitTestBuilder};
+    use serde_json::json;
+
+    #[test]
+    fn expression_returns_200_with_result() {
+        let mut tester = UnitTestBuilder::default()
+            .with_config(json!({"expression": dw2pel("vars.defaultId")}).to_string())
+            .with_entrypoint(crate::configure);
+
+        let response = tester.request(UnitHttpRequest::get());
+
+        assert_eq!(response.status_code(), 200);
+        assert_eq!(response.body(), br#"{"result":"hardcoded"}"#);
+    }
+
+    #[test]
+    fn expression_using_version_var_returns_200() {
+        let mut tester = UnitTestBuilder::default()
+            .with_config(json!({"expression": dw2pel("vars.version")}).to_string())
+            .with_entrypoint(crate::configure);
+
+        let response = tester.request(UnitHttpRequest::get());
+
+        assert_eq!(response.status_code(), 200);
+        assert_eq!(response.body(), br#"{"result":"1"}"#);
+    }
+
+    #[test]
+    fn expression_using_header_value_returns_200() {
+        let mut tester = UnitTestBuilder::default()
+            .with_config(
+                json!({"expression": dw2pel("attributes.headers['x-custom']")}).to_string(),
+            )
+            .with_entrypoint(crate::configure);
+
+        let response = tester.request(UnitHttpRequest::get().with_header("x-custom", "my-value"));
+
+        assert_eq!(response.status_code(), 200);
+        assert_eq!(response.body(), br#"{"result":"my-value"}"#);
+    }
+}

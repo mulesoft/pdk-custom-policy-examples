@@ -196,3 +196,235 @@ fn sanitized_base_path(path: &str) -> String {
         format!("{}/", path)
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use pdk_unit::{
+        TraceBackend, UnitHttpMessage, UnitHttpRequest, UnitHttpResponse, UnitTestBuilder,
+    };
+    use serde_json::json;
+    use std::rc::Rc;
+
+    fn config(verify_schema: bool) -> String {
+        json!({
+            "cardPath": "/.well-known/agent.json",
+            "consumerUrl": "https://example.com/api/",
+            "verifySchema": verify_schema
+        })
+        .to_string()
+    }
+
+    fn tasks_send_body() -> String {
+        json!({
+            "jsonrpc": "2.0",
+            "method": "tasks/send",
+            "id": 1,
+            "params": {
+                "id": "task-1",
+                "message": {
+                    "role": "user",
+                    "parts": [{"type": "text", "text": "Hello"}]
+                }
+            }
+        })
+        .to_string()
+    }
+
+    #[test]
+    fn get_request_passes_through() {
+        let mut tester = UnitTestBuilder::default()
+            .with_config(config(true))
+            .with_entrypoint(crate::configure);
+
+        let response = tester.request(UnitHttpRequest::get().with_path("/api/tasks"));
+
+        assert_eq!(response.status_code(), 200);
+    }
+
+    #[test]
+    fn post_without_content_type_passes_through() {
+        let mut tester = UnitTestBuilder::default()
+            .with_config(config(true))
+            .with_entrypoint(crate::configure);
+
+        let response = tester.request(UnitHttpRequest::post().with_body(tasks_send_body()));
+
+        assert_eq!(response.status_code(), 200);
+    }
+
+    #[test]
+    fn valid_json_rpc_post_passes_through() {
+        let mut tester = UnitTestBuilder::default()
+            .with_config(config(true))
+            .with_entrypoint(crate::configure);
+
+        let response = tester.request(
+            UnitHttpRequest::post()
+                .with_header("content-type", "application/json")
+                .with_body(tasks_send_body()),
+        );
+
+        assert_eq!(response.status_code(), 200);
+    }
+
+    #[test]
+    fn invalid_method_returns_400() {
+        let mut tester = UnitTestBuilder::default()
+            .with_config(config(true))
+            .with_entrypoint(crate::configure);
+
+        let body = json!({
+            "jsonrpc": "2.0",
+            "method": "tasks/unknown",
+            "id": 1
+        })
+        .to_string();
+
+        let response = tester.request(
+            UnitHttpRequest::post()
+                .with_header("content-type", "application/json")
+                .with_body(body),
+        );
+
+        assert_eq!(response.status_code(), 400);
+    }
+
+    #[test]
+    fn invalid_json_body_returns_400() {
+        let mut tester = UnitTestBuilder::default()
+            .with_config(config(true))
+            .with_entrypoint(crate::configure);
+
+        let response = tester.request(
+            UnitHttpRequest::post()
+                .with_header("content-type", "application/json")
+                .with_body("not valid json"),
+        );
+
+        assert_eq!(response.status_code(), 400);
+    }
+
+    #[test]
+    fn verify_schema_disabled_skips_validation() {
+        let mut tester = UnitTestBuilder::default()
+            .with_config(config(false))
+            .with_entrypoint(crate::configure);
+
+        let body = json!({
+            "jsonrpc": "2.0",
+            "method": "tasks/unknown",
+            "id": 1
+        })
+        .to_string();
+
+        let response = tester.request(
+            UnitHttpRequest::post()
+                .with_header("content-type", "application/json")
+                .with_body(body),
+        );
+
+        assert_eq!(response.status_code(), 200);
+    }
+
+    #[test]
+    fn missing_params_for_valid_method_returns_400() {
+        let mut tester = UnitTestBuilder::default()
+            .with_config(config(true))
+            .with_entrypoint(crate::configure);
+
+        let body = json!({
+            "jsonrpc": "2.0",
+            "method": "tasks/send",
+            "id": 1
+        })
+        .to_string();
+
+        let response = tester.request(
+            UnitHttpRequest::post()
+                .with_header("content-type", "application/json")
+                .with_body(body),
+        );
+
+        assert_eq!(response.status_code(), 400);
+    }
+
+    #[test]
+    fn post_with_non_json_content_type_bypasses_validation() {
+        let mut tester = UnitTestBuilder::default()
+            .with_config(config(true))
+            .with_entrypoint(crate::configure);
+
+        let response = tester.request(
+            UnitHttpRequest::post()
+                .with_header("content-type", "text/plain")
+                .with_body("tasks/unknown invalid body"),
+        );
+
+        assert_eq!(response.status_code(), 200);
+    }
+
+    #[test]
+    fn card_path_response_injects_consumer_url() {
+        let agent_card_json = json!({
+            "name": "My Agent",
+            "version": "1.0",
+            "url": "https://old-url.example.com/",
+            "capabilities": {},
+            "skills": []
+        })
+        .to_string();
+
+        let backend = Rc::new(TraceBackend::new(
+            UnitHttpResponse::new(200)
+                .with_header("content-type", "application/json")
+                .with_body(agent_card_json),
+        ));
+
+        let mut tester = UnitTestBuilder::default()
+            .with_config(config(false))
+            .with_backend(Rc::clone(&backend))
+            .with_entrypoint(crate::configure);
+
+        let response = tester.request(UnitHttpRequest::get().with_path("/.well-known/agent.json"));
+
+        assert_eq!(response.status_code(), 200);
+        let body: serde_json::Value = serde_json::from_slice(response.body()).unwrap();
+        assert_eq!(body["url"], "https://example.com/api/");
+    }
+
+    #[test]
+    fn card_path_response_with_no_content_type_passes_unchanged() {
+        let backend = Rc::new(TraceBackend::new(
+            UnitHttpResponse::new(200).with_body(r#"{"name":"My Agent"}"#),
+        ));
+
+        let mut tester = UnitTestBuilder::default()
+            .with_config(config(false))
+            .with_backend(Rc::clone(&backend))
+            .with_entrypoint(crate::configure);
+
+        let response = tester.request(UnitHttpRequest::get().with_path("/.well-known/agent.json"));
+
+        assert_eq!(response.status_code(), 200);
+    }
+
+    #[test]
+    fn non_card_path_response_is_unchanged() {
+        let backend = Rc::new(TraceBackend::new(
+            UnitHttpResponse::new(200)
+                .with_header("content-type", "application/json")
+                .with_body(json!({"result": "ok"}).to_string()),
+        ));
+
+        let mut tester = UnitTestBuilder::default()
+            .with_config(config(false))
+            .with_backend(Rc::clone(&backend))
+            .with_entrypoint(crate::configure);
+
+        let response = tester.request(UnitHttpRequest::get().with_path("/api/tasks"));
+
+        assert_eq!(response.status_code(), 200);
+        let body: serde_json::Value = serde_json::from_slice(response.body()).unwrap();
+        assert_eq!(body["result"], "ok");
+    }
+}
