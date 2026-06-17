@@ -8,6 +8,6 @@ spec:
   address: http://0.0.0.0:8081
   policies:
     - policyRef:
-        name: websocket-frame-counter-flex-v1-0
+        name: websocket-flex-v1-0
         namespace: default
       config: {}

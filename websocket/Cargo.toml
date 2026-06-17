@@ -1,6 +1,6 @@
 # Copyright 2023 Salesforce, Inc. All rights reserved.
 [package]
-name = "websocket_frame_counter"
+name = "websocket"
 version = "1.0.0"
 rust-version = "1.88.0"
 edition = "2018"
@@ -8,8 +8,8 @@ resolver = "2"
 
 [package.metadata.anypoint]
 group_id = "edce8390-cbc6-4b53-af21-b1991d7a14bc"
-definition_asset_id = "websocket-frame-counter"
-implementation_asset_id = "websocket-frame-counter-flex"
+definition_asset_id = "websocket"
+implementation_asset_id = "websocket-flex"
 
 [dependencies]
 pdk = { git = "https://github.com/mulesoft-emu/mgw-policy-development-kit.git", branch = "fix/W-22061650", package = "pdk", features = ["ll", "experimental_websocket"] }
