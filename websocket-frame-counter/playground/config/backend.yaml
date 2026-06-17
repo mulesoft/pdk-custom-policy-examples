@@ -1,0 +1,27 @@
+# Copyright 2023 Salesforce, Inc. All rights reserved.
+---
+apiVersion: gateway.mulesoft.com/v1alpha1
+kind: Service
+metadata:
+  name: echo-upstream
+spec:
+  address: http://echo:8080
+---
+apiVersion: gateway.mulesoft.com/v1alpha1
+kind: PolicyBinding
+metadata:
+  name: ingress-http-route
+spec:
+  targetRef:
+    kind: ApiInstance
+    name: ingress-http
+  policyRef:
+    kind: Extension
+    name: route
+  config:
+    destinationRef:
+      kind: Service
+      name: echo-upstream
+      namespace: default
+  rules:
+    - path: /.*

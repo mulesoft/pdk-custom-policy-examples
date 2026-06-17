@@ -1,0 +1,28 @@
+# Copyright 2023 Salesforce, Inc. All rights reserved.
+[package]
+name = "websocket_frame_counter"
+version = "1.0.0"
+rust-version = "1.88.0"
+edition = "2018"
+resolver = "2"
+
+[package.metadata.anypoint]
+group_id = "edce8390-cbc6-4b53-af21-b1991d7a14bc"
+definition_asset_id = "websocket-frame-counter"
+implementation_asset_id = "websocket-frame-counter-flex"
+
+[dependencies]
+pdk = { path = "/Users/mpanetta/PDK/github/mgw-policy-development-kit/pdk", package = "pdk", features = ["ll", "experimental_websocket"]}
+anyhow = "1.0"
+serde = { version = "1.0", features = ["derive"] }
+
+[dev-dependencies]
+pdk-unit = { path = "/Users/mpanetta/PDK/github/mgw-policy-development-kit/pdk-unit", package = "pdk-unit", features = ["experimental", "experimental_websocket"] }
+
+[lib]
+crate-type = ["cdylib"]
+
+[profile.release]
+lto = true
+opt-level = 'z'
+strip = "debuginfo"

@@ -1,0 +1,13 @@
+# Copyright 2023 Salesforce, Inc. All rights reserved.
+---
+apiVersion: gateway.mulesoft.com/v1alpha1
+kind: ApiInstance
+metadata:
+  name: ingress-http
+spec:
+  address: http://0.0.0.0:8081
+  policies:
+    - policyRef:
+        name: websocket-frame-counter-flex-v1-0
+        namespace: default
+      config: {}
