@@ -12,12 +12,12 @@ definition_asset_id = "websocket-frame-counter"
 implementation_asset_id = "websocket-frame-counter-flex"
 
 [dependencies]
-pdk = { path = "/Users/mpanetta/PDK/github/mgw-policy-development-kit/pdk", package = "pdk", features = ["ll", "experimental_websocket"]}
+pdk = { git = "https://github.com/mulesoft-emu/mgw-policy-development-kit.git", branch = "fix/W-22061650", package = "pdk", features = ["ll", "experimental_websocket"] }
 anyhow = "1.0"
 serde = { version = "1.0", features = ["derive"] }
 
 [dev-dependencies]
-pdk-unit = { path = "/Users/mpanetta/PDK/github/mgw-policy-development-kit/pdk-unit", package = "pdk-unit", features = ["experimental", "experimental_websocket"] }
+pdk-unit = { git = "https://github.com/mulesoft-emu/mgw-policy-development-kit.git", branch = "fix/W-22061650", package = "pdk-unit", features = ["experimental", "experimental_websocket"] }
 
 [lib]
 crate-type = ["cdylib"]
