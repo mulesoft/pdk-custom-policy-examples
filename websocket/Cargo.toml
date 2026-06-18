@@ -17,7 +17,7 @@ anyhow = "1.0"
 serde = { version = "1.0", features = ["derive"] }
 
 [dev-dependencies]
-pdk-unit = { git = "https://github.com/mulesoft-emu/mgw-policy-development-kit.git", branch = "fix/W-22061650", package = "pdk-unit", features = ["experimental", "experimental_websocket"] }
+pdk-unit = { git = "https://github.com/mulesoft-emu/mgw-policy-development-kit.git", branch = "fix/W-22061650", package = "pdk-unit", features = ["experimental"] }
 
 [lib]
 crate-type = ["cdylib"]
