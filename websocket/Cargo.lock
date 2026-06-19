@@ -379,8 +379,9 @@ dependencies = [
 
 [[package]]
 name = "dw-parser"
-version = "1.9.0-rc.0"
-source = "git+https://github.com/mulesoft-emu/mgw-policy-development-kit.git?branch=master#799d51adb32d48f66cfceb2063389e1dd3d3b41c"
+version = "1.9.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "22876377c05446f50b8d337eb0cb234a534717b5883c942be2f6194c9f9ed0d7"
 dependencies = [
  "peg",
 ]
@@ -1147,8 +1148,9 @@ dependencies = [
 
 [[package]]
 name = "pdk"
-version = "1.9.0-rc.0"
-source = "git+https://github.com/mulesoft-emu/mgw-policy-development-kit.git?branch=master#799d51adb32d48f66cfceb2063389e1dd3d3b41c"
+version = "1.9.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "0b9a2d639313b1a53ca8b8c0db34ca2afab258bfed0d1afe1a637b20ce137abf"
 dependencies = [
  "pdk-cache-lib",
  "pdk-classy",
@@ -1173,8 +1175,9 @@ dependencies = [
 
 [[package]]
 name = "pdk-cache-lib"
-version = "1.9.0-rc.0"
-source = "git+https://github.com/mulesoft-emu/mgw-policy-development-kit.git?branch=master#799d51adb32d48f66cfceb2063389e1dd3d3b41c"
+version = "1.9.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "423a0a632e71640b7e6f3a1b39d69f6afeffe3f02302a2fa8686b3e0b16b9f3f"
 dependencies = [
  "bincode",
  "cfg-if",
@@ -1186,8 +1189,9 @@ dependencies = [
 
 [[package]]
 name = "pdk-classy"
-version = "1.9.0-rc.0"
-source = "git+https://github.com/mulesoft-emu/mgw-policy-development-kit.git?branch=master#799d51adb32d48f66cfceb2063389e1dd3d3b41c"
+version = "1.9.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "2b272f9dc3cd8446c4be61715a2396d1c0dea022e45c701c8446fa7bc81a0448"
 dependencies = [
  "bincode",
  "futures",
@@ -1205,8 +1209,9 @@ dependencies = [
 
 [[package]]
 name = "pdk-contracts-lib"
-version = "1.9.0-rc.0"
-source = "git+https://github.com/mulesoft-emu/mgw-policy-development-kit.git?branch=master#799d51adb32d48f66cfceb2063389e1dd3d3b41c"
+version = "1.9.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "eb14f50977837ac0e35250e0cb33819fc3b78cf1ba1ef236a610b9f8cc2df543"
 dependencies = [
  "base64 0.22.1",
  "cfg-if",
@@ -1224,8 +1229,9 @@ dependencies = [
 
 [[package]]
 name = "pdk-core"
-version = "1.9.0-rc.0"
-source = "git+https://github.com/mulesoft-emu/mgw-policy-development-kit.git?branch=master#799d51adb32d48f66cfceb2063389e1dd3d3b41c"
+version = "1.9.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "94e3a49e0045a651298424a582db6ef81978b3f619f914b485feb2a8d3cb18eb"
 dependencies = [
  "anyhow",
  "log",
@@ -1244,8 +1250,9 @@ dependencies = [
 
 [[package]]
 name = "pdk-cors-lib"
-version = "1.9.0-rc.0"
-source = "git+https://github.com/mulesoft-emu/mgw-policy-development-kit.git?branch=master#799d51adb32d48f66cfceb2063389e1dd3d3b41c"
+version = "1.9.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "4f7647e98bc414b7093ef5d3c6eec71a5083b9e764d54331f5d14d78f3a24aeb"
 dependencies = [
  "derive_builder",
  "log",
@@ -1259,8 +1266,9 @@ dependencies = [
 
 [[package]]
 name = "pdk-data-storage-lib"
-version = "1.9.0-rc.0"
-source = "git+https://github.com/mulesoft-emu/mgw-policy-development-kit.git?branch=master#799d51adb32d48f66cfceb2063389e1dd3d3b41c"
+version = "1.9.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "0cec1574ca35f2f8e6c240f52e19063f7e1a96f6c471371b12ee96d0bacd5a49"
 dependencies = [
  "base64 0.22.1",
  "bincode",
@@ -1273,8 +1281,9 @@ dependencies = [
 
 [[package]]
 name = "pdk-flex-abi"
-version = "1.9.0-rc.0"
-source = "git+https://github.com/mulesoft-emu/mgw-policy-development-kit.git?branch=master#799d51adb32d48f66cfceb2063389e1dd3d3b41c"
+version = "1.9.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f183e6ceaaa6f94681c491ea1395b8f0554e99d0a9e759f182638d31b33e2aac"
 dependencies = [
  "anyhow",
  "pdk-core",
@@ -1285,8 +1294,9 @@ dependencies = [
 
 [[package]]
 name = "pdk-ip-filter-lib"
-version = "1.9.0-rc.0"
-source = "git+https://github.com/mulesoft-emu/mgw-policy-development-kit.git?branch=master#799d51adb32d48f66cfceb2063389e1dd3d3b41c"
+version = "1.9.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "0eab0326a148dc64b3ce0b444b9be79e77e2c32c8a11e98800cb897f46d077ec"
 dependencies = [
  "anyhow",
  "ipnet",
@@ -1296,8 +1306,9 @@ dependencies = [
 
 [[package]]
 name = "pdk-json-validator-lib"
-version = "1.9.0-rc.0"
-source = "git+https://github.com/mulesoft-emu/mgw-policy-development-kit.git?branch=master#799d51adb32d48f66cfceb2063389e1dd3d3b41c"
+version = "1.9.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "927683bce242cfa8965e06303af6aa6454a153fd391d125b072f80ed1724a9c0"
 dependencies = [
  "anyhow",
  "itertools",
@@ -1307,8 +1318,9 @@ dependencies = [
 
 [[package]]
 name = "pdk-jwt-lib"
-version = "1.9.0-rc.0"
-source = "git+https://github.com/mulesoft-emu/mgw-policy-development-kit.git?branch=master#799d51adb32d48f66cfceb2063389e1dd3d3b41c"
+version = "1.9.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "6bce2dd610571bb23555539f0734b52824e5d46359757e46ccb5ae8b748888b4"
 dependencies = [
  "base64 0.13.1",
  "cfg-if",
@@ -1334,8 +1346,9 @@ dependencies = [
 
 [[package]]
 name = "pdk-ldap-lib"
-version = "1.9.0-rc.0"
-source = "git+https://github.com/mulesoft-emu/mgw-policy-development-kit.git?branch=master#799d51adb32d48f66cfceb2063389e1dd3d3b41c"
+version = "1.9.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "3dd3026bf98e3d42f08be783a0491e24c110318d8e591f0e68610a0a593bc7bd"
 dependencies = [
  "base64 0.22.1",
  "pdk-core",
@@ -1345,8 +1358,9 @@ dependencies = [
 
 [[package]]
 name = "pdk-lock-lib"
-version = "1.9.0-rc.0"
-source = "git+https://github.com/mulesoft-emu/mgw-policy-development-kit.git?branch=master#799d51adb32d48f66cfceb2063389e1dd3d3b41c"
+version = "1.9.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "0aa691f394bf87351c3c371fc8c04f671eefeadcf072a44ab8563f51d2865761"
 dependencies = [
  "bincode",
  "pdk-core",
@@ -1354,8 +1368,9 @@ dependencies = [
 
 [[package]]
 name = "pdk-macros"
-version = "1.9.0-rc.0"
-source = "git+https://github.com/mulesoft-emu/mgw-policy-development-kit.git?branch=master#799d51adb32d48f66cfceb2063389e1dd3d3b41c"
+version = "1.9.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "c3123ab64f4cea8374fbb6d0697997a209fe16794e330caacb4914967530d10a"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -1364,8 +1379,9 @@ dependencies = [
 
 [[package]]
 name = "pdk-pel"
-version = "1.9.0-rc.0"
-source = "git+https://github.com/mulesoft-emu/mgw-policy-development-kit.git?branch=master#799d51adb32d48f66cfceb2063389e1dd3d3b41c"
+version = "1.9.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "7af9cbea6ed98d843d106e95451ea907b5e411061e23783b86a37c5748f7be3a"
 dependencies = [
  "base64 0.22.1",
  "getrandom 0.2.17",
@@ -1376,13 +1392,15 @@ dependencies = [
 
 [[package]]
 name = "pdk-proxy-wasm-stub"
-version = "1.9.0-rc.0"
-source = "git+https://github.com/mulesoft-emu/mgw-policy-development-kit.git?branch=master#799d51adb32d48f66cfceb2063389e1dd3d3b41c"
+version = "1.9.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "9469584d6a62ac97a46cfd3e67a270dbac8af33e27169b4e87a1a7f2e10d321f"
 
 [[package]]
 name = "pdk-rate-limit-lib"
-version = "1.9.0-rc.0"
-source = "git+https://github.com/mulesoft-emu/mgw-policy-development-kit.git?branch=master#799d51adb32d48f66cfceb2063389e1dd3d3b41c"
+version = "1.9.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "b318272beec9657517cfaff9b2b6eb80c2fb47a27068dcf5c7cf769371030b5c"
 dependencies = [
  "base64 0.22.1",
  "bincode",
@@ -1396,8 +1414,9 @@ dependencies = [
 
 [[package]]
 name = "pdk-script"
-version = "1.9.0-rc.0"
-source = "git+https://github.com/mulesoft-emu/mgw-policy-development-kit.git?branch=master#799d51adb32d48f66cfceb2063389e1dd3d3b41c"
+version = "1.9.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "db9968802349bd53285e846450a534ff91d9c9d51f9bd1da4e833eff17b906d9"
 dependencies = [
  "log",
  "num-traits",
@@ -1412,8 +1431,9 @@ dependencies = [
 
 [[package]]
 name = "pdk-spike-control-lib"
-version = "1.9.0-rc.0"
-source = "git+https://github.com/mulesoft-emu/mgw-policy-development-kit.git?branch=master#799d51adb32d48f66cfceb2063389e1dd3d3b41c"
+version = "1.9.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f2339f6a9f13f5d2021bf987b463637d669579fcf4c780cbb040f618631ba46f"
 dependencies = [
  "pdk-core",
  "pdk-rate-limit-lib",
@@ -1422,8 +1442,9 @@ dependencies = [
 
 [[package]]
 name = "pdk-token-introspection-lib"
-version = "1.9.0-rc.0"
-source = "git+https://github.com/mulesoft-emu/mgw-policy-development-kit.git?branch=master#799d51adb32d48f66cfceb2063389e1dd3d3b41c"
+version = "1.9.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "93598f8f709d0f282c89212242efb53033d059a5b3f5de4ea53490df6305c747"
 dependencies = [
  "base64 0.22.1",
  "pdk-cache-lib",
@@ -1438,8 +1459,9 @@ dependencies = [
 
 [[package]]
 name = "pdk-unit"
-version = "1.9.0-rc.0"
-source = "git+https://github.com/mulesoft-emu/mgw-policy-development-kit.git?branch=master#799d51adb32d48f66cfceb2063389e1dd3d3b41c"
+version = "1.9.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "c9169e7ae8ba68793297ac3ca6ba545a65ec02931dcc3a171936e34f103018cf"
 dependencies = [
  "base64 0.22.1",
  "dw-parser",
@@ -1458,8 +1480,9 @@ dependencies = [
 
 [[package]]
 name = "pdk-unit-macros"
-version = "1.9.0-rc.0"
-source = "git+https://github.com/mulesoft-emu/mgw-policy-development-kit.git?branch=master#799d51adb32d48f66cfceb2063389e1dd3d3b41c"
+version = "1.9.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "6a431cab1bd38c5a4efa3d795121b277f351c7100a5be92f1dac8e93965acc66"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -1468,8 +1491,9 @@ dependencies = [
 
 [[package]]
 name = "pdk-websockets-lib"
-version = "1.9.0-rc.0"
-source = "git+https://github.com/mulesoft-emu/mgw-policy-development-kit.git?branch=master#799d51adb32d48f66cfceb2063389e1dd3d3b41c"
+version = "1.9.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e75439ff851e53b5ff980f6e44f63dcd4cf9b6878bdc1d943e8bb690400e32e4"
 dependencies = [
  "rand 0.8.6",
  "websocket-sans-io",
@@ -1477,8 +1501,9 @@ dependencies = [
 
 [[package]]
 name = "pdk-xml-validator-lib"
-version = "1.9.0-rc.0"
-source = "git+https://github.com/mulesoft-emu/mgw-policy-development-kit.git?branch=master#799d51adb32d48f66cfceb2063389e1dd3d3b41c"
+version = "1.9.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "25f1ed60921b5cabf24eda5eb4ddb337b5a20b7c914db89564482e70746240a3"
 dependencies = [
  "pdk-classy",
  "quick-xml",

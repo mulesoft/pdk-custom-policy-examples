@@ -12,12 +12,12 @@ definition_asset_id = "websocket"
 implementation_asset_id = "websocket-flex"
 
 [dependencies]
-pdk = { git = "https://github.com/mulesoft-emu/mgw-policy-development-kit.git", branch = "master", package = "pdk", features = ["ll", "experimental_websocket"] }
+pdk = { version = "1.9.0", features = ["ll", "experimental_websocket"] }
 anyhow = "1.0"
 serde = { version = "1.0", features = ["derive"] }
 
 [dev-dependencies]
-pdk-unit = { git = "https://github.com/mulesoft-emu/mgw-policy-development-kit.git", branch = "master", package = "pdk-unit", features = ["experimental"] }
+pdk-unit = { version = "1.9.0" }
 
 [lib]
 crate-type = ["cdylib"]
