@@ -12,13 +12,13 @@ definition_asset_id = "json-validation"
 implementation_asset_id = "json-validation-flex"
 
 [dependencies]
-pdk = { version = "1.8.0" }
+pdk = { version = "1.9.0" }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = { version = "1.0", default-features = false, features = ["alloc"] }
 anyhow = "1.0"
 
 [dev-dependencies]
-pdk-unit = { version = "1.8.0" }
+pdk-unit = { version = "1.9.0" }
 
 [lib]
 crate-type = ["cdylib"]
