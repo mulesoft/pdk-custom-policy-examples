@@ -14,14 +14,14 @@ definition_asset_id = "stop-iteration"
 implementation_asset_id = "stop-iteration-flex"
 
 [dependencies]
-pdk = { version = "1.8.0", features = ["enable_stop_iteration"] }
+pdk = { version = "1.9.0", features = ["enable_stop_iteration"] }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = { version = "1.0", default-features = false, features = ["alloc"] }
 anyhow = "1.0"
 
 [dev-dependencies]
-pdk-test = { version = "1.8.0" }
-pdk-unit = { version = "1.8.0", features = ["enable_stop_iteration"] }
+pdk-test = { version = "1.9.0" }
+pdk-unit = { version = "1.9.0", features = ["enable_stop_iteration"] }
 httpmock = "0.6"
 reqwest = "0.11"
 
