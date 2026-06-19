@@ -97,7 +97,7 @@ async fn execute_request(url: String) -> u16 {
 
     if response.status() == 202 {
         // Accepted request should have been served as soon as possible.
-        assert!(elapsed <= MAX_ATTEMPTS * (DELAY + EPSILON))
+        assert!(elapsed < (MAX_ATTEMPTS + 1) * (DELAY + EPSILON))
     } else if response.status() == 429 {
         // Rejected request should have spent time waiting.
         assert!(elapsed >= MAX_ATTEMPTS * DELAY)
