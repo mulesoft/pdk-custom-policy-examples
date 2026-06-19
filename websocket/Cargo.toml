@@ -1,0 +1,28 @@
+# Copyright 2023 Salesforce, Inc. All rights reserved.
+[package]
+name = "websocket"
+version = "1.0.0"
+rust-version = "1.88.0"
+edition = "2018"
+resolver = "2"
+
+[package.metadata.anypoint]
+group_id = "edce8390-cbc6-4b53-af21-b1991d7a14bc"
+definition_asset_id = "websocket"
+implementation_asset_id = "websocket-flex"
+
+[dependencies]
+pdk = { version = "1.9.0", features = ["ll", "experimental_websocket"] }
+anyhow = "1.0"
+serde = { version = "1.0", features = ["derive"] }
+
+[dev-dependencies]
+pdk-unit = { version = "1.9.0" }
+
+[lib]
+crate-type = ["cdylib"]
+
+[profile.release]
+lto = true
+opt-level = 'z'
+strip = "debuginfo"

@@ -1,0 +1,17 @@
+# Copyright 2023 Salesforce, Inc. All rights reserved.
+version: "3.3"
+
+services:
+  local-flex:
+    # Flex supports WebSocket from 1.13.0
+    image: mulesoft/flex-gateway:1.13.0
+    ports:
+      - 8081:8081
+    volumes:
+      - ./config:/usr/local/share/mulesoft/flex-gateway/conf.d/
+
+  # WebSocket echo server — reflects every frame back to the client.
+  echo:
+    image: jmalloc/echo-server
+    ports:
+      - "8082:8080"
