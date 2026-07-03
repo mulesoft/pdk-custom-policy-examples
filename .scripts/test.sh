@@ -7,11 +7,7 @@
 #   ./.scripts/test.sh <path-to-registration.yaml>
 #
 # Environment:
-#   PDK_TEST_FLEX_IMAGE_VERSION  Flex version under test (e.g. 1.9.3000). Used to
-#                                skip examples that declare a higher minimum Flex
-#                                version. Also consumed by pdk-test to select the
-#                                Flex image. When unset or "latest", no example is
-#                                skipped.
+#   PDK_TEST_FLEX_IMAGE_VERSION  Flex version under test (e.g. 1.9.3000).
 #
 # An example declares its minimum Flex version in Cargo.toml:
 #
@@ -58,8 +54,7 @@ version_lt() {
 }
 
 # Prints the min-version declared under [package.metadata.flex] in the
-# example's Cargo.toml, or nothing when absent. Uses awk (jq is not available in
-# CI) and requires no build.
+# example's Cargo.toml, or nothing when absent.
 min_flex_version() {
     local cargo="${1}Cargo.toml"
     [ -f "$cargo" ] || return 0
