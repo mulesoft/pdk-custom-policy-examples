@@ -13,6 +13,9 @@ group_id = "f7a576be-e707-4ce3-9c68-3432d591846c"
 definition_asset_id = "dataweave"
 implementation_asset_id = "dataweave-flex"
 
+[package.metadata.flex]
+min-version = "1.11.0"
+
 [dependencies]
 pdk = { version = "1.9.0" }
 serde = { version = "1.0", features = ["derive"] }

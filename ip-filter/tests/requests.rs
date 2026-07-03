@@ -39,7 +39,6 @@ async fn test_allowlist_ip_passes() -> anyhow::Result<()> {
         .build();
 
     let flex_config = FlexConfig::builder()
-        .version("1.10.0")
         .hostname("local-flex")
         .with_api(api_config)
         .config_mounts([(POLICY_DIR, "policy"), (COMMON_CONFIG_DIR, "common")])
@@ -112,7 +111,6 @@ async fn test_allowlist_blocks_non_allowed_ip() -> anyhow::Result<()> {
         .build();
 
     let flex_config = FlexConfig::builder()
-        .version("1.10.0")
         .hostname("local-flex-forbidden")
         .with_api(api_config)
         .config_mounts([(POLICY_DIR, "policy"), (COMMON_CONFIG_DIR, "common")])
@@ -184,7 +182,6 @@ async fn test_blocklist_blocks_ip() -> anyhow::Result<()> {
         .build();
 
     let flex_config = FlexConfig::builder()
-        .version("1.10.0")
         .hostname("local-flex-blocklist")
         .with_api(api_config)
         .config_mounts([(POLICY_DIR, "policy"), (COMMON_CONFIG_DIR, "common")])
@@ -256,7 +253,6 @@ async fn test_blocklist_allows_non_blocked_ip() -> anyhow::Result<()> {
         .build();
 
     let flex_config = FlexConfig::builder()
-        .version("1.10.0")
         .hostname("local-flex-blocklist-pass")
         .with_api(api_config)
         .config_mounts([(POLICY_DIR, "policy"), (COMMON_CONFIG_DIR, "common")])
@@ -328,7 +324,6 @@ async fn test_blocklist_cidr_range_blocks_ip() -> anyhow::Result<()> {
         .build();
 
     let flex_config = FlexConfig::builder()
-        .version("1.10.0")
         .hostname("local-flex-blocklist-cidr")
         .with_api(api_config)
         .config_mounts([(POLICY_DIR, "policy"), (COMMON_CONFIG_DIR, "common")])

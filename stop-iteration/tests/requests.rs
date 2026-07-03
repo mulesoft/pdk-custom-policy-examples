@@ -45,7 +45,6 @@ async fn test_stop_iteration_modifies_response() -> anyhow::Result<()> {
 
     // Configure Flex service
     let flex_config = FlexConfig::builder()
-        .version("1.12.0")
         .hostname("local-flex")
         .with_api(api_config)
         .config_mounts([(POLICY_DIR, "policy"), (COMMON_CONFIG_DIR, "common")])
