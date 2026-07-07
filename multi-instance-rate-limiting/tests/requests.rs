@@ -46,7 +46,6 @@ async fn test_basic_rate_limiting_with_api_key() -> anyhow::Result<()> {
         .build();
 
     let flex_config = FlexConfig::builder()
-        .version("1.10.0")
         .hostname("local-flex-api-key")
         .with_api(api_config)
         .config_mounts([(POLICY_DIR, "policy"), (COMMON_CONFIG_DIR, "common")])
@@ -144,7 +143,6 @@ async fn test_rate_limiting_with_user_id() -> anyhow::Result<()> {
         .build();
 
     let flex_config = FlexConfig::builder()
-        .version("1.10.0")
         .hostname("local-flex-user-id")
         .with_api(api_config)
         .config_mounts([(POLICY_DIR, "policy"), (COMMON_CONFIG_DIR, "common")])
@@ -246,7 +244,6 @@ async fn test_single_request_limit() -> anyhow::Result<()> {
         .build();
 
     let flex_config = FlexConfig::builder()
-        .version("1.10.0")
         .hostname("local-flex-single")
         .with_api(api_config)
         .config_mounts([(POLICY_DIR, "policy"), (COMMON_CONFIG_DIR, "common")])
@@ -332,7 +329,6 @@ async fn test_different_window_sizes() -> anyhow::Result<()> {
         .build();
 
     let flex_config = FlexConfig::builder()
-        .version("1.10.0")
         .hostname("local-flex-window")
         .with_api(api_config)
         .config_mounts([(POLICY_DIR, "policy"), (COMMON_CONFIG_DIR, "common")])
@@ -435,7 +431,6 @@ async fn test_api_key_rate_limiting() -> anyhow::Result<()> {
         .build();
 
     let flex_config = FlexConfig::builder()
-        .version("1.10.0")
         .hostname("local-flex-multi-limits")
         .with_api(api_config)
         .config_mounts([(POLICY_DIR, "policy"), (COMMON_CONFIG_DIR, "common")])
