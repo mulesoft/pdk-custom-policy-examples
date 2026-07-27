@@ -16,7 +16,7 @@ so each path has its own performance profile worth measuring.
 
 > **On Criterion.** Criterion is used here only as one example of a benchmarking
 > framework. It is a third-party crate, not owned or endorsed by MuleSoft, and
-> any other benchmarking harness works just as well — the `pdk-unit` integration
+> any other benchmarking harness should work just as well — the `pdk-unit` integration
 > is the same regardless of which you pick.
 
 > **What the numbers mean.** Each measured iteration includes the `pdk-unit`

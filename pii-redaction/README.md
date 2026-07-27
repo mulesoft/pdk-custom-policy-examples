@@ -17,7 +17,7 @@ micro-benchmarks: you can measure the cost of a policy's code paths in isolation
 `benches/redaction.rs` benchmarks each of the policy's flows. It uses
 [Criterion](https://docs.rs/criterion/latest/criterion/) as one example of a
 benchmarking framework — Criterion is a third-party crate, not owned or endorsed
-by MuleSoft, and any other benchmarking harness works just as well; the pdk-unit
+by MuleSoft, and any other benchmarking harness should work just as well; the pdk-unit
 integration is the same regardless of which you pick.
 
 See [BENCHMARKING.md](./BENCHMARKING.md) for the full walkthrough. Run the
