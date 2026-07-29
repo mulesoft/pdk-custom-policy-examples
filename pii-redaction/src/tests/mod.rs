@@ -78,7 +78,10 @@ fn regex_scan_masks_values_in_text_body() {
 
     let forwarded = backend.next().expect("backend received request");
     let body = String::from_utf8(forwarded.body().to_vec()).unwrap();
-    assert!(!body.contains("jane.doe@example.com"), "email must be masked");
+    assert!(
+        !body.contains("jane.doe@example.com"),
+        "email must be masked"
+    );
     assert!(!body.contains("123-45-6789"), "ssn must be masked");
     assert!(!body.contains("4111 1111 1111 1111"), "card must be masked");
     assert!(body.contains("***REDACTED***"));
@@ -122,7 +125,10 @@ fn json_deep_redacts_nested_fields() {
 
     let forwarded = backend.next().expect("backend received request");
     let body = String::from_utf8(forwarded.body().to_vec()).unwrap();
-    assert!(!body.contains("jane.doe@example.com"), "nested email masked");
+    assert!(
+        !body.contains("jane.doe@example.com"),
+        "nested email masked"
+    );
     assert!(!body.contains("123-45-6789"), "nested ssn masked");
     assert!(!body.contains("4111 1111 1111 1111"), "nested card masked");
     assert!(!body.contains("hunter2"), "nested password masked");

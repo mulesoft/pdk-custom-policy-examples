@@ -17,7 +17,7 @@
 //!   * `json_deep`     — recursive walk over a deeply nested JSON document
 
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
-use pdk_unit::{UnitHttpRequest, UnitTest, UnitTestBuilder};
+use pdk_unit::{UnitHttpRequest, UnitLogLevel, UnitTest, UnitTestBuilder};
 
 /// Config and sample bodies driving each flow. A benchmark is a separate crate
 /// that cannot import the policy's `#[cfg(test)]` fixtures, so these are
@@ -91,77 +91,89 @@ mod fixtures {
 
 /// Builds a tester with the standard redaction config and a default 200 backend.
 fn tester() -> UnitTest {
-    UnitTestBuilder::default()
+    let mut tester = UnitTestBuilder::default()
         .with_config(fixtures::config())
-        .with_entrypoint(pii_redaction::configure)
+        .with_entrypoint(pii_redaction::configure);
+    tester.set_log_level(UnitLogLevel::Disabled);
+    tester
 }
 
 fn bench_redaction_flows(c: &mut Criterion) {
     let mut group = c.benchmark_group("pii_redaction");
 
     // Passthrough: a binary content type the policy does not touch.
+    let mut t = tester();
     group.bench_function("passthrough", |b| {
-        let mut t = tester();
         let body = vec![0u8, 1, 2, 3, 255, 254, 128, 64];
         b.iter(|| {
-            black_box(t.request(
-                UnitHttpRequest::post()
-                    .with_header("content-type", "image/png")
-                    .with_body(body.clone()),
-            ));
+            black_box(
+                t.request(
+                    UnitHttpRequest::post()
+                        .with_header("content-type", "image/png")
+                        .with_body(body.clone()),
+                ),
+            );
         });
     });
 
     // Header redaction: mask sensitive headers, no body processing.
+    let mut t = tester();
     group.bench_function("header_redact", |b| {
-        let mut t = tester();
         b.iter(|| {
-            black_box(t.request(
-                UnitHttpRequest::get()
-                    .with_header("authorization", "Bearer super-secret-token")
-                    .with_header("cookie", "session=abcdef123456")
-                    .with_header("x-api-key", "key-0123456789")
-                    .with_header("x-request-id", "keep-me"),
-            ));
+            black_box(
+                t.request(
+                    UnitHttpRequest::get()
+                        .with_header("authorization", "Bearer super-secret-token")
+                        .with_header("cookie", "session=abcdef123456")
+                        .with_header("x-api-key", "key-0123456789")
+                        .with_header("x-request-id", "keep-me"),
+                ),
+            );
         });
     });
 
     // Regex scan: sweep a plain-text body for sensitive value patterns.
+    let mut t = tester();
     group.bench_function("regex_scan", |b| {
-        let mut t = tester();
         let body = fixtures::text_body();
         b.iter(|| {
-            black_box(t.request(
-                UnitHttpRequest::post()
-                    .with_header("content-type", "text/plain")
-                    .with_body(body.clone()),
-            ));
+            black_box(
+                t.request(
+                    UnitHttpRequest::post()
+                        .with_header("content-type", "text/plain")
+                        .with_body(body.clone()),
+                ),
+            );
         });
     });
 
     // JSON mask: parse and walk a shallow JSON object.
+    let mut t = tester();
     group.bench_function("json_mask", |b| {
-        let mut t = tester();
         let body = fixtures::json_shallow_body();
         b.iter(|| {
-            black_box(t.request(
-                UnitHttpRequest::post()
-                    .with_header("content-type", "application/json")
-                    .with_body(body.clone()),
-            ));
+            black_box(
+                t.request(
+                    UnitHttpRequest::post()
+                        .with_header("content-type", "application/json")
+                        .with_body(body.clone()),
+                ),
+            );
         });
     });
 
     // JSON deep: recursive walk over a deeply nested JSON document.
+    let mut t = tester();
     group.bench_function("json_deep", |b| {
-        let mut t = tester();
         let body = fixtures::json_deep_body();
         b.iter(|| {
-            black_box(t.request(
-                UnitHttpRequest::post()
-                    .with_header("content-type", "application/json")
-                    .with_body(body.clone()),
-            ));
+            black_box(
+                t.request(
+                    UnitHttpRequest::post()
+                        .with_header("content-type", "application/json")
+                        .with_body(body.clone()),
+                ),
+            );
         });
     });
 
