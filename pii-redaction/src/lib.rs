@@ -190,10 +190,12 @@ async fn request_filter(request_state: RequestState, redactor: &Redactor) -> Flo
             .ok()
             .and_then(|text| redactor.redact_text(text))
             .map(String::into_bytes),
-        BodyKind::Json => serde_json::from_slice::<Value>(&body).ok().map(|mut value| {
-            redactor.redact_json(&mut value);
-            serde_json::to_vec(&value).unwrap_or(body.clone())
-        }),
+        BodyKind::Json => serde_json::from_slice::<Value>(&body)
+            .ok()
+            .map(|mut value| {
+                redactor.redact_json(&mut value);
+                serde_json::to_vec(&value).unwrap_or(body.clone())
+            }),
         BodyKind::Skip => None,
     };
 

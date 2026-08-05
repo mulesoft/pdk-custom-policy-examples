@@ -19,11 +19,26 @@ so each path has its own performance profile worth measuring.
 > any other benchmarking harness should work just as well — the `pdk-unit` integration
 > is the same regardless of which you pick.
 
-> **What the numbers mean.** Each measured iteration includes the `pdk-unit`
-> request/host emulation overhead *in addition to* your policy's work. Treat the
-> results as **relative** — path A vs path B, or this commit vs the last one —
-> not as absolute production latencies. The emulator is not the real Flex data
-> plane.
+> **What the numbers mean.** Read the timings with three caveats in mind:
+>
+> 1. **They are relative.** A single number in isolation says nothing — it only
+>    means something next to a baseline. Compare a flow against another flow, a
+>    commit against the previous one, or one implementation against an
+>    alternative. That comparison is the signal; the raw microseconds are not.
+> 2. **They are not real Flex latencies.** Each iteration includes the `pdk-unit`
+>    request/host emulation overhead *in addition to* your policy's work, and the
+>    emulator is not the real Flex data plane. The absolute values will not match
+>    production — but because the same policy code runs, they track it closely:
+>    a change that makes a flow cheaper here almost always makes it cheaper in
+>    production too. `pdk-unit` is also under active development, so the emulation
+>    overhead itself can shift up or down between versions — compare numbers only
+>    within a single `pdk-unit` version, and re-baseline after a version bump.
+> 3. **Upstream calls are counted, not timed.** `pii-redaction` makes no
+>    upstream calls, but many policies do. Each call routes through an emulated
+>    backend that answers immediately, so the benchmark measures the cost of
+>    *dispatching* the call, not real network latency. This is what lets you
+>    compare policy variants by how many upstream calls they make — see
+>    [Measuring policies that call upstreams](#measuring-policies-that-call-upstreams).
 
 ---
 
@@ -153,6 +168,62 @@ Key points:
   input.
 - **One `bench_function` per flow**, grouped under one
   `benchmark_group`, so the report lines up the flows side by side.
+
+---
+
+## Measuring policies that call upstreams
+
+`pii-redaction` never leaves the gateway — it only rewrites the request in place.
+Many policies do more: an authorization policy calls a token-introspection
+endpoint, an enrichment policy fetches data over HTTP or gRPC, a policy might hit
+one upstream on a cache miss and none on a hit. Those calls are where the real
+cost — and the interesting comparisons — usually live.
+
+Every upstream call a policy dispatches routes through a **backend** you register
+on the tester. A backend is a `Fn(UnitHttpRequest) -> UnitHttpResponse` (see
+`with_backend` / `with_http_upstream_from_authority`), and the emulator runs the
+full dispatch path for each call inside the measured `t.request(...)`. So the
+benchmark captures the cost of *making* the calls — which lets you compare
+variants that differ in how many they make:
+
+```rust
+// One backend per named upstream the policy talks to.
+fn introspection_backend(_req: UnitHttpRequest) -> UnitHttpResponse {
+    UnitHttpResponse::new(200).with_body(r#"{"active":true}"#)
+}
+
+fn tester() -> UnitTest {
+    UnitTestBuilder::default()
+        .with_config(fixtures::config())
+        .with_http_upstream_from_authority("auth.internal:443", introspection_backend)
+        .with_entrypoint(my_policy::configure)
+}
+```
+
+Then give each `bench_function` a scenario that drives a different call count —
+cache hit (zero upstream calls) vs miss (one), single fetch vs fan-out, etc. The
+spread across those groups is the signal: it shows what each extra upstream call
+costs relative to the policy's in-process work.
+
+> The backend runs synchronously and returns immediately, so this measures the
+> **dispatch and handling cost per call**, not network latency — the emulator is
+> not a real socket. If you specifically want to model a slow upstream you can
+> `std::thread::sleep` inside the backend:
+>
+> ```rust
+> fn slow_backend(_req: UnitHttpRequest) -> UnitHttpResponse {
+>     std::thread::sleep(std::time::Duration::from_millis(20)); // fake 20ms upstream
+>     UnitHttpResponse::new(200)
+> }
+> ```
+>
+> But that adds a flat 20ms to *every* iteration, so a 28µs flow and a 15µs flow
+> both read as ~20.0ms and the spread you came to measure vanishes below the
+> noise. It only earns its place when the policy *branches* on upstream timing
+> (e.g. a timeout path) and you sleep past the threshold to exercise that branch
+> — then you care which path ran, not the microseconds. Note this is also
+> distinct from `t.sleep(duration)`, which advances the *emulated* clock for
+> timer-driven policy logic and is not measured latency.
 
 ---
 
