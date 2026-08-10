@@ -1,6 +1,7 @@
 export PDK_COMPATIBILITY_VERSION = 1.4.0
 TARGET                	:= wasm32-wasip1
 TARGET_DIR            	:= target/$(TARGET)/release
+FLEX_IMAGE            	:= mulesoft/flex-gateway:1.13.4
 CARGO_ANYPOINT        	:= cargo-anypoint
 DEFINITION_NAME        	= $(shell anypoint-cli-v4 pdk policy-project definition get gcl-metadata-name)
 DEFINITION_NAMESPACE   	= $(shell anypoint-cli-v4 pdk policy-project definition get gcl-metadata-namespace)
@@ -27,6 +28,10 @@ endif
 setup: install-cargo-anypoint install-llvm-cov ## Setup Cargo Anypoint to build, LLVM-cov for coverage
 	cargo fetch
 
+playground/config/registration.yaml tests/config/registration.yaml: ## Generate a disconnected registration.yaml from the local flex gateway
+	docker image pull $(FLEX_IMAGE)
+	docker run --rm --entrypoint flexctl -v "$(CURDIR)/$(@D)":/registration $(FLEX_IMAGE) registration create --mode disconnected --output-directory=/registration testing-flex
+
 .PHONY: build
 build: build-asset-files ## Build the policy definition and implementation
 	@cargo build --target $(TARGET) --release
@@ -35,7 +40,7 @@ build: build-asset-files ## Build the policy definition and implementation
 	@echo $(POLICY_REF_NAME) > target/policy-ref-name.txt
 
 .PHONY: run
-run: build ## Run the policy in local flex
+run: build playground/config/registration.yaml ## Run the policy in local flex
 	@anypoint-cli-v4 pdk log -t "warn" -m "Remember to update the config values in playground/config/api.yaml file for the policy configuration"
 	@cargo anypoint patch-api -o playground/config/api.yaml -m $(DEFINITION_GCL_PATH) -n $(POLICY_REF_NAME) -s $(DEFINITION_NAMESPACE)
 ifeq ($(OS), Windows_NT)
@@ -49,7 +54,7 @@ endif
 	docker compose -f ./playground/docker-compose.yaml up
 
 .PHONY: test
-test: build ## Run integration tests
+test: build tests/config/registration.yaml ## Run integration tests
 	@cargo test -- --nocapture
 
 FORMAT     ?=
@@ -59,7 +64,7 @@ _COVERAGE_FORMAT = $(if $(filter json,$(FORMAT)),--json,$(if $(filter html,$(FOR
 _COVERAGE_OUTPUT = $(if $(OUTPUT_PATH),--output-path $(OUTPUT_PATH),)
 
 .PHONY: test-coverage
-test-coverage: build ## Run tests with coverage. Opts: FORMAT=json|html, OUTPUT_PATH=/my/path
+test-coverage: build tests/config/registration.yaml ## Run tests with coverage. Opts: FORMAT=json|html, OUTPUT_PATH=/my/path
 	cargo llvm-cov test $(_COVERAGE_FORMAT) $(_COVERAGE_OUTPUT) --ignore-filename-regex config.rs -- --nocapture
 
 .PHONY: publish
