@@ -9,6 +9,9 @@ DEFINITION_SRC_GCL_PATH = $(shell anypoint-cli-v4 pdk policy-project locate-gcl 
 DEFINITION_GCL_PATH    	= $(shell anypoint-cli-v4 pdk policy-project locate-gcl definition)
 CRATE_NAME             	= $(shell cargo anypoint get-name)
 SETUP_ERROR_CMD        	= (echo "ERROR:\n\tMissing custom policy project setup. Please run 'make setup'\n")
+# When true, publish/release skip re-publishing the definition if its content matches the version
+# already in Exchange, pointing the implementation dependency at that published definition instead.
+SKIP_UNCHANGED_DEFINITION ?= true
 
 ifeq ($(OS), Windows_NT)
     SHELL = powershell.exe
@@ -69,11 +72,11 @@ test-coverage: build tests/config/registration.yaml ## Run tests with coverage. 
 
 .PHONY: publish
 publish: build ## Publish a development version of the policy
-	anypoint-cli-v4 pdk policy-project publish --binary-path $(TARGET_DIR)/$(CRATE_NAME).wasm --implementation-gcl-path $(TARGET_DIR)/$(CRATE_NAME)_implementation.yaml
+	anypoint-cli-v4 pdk policy-project publish --binary-path $(TARGET_DIR)/$(CRATE_NAME).wasm --implementation-gcl-path $(TARGET_DIR)/$(CRATE_NAME)_implementation.yaml --skip-unchanged-definition=$(SKIP_UNCHANGED_DEFINITION)
 
 .PHONY: release
 release: build ## Publish a release version
-	anypoint-cli-v4 pdk policy-project release --binary-path $(TARGET_DIR)/$(CRATE_NAME).wasm --implementation-gcl-path $(TARGET_DIR)/$(CRATE_NAME)_implementation.yaml
+	anypoint-cli-v4 pdk policy-project release --binary-path $(TARGET_DIR)/$(CRATE_NAME).wasm --implementation-gcl-path $(TARGET_DIR)/$(CRATE_NAME)_implementation.yaml --skip-unchanged-definition=$(SKIP_UNCHANGED_DEFINITION)
 
 .PHONY: build-asset-files
 build-asset-files: $(DEFINITION_SRC_GCL_PATH)
