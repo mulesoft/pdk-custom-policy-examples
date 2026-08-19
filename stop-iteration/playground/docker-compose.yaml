@@ -3,7 +3,7 @@ version: "3.3"
 
 services:
   local-flex:
-    image: mulesoft/flex-gateway:1.12.0
+    image: ${PDK_TEST_FLEX_IMAGE_NAME:-mulesoft/flex-gateway}:${PDK_TEST_FLEX_IMAGE_VERSION:-1.13.4}
     ports:
       - 8081:8081
     volumes:

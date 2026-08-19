@@ -4,7 +4,11 @@
 # Single entry point to run the integration tests of every policy example.
 #
 # Usage:
-#   ./.scripts/test.sh <path-to-registration.yaml>
+#   ./.scripts/test.sh
+#
+# Each example generates its own disconnected registration.yaml from the local
+# Flex image via its Makefile (see the registration target), so no registration
+# file needs to be provided here.
 #
 # Environment:
 #   PDK_TEST_FLEX_IMAGE_VERSION  Flex version under test (e.g. 1.9.3000).
@@ -17,19 +21,6 @@
 # Examples requiring a version newer than PDK_TEST_FLEX_IMAGE_VERSION are skipped,
 # so any job running these tests inherits the same compatibility rules. Examples
 # without a declaration have no minimum and always run.
-
-if [ -z "$1" ]; then
-    echo "No path to registration file was given";
-    echo "Usage: $0 <path-to-registration.yaml>";
-    exit 1;
-fi
-
-REGISTRATION_FILE="$1"
-
-if [ ! -f "$REGISTRATION_FILE" ]; then
-    echo "Error: registration file not found: $REGISTRATION_FILE";
-    exit 1;
-fi
 
 FLEX_VERSION="${PDK_TEST_FLEX_IMAGE_VERSION:-}"
 
@@ -108,11 +99,13 @@ for dir in */; do
 
         cd "$dir" || { failed=$((failed + 1)); continue; }
 
-        # Provide the registration file wherever the example expects it.
+        # Generate the registration file wherever the example expects it. The
+        # Makefile target pulls the local Flex image and creates a disconnected
+        # registration.yaml under the matching tests directory.
         if [ -d "tests/config" ]; then
-            cp "$REGISTRATION_FILE" tests/config/registration.yaml
+            make tests/config/registration.yaml
         elif [ -d "tests/common" ]; then
-            cp "$REGISTRATION_FILE" tests/common/registration.yaml
+            make tests/common/registration.yaml
         fi
 
         make setup && make build
