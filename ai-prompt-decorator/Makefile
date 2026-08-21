@@ -86,7 +86,7 @@ build-asset-files: $(DEFINITION_SRC_GCL_PATH)
 
 .PHONY: install-cargo-anypoint
 install-cargo-anypoint:
-	cargo install cargo-anypoint@1.9.0
+	cargo install cargo-anypoint@1.10.0
 
 .PHONY: install-llvm-cov
 install-llvm-cov:

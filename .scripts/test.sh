@@ -4,11 +4,12 @@
 # Single entry point to run the integration tests of every policy example.
 #
 # Usage:
-#   ./.scripts/test.sh
+#   ./.scripts/test.sh [path-to-registration.yaml]
 #
-# Each example generates its own disconnected registration.yaml from the local
-# Flex image via its Makefile (see the registration target), so no registration
-# file needs to be provided here.
+# When a registration file is provided, it is copied wherever each example
+# expects it. When omitted, each example generates its own disconnected
+# registration.yaml from the local Flex image via its Makefile (see the
+# registration target).
 #
 # Environment:
 #   PDK_TEST_FLEX_IMAGE_VERSION  Flex version under test (e.g. 1.9.3000).
@@ -21,6 +22,17 @@
 # Examples requiring a version newer than PDK_TEST_FLEX_IMAGE_VERSION are skipped,
 # so any job running these tests inherits the same compatibility rules. Examples
 # without a declaration have no minimum and always run.
+
+REGISTRATION_FILE="$1"
+
+if [ -n "$REGISTRATION_FILE" ]; then
+    if [ ! -f "$REGISTRATION_FILE" ]; then
+        echo "Error: registration file not found: $REGISTRATION_FILE";
+        exit 1;
+    fi
+    # Resolve to an absolute path so it stays valid after cd into each example.
+    REGISTRATION_FILE="$(cd "$(dirname "$REGISTRATION_FILE")" && pwd)/$(basename "$REGISTRATION_FILE")"
+fi
 
 FLEX_VERSION="${PDK_TEST_FLEX_IMAGE_VERSION:-}"
 
@@ -99,13 +111,22 @@ for dir in */; do
 
         cd "$dir" || { failed=$((failed + 1)); continue; }
 
-        # Generate the registration file wherever the example expects it. The
-        # Makefile target pulls the local Flex image and creates a disconnected
-        # registration.yaml under the matching tests directory.
+        # Provide the registration file wherever the example expects it. When a
+        # registration file was passed in, copy it; otherwise generate one via
+        # the Makefile target, which pulls the local Flex image and creates a
+        # disconnected registration.yaml under the matching tests directory.
         if [ -d "tests/config" ]; then
-            make tests/config/registration.yaml
+            if [ -n "$REGISTRATION_FILE" ]; then
+                cp "$REGISTRATION_FILE" tests/config/registration.yaml
+            else
+                make tests/config/registration.yaml
+            fi
         elif [ -d "tests/common" ]; then
-            make tests/common/registration.yaml
+            if [ -n "$REGISTRATION_FILE" ]; then
+                cp "$REGISTRATION_FILE" tests/common/registration.yaml
+            else
+                make tests/common/registration.yaml
+            fi
         fi
 
         make setup && make build
