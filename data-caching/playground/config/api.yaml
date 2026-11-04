@@ -18,5 +18,5 @@ spec:
         namespace: default
       config:
         max_cached_values: 10
-        start_hour: 18
-        end_hour: 10
+        start_hour: 0
+        end_hour: 23

@@ -185,3 +185,98 @@ async fn configure(
 
     Ok(())
 }
+
+#[cfg(test)]
+mod tests {
+    use crate::auth::{AuthRequest, AuthResponse};
+    use pdk_unit::{
+        dw2pel, protobuf_grpc_backend, UnitGrpcRequest, UnitGrpcResponse, UnitHttpRequest,
+        UnitTestBuilder,
+    };
+    use serde_json::json;
+
+    fn config() -> String {
+        json!({
+            "oauthService": "h2://grpc-auth:4770",
+            "authorization": "Basic dXNlcjpwYXNz",
+            "tokenExtractor": dw2pel("attributes.headers['authorization']"),
+        })
+        .to_string()
+    }
+
+    struct AuthBackend {
+        active: bool,
+    }
+
+    impl AuthBackend {
+        fn new(active: bool) -> Self {
+            Self { active }
+        }
+    }
+
+    #[protobuf_grpc_backend]
+    impl AuthBackend {
+        #[grpc_method(service = "AuthService", method = "Check")]
+        fn check(&self, _req: AuthRequest) -> AuthResponse {
+            AuthResponse {
+                active: self.active,
+                ..Default::default()
+            }
+        }
+    }
+
+    fn error_response(_: UnitGrpcRequest) -> UnitGrpcResponse {
+        UnitGrpcResponse::default().with_status_code(13)
+    }
+
+    #[test]
+    fn active_token_passes_through() {
+        let mut tester = UnitTestBuilder::default()
+            .with_config(config())
+            .with_grpc_upstream_from_authority("grpc-auth:4770", AuthBackend::new(true))
+            .with_entrypoint(crate::configure);
+
+        let response = tester
+            .request(UnitHttpRequest::get().with_header("authorization", "Bearer valid-token"));
+
+        assert_eq!(response.status_code(), 200);
+    }
+
+    #[test]
+    fn inactive_token_returns_401() {
+        let mut tester = UnitTestBuilder::default()
+            .with_config(config())
+            .with_grpc_upstream_from_authority("grpc-auth:4770", AuthBackend::new(false))
+            .with_entrypoint(crate::configure);
+
+        let response = tester
+            .request(UnitHttpRequest::get().with_header("authorization", "Bearer inactive-token"));
+
+        assert_eq!(response.status_code(), 401);
+    }
+
+    #[test]
+    fn grpc_error_returns_500() {
+        let mut tester = UnitTestBuilder::default()
+            .with_config(config())
+            .with_grpc_upstream_from_authority("grpc-auth:4770", error_response)
+            .with_entrypoint(crate::configure);
+
+        let response = tester
+            .request(UnitHttpRequest::get().with_header("authorization", "Bearer some-token"));
+
+        assert_eq!(response.status_code(), 500);
+    }
+
+    #[test]
+    fn missing_token_returns_401() {
+        let mut tester = UnitTestBuilder::default()
+            .with_config(config())
+            .with_grpc_upstream_from_authority("grpc-auth:4770", AuthBackend::new(true))
+            .with_entrypoint(crate::configure);
+
+        let response = tester.request(UnitHttpRequest::get());
+
+        assert_eq!(response.status_code(), 401);
+    }
+}

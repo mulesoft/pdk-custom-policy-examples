@@ -18,4 +18,4 @@ spec:
         namespace: default
       config:
         metricsSink: http://backend/anything/echo/metrics
-        pushFrequency: 10
+        pushFrequency: 1

@@ -1,0 +1,2 @@
+Place registration.yaml here to connect to Anypoint Platform.
+Run `make run` from the example root to start Flex Gateway.

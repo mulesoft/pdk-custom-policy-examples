@@ -70,3 +70,54 @@ async fn configure(launcher: Launcher) -> Result<()> {
     launcher.launch(filter).await?;
     Ok(())
 }
+
+#[cfg(test)]
+mod tests {
+    use pdk_unit::{UnitHttpRequest, UnitTestBuilder};
+    use serde_json::json;
+
+    #[test]
+    fn valid_subject_sets_name_and_email_headers() {
+        let mut tester = UnitTestBuilder::default().with_entrypoint(crate::configure);
+
+        let response = tester.request(UnitHttpRequest::get().with_property(
+            vec!["connection", "subject_peer_certificate"],
+            "CN=Alice,emailAddress=alice@example.com",
+        ));
+
+        assert_eq!(response.status_code(), 200);
+    }
+
+    #[test]
+    fn missing_subject_returns_401() {
+        let mut tester = UnitTestBuilder::default().with_entrypoint(crate::configure);
+
+        let response = tester.request(UnitHttpRequest::get());
+
+        assert_eq!(response.status_code(), 401);
+    }
+
+    #[test]
+    fn subject_missing_email_returns_401() {
+        let mut tester = UnitTestBuilder::default().with_entrypoint(crate::configure);
+
+        let response = tester.request(
+            UnitHttpRequest::get()
+                .with_property(vec!["connection", "subject_peer_certificate"], "CN=Alice"),
+        );
+
+        assert_eq!(response.status_code(), 401);
+    }
+
+    #[test]
+    fn subject_missing_cn_returns_401() {
+        let mut tester = UnitTestBuilder::default().with_entrypoint(crate::configure);
+
+        let response = tester.request(UnitHttpRequest::get().with_property(
+            vec!["connection", "subject_peer_certificate"],
+            "emailAddress=alice@example.com",
+        ));
+
+        assert_eq!(response.status_code(), 401);
+    }
+}

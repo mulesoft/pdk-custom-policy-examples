@@ -1,0 +1,16 @@
+---
+apiVersion: gateway.mulesoft.com/v1alpha1
+kind: Extension
+metadata:
+  labels:
+    title: WebSocket Frame Counter
+    description: >-
+      Prefixes each upstream WebSocket text frame with a sequential counter.
+      Demonstrates PDK WebSocket support with per-connection shared state.
+    category: Custom
+    metadata/interfaceScope: api,resource
+spec:
+  extends:
+    - name: extension-definition
+      namespace: default
+  properties: {}

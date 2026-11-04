@@ -14,7 +14,6 @@ const ACCESS_CONTROL_ALLOW_ORIGIN_VALUE: &str = "http://localhost:8081";
 
 #[pdk_test]
 async fn check_origin_header() -> Result<()> {
-
     // Policy configuration
     let config = json!( {
         "publicResource": false,

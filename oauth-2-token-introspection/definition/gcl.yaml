@@ -1,0 +1,56 @@
+---
+apiVersion: gateway.mulesoft.com/v1alpha1
+kind: Extension
+metadata:
+  labels:
+    title: oauth2-token-introspection
+    category: Custom
+    metadata/interfaceScope: api,resource
+spec:
+  extends:
+    - name: extension-definition
+      namespace: default
+  properties:
+    introspectionService:
+      type: string
+      format: service
+    introspectionPath:
+      type: string
+      default: ""
+    authorizationValue:
+      type: string
+      default: ""
+    expiresInAttribute:
+      type: string
+      default: "exp"
+    validatedTokenTTL:
+      type: number
+      default: 600
+    authenticationTimeout:
+      type: number
+      default: 10000
+    exposeHeaders:
+      type: boolean
+      default: false
+    scopes:
+      type: string
+      default: ""
+    scopeValidationCriteria:
+      type: string
+      default: "AND"
+      enum:
+        - AND
+        - OR
+    maxCacheEntries:
+      type: number
+      default: 10000
+  required:
+    - introspectionService
+    - introspectionPath
+    - authorizationValue
+    - expiresInAttribute
+    - validatedTokenTTL
+    - authenticationTimeout
+    - exposeHeaders
+    - scopeValidationCriteria
+    - maxCacheEntries

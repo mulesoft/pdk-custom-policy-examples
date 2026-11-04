@@ -25,7 +25,6 @@ pub const POLICY_NAME: &str = "cors-validation-v1-0-impl";
 pub const FLEX_PORT: Port = 8081;
 
 pub async fn compose<T: Serialize>(config: &T) -> Result<TestComposite> {
-
     let httpbin_config = HttpBinConfig::builder().hostname("httpbin").build();
 
     let policy_config = PolicyConfig::builder()
@@ -42,7 +41,6 @@ pub async fn compose<T: Serialize>(config: &T) -> Result<TestComposite> {
         .build();
 
     let flex_config = FlexConfig::builder()
-        .version("1.10.0")
         .with_api(api)
         .config_mounts([
             (COMMON_CONFIG_DIR, "common"),

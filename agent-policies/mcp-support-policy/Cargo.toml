@@ -2,7 +2,7 @@
 [package]
 name = "mcp_support_policy"
 version = "1.0.12"
-rust-version = "1.83.0"
+rust-version = "1.88.0"
 edition = "2018"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
@@ -23,6 +23,9 @@ anyhow = { workspace = true }
 mime = { workspace = true }
 bytes = "1.10.1"
 eventsource = { version = "0.5.0", default-features = false }
+
+[dev-dependencies]
+pdk-unit = { workspace = true }
 
 
 

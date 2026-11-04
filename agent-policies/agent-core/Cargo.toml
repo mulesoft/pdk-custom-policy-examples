@@ -2,7 +2,7 @@
 [package]
 name = "agent-core"
 version = "1.0.0"
-rust-version = "1.83.0"
+rust-version = "1.88.0"
 edition = "2018"
 
 

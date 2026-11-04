@@ -13,9 +13,9 @@ use pdk::script::{PayloadBinding, Script};
 use serde_json::value::RawValue;
 use serde_json::{Error, Map, Value};
 
-use pdk::authentication::{Authentication, AuthenticationHandler};
 use agent_core::attributes::HeadersAttributes;
 use agent_core::json_rpc::JsonRpcRequest;
+use pdk::authentication::{Authentication, AuthenticationHandler};
 
 async fn request_filter(
     request_state: RequestState,
@@ -25,10 +25,10 @@ async fn request_filter(
 ) -> Flow<()> {
     let header_state = request_state.into_headers_state().await;
     let handler = header_state.handler();
-    
+
     // Remove the timeout
     with_no_timeout(handler);
-    
+
     match header_state.method().as_str() {
         POST_METHOD => {
             let content_type_maybe = handler.header(CONTENT_TYPE_HEADER);
@@ -197,7 +197,7 @@ fn evaluate_to_json_string_value(
     evaluator.bind_authentication(&auth.authentication());
     let x: Value = json_value.clone();
     evaluator.bind_vars("params", x);
-    
+
     match evaluator.eval() {
         Ok(value) => as_serde_string_value(&value),
         Err(e) => {
@@ -218,7 +218,7 @@ fn evaluate_to_bool(
     evaluator.bind_authentication(&auth.authentication());
     let x: Value = json_value.clone();
     evaluator.bind_vars("params", x);
-    
+
     match evaluator.eval() {
         Ok(pdk::script::Value::Bool(b)) => b,
         Ok(e) => {
@@ -260,4 +260,276 @@ async fn configure(launcher: Launcher, Configuration(bytes): Configuration) -> R
     });
     launcher.launch(filter).await?;
     Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use pdk_unit::{
+        dw2pel, TraceBackend, UnitHttpMessage, UnitHttpRequest, UnitHttpResponse, UnitTestBuilder,
+    };
+    use serde_json::json;
+    use std::rc::Rc;
+
+    fn tasks_send_body(text: &str) -> String {
+        json!({
+            "jsonrpc": "2.0",
+            "method": "tasks/send",
+            "id": 1,
+            "params": {
+                "id": "task-1",
+                "message": {
+                    "role": "user",
+                    "parts": [{"type": "text", "text": text}]
+                }
+            }
+        })
+        .to_string()
+    }
+
+    fn parts_from_backend(backend: &TraceBackend<UnitHttpResponse>) -> Vec<serde_json::Value> {
+        let req = backend.next().unwrap();
+        let body: serde_json::Value = serde_json::from_slice(req.body()).unwrap();
+        body["params"]["message"]["parts"]
+            .as_array()
+            .unwrap()
+            .clone()
+    }
+
+    #[test]
+    fn get_request_passes_through_unchanged() {
+        let mut tester = UnitTestBuilder::default()
+            .with_config(json!({"textDecorators": [], "fileDecorators": []}).to_string())
+            .with_entrypoint(crate::configure);
+
+        let response = tester.request(UnitHttpRequest::get().with_path("/api/tasks"));
+
+        assert_eq!(response.status_code(), 200);
+    }
+
+    #[test]
+    fn post_without_content_type_passes_through_unchanged() {
+        let backend = Rc::new(TraceBackend::new(UnitHttpResponse::new(200)));
+        let mut tester = UnitTestBuilder::default()
+            .with_config(json!({"textDecorators": [], "fileDecorators": []}).to_string())
+            .with_backend(Rc::clone(&backend))
+            .with_entrypoint(crate::configure);
+
+        let response = tester.request(UnitHttpRequest::post().with_body(tasks_send_body("Hello")));
+
+        assert_eq!(response.status_code(), 200);
+        let req = backend.next().unwrap();
+        let body: serde_json::Value = serde_json::from_slice(req.body()).unwrap();
+        assert_eq!(body["params"]["message"]["parts"][0]["text"], "Hello");
+    }
+
+    #[test]
+    fn text_decorator_is_prepended_to_parts() {
+        let backend = Rc::new(TraceBackend::new(UnitHttpResponse::new(200)));
+        let mut tester = UnitTestBuilder::default()
+            .with_config(
+                json!({
+                    "textDecorators": [{"text": dw2pel("\"You are a helpful assistant.\"")}],
+                    "fileDecorators": []
+                })
+                .to_string(),
+            )
+            .with_backend(Rc::clone(&backend))
+            .with_entrypoint(crate::configure);
+
+        let response = tester.request(
+            UnitHttpRequest::post()
+                .with_header("content-type", "application/json")
+                .with_body(tasks_send_body("Hello")),
+        );
+
+        assert_eq!(response.status_code(), 200);
+        let parts = parts_from_backend(&backend);
+        assert_eq!(parts.len(), 2);
+        assert_eq!(parts[0]["type"], "text");
+        assert_eq!(parts[0]["text"], "You are a helpful assistant.");
+        assert_eq!(parts[1]["text"], "Hello");
+    }
+
+    #[test]
+    fn multiple_text_decorators_are_all_prepended() {
+        let backend = Rc::new(TraceBackend::new(UnitHttpResponse::new(200)));
+        let mut tester = UnitTestBuilder::default()
+            .with_config(
+                json!({
+                    "textDecorators": [
+                        {"text": dw2pel("\"First decorator\"")},
+                        {"text": dw2pel("\"Second decorator\"")}
+                    ],
+                    "fileDecorators": []
+                })
+                .to_string(),
+            )
+            .with_backend(Rc::clone(&backend))
+            .with_entrypoint(crate::configure);
+
+        let response = tester.request(
+            UnitHttpRequest::post()
+                .with_header("content-type", "application/json")
+                .with_body(tasks_send_body("Hello")),
+        );
+
+        assert_eq!(response.status_code(), 200);
+        let parts = parts_from_backend(&backend);
+        assert_eq!(parts.len(), 3);
+        assert_eq!(parts[2]["text"], "Hello");
+    }
+
+    #[test]
+    fn text_decorator_with_true_condition_is_applied() {
+        let backend = Rc::new(TraceBackend::new(UnitHttpResponse::new(200)));
+        let mut tester = UnitTestBuilder::default()
+            .with_config(
+                json!({
+                    "textDecorators": [{
+                        "text": dw2pel("\"Conditional text\""),
+                        "condition": dw2pel("true")
+                    }],
+                    "fileDecorators": []
+                })
+                .to_string(),
+            )
+            .with_backend(Rc::clone(&backend))
+            .with_entrypoint(crate::configure);
+
+        let response = tester.request(
+            UnitHttpRequest::post()
+                .with_header("content-type", "application/json")
+                .with_body(tasks_send_body("Hello")),
+        );
+
+        assert_eq!(response.status_code(), 200);
+        let parts = parts_from_backend(&backend);
+        assert_eq!(parts.len(), 2);
+        assert_eq!(parts[0]["text"], "Conditional text");
+    }
+
+    #[test]
+    fn text_decorator_with_false_condition_is_skipped() {
+        let backend = Rc::new(TraceBackend::new(UnitHttpResponse::new(200)));
+        let mut tester = UnitTestBuilder::default()
+            .with_config(
+                json!({
+                    "textDecorators": [{
+                        "text": dw2pel("\"Should not appear\""),
+                        "condition": dw2pel("false")
+                    }],
+                    "fileDecorators": []
+                })
+                .to_string(),
+            )
+            .with_backend(Rc::clone(&backend))
+            .with_entrypoint(crate::configure);
+
+        let response = tester.request(
+            UnitHttpRequest::post()
+                .with_header("content-type", "application/json")
+                .with_body(tasks_send_body("Hello")),
+        );
+
+        assert_eq!(response.status_code(), 200);
+        let parts = parts_from_backend(&backend);
+        assert_eq!(parts.len(), 1);
+        assert_eq!(parts[0]["text"], "Hello");
+    }
+
+    #[test]
+    fn file_decorator_uri_type_is_prepended() {
+        let backend = Rc::new(TraceBackend::new(UnitHttpResponse::new(200)));
+        let mut tester = UnitTestBuilder::default()
+            .with_config(
+                json!({
+                    "textDecorators": [],
+                    "fileDecorators": [{
+                        "file": dw2pel("\"https://example.com/context.txt\""),
+                        "fileType": "Uri",
+                        "fileName": dw2pel("\"context.txt\"")
+                    }]
+                })
+                .to_string(),
+            )
+            .with_backend(Rc::clone(&backend))
+            .with_entrypoint(crate::configure);
+
+        let response = tester.request(
+            UnitHttpRequest::post()
+                .with_header("content-type", "application/json")
+                .with_body(tasks_send_body("Hello")),
+        );
+
+        assert_eq!(response.status_code(), 200);
+        let parts = parts_from_backend(&backend);
+        assert_eq!(parts.len(), 2);
+        assert_eq!(parts[0]["type"], "file");
+        assert_eq!(parts[0]["file"]["uri"], "https://example.com/context.txt");
+        assert_eq!(parts[0]["file"]["name"], "context.txt");
+    }
+
+    #[test]
+    fn file_decorator_base64_type_is_prepended() {
+        let backend = Rc::new(TraceBackend::new(UnitHttpResponse::new(200)));
+        let mut tester = UnitTestBuilder::default()
+            .with_config(
+                json!({
+                    "textDecorators": [],
+                    "fileDecorators": [{
+                        "file": dw2pel("\"SGVsbG8gV29ybGQ=\""),
+                        "fileType": "Base64"
+                    }]
+                })
+                .to_string(),
+            )
+            .with_backend(Rc::clone(&backend))
+            .with_entrypoint(crate::configure);
+
+        let response = tester.request(
+            UnitHttpRequest::post()
+                .with_header("content-type", "application/json")
+                .with_body(tasks_send_body("Hello")),
+        );
+
+        assert_eq!(response.status_code(), 200);
+        let parts = parts_from_backend(&backend);
+        assert_eq!(parts.len(), 2);
+        assert_eq!(parts[0]["type"], "file");
+        assert_eq!(parts[0]["file"]["bytes"], "SGVsbG8gV29ybGQ=");
+    }
+
+    #[test]
+    fn non_send_task_method_is_not_decorated() {
+        let backend = Rc::new(TraceBackend::new(UnitHttpResponse::new(200)));
+        let mut tester = UnitTestBuilder::default()
+            .with_config(
+                json!({
+                    "textDecorators": [{"text": dw2pel("\"Should not appear\"")}],
+                    "fileDecorators": []
+                })
+                .to_string(),
+            )
+            .with_backend(Rc::clone(&backend))
+            .with_entrypoint(crate::configure);
+
+        let body = json!({
+            "jsonrpc": "2.0",
+            "method": "tasks/get",
+            "id": 1,
+            "params": {"id": "task-1"}
+        })
+        .to_string();
+
+        let response = tester.request(
+            UnitHttpRequest::post()
+                .with_header("content-type", "application/json")
+                .with_body(body),
+        );
+
+        assert_eq!(response.status_code(), 200);
+        let req = backend.next().unwrap();
+        let backend_body: serde_json::Value = serde_json::from_slice(req.body()).unwrap();
+        assert_eq!(backend_body["method"], "tasks/get");
+    }
 }

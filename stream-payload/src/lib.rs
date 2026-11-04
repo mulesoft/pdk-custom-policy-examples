@@ -100,3 +100,79 @@ async fn configure(
     launcher.launch(filter).await?;
     Ok(())
 }
+
+#[cfg(test)]
+mod tests {
+    use pdk_unit::{UnitHttpRequest, UnitTestBuilder};
+    use serde_json::json;
+
+    #[test]
+    fn request_with_forbidden_string_is_rejected_buffered() {
+        let mut tester = UnitTestBuilder::default()
+            .with_config(
+                json!({
+                    "forbiddenStrings": ["forbidden"],
+                    "searchMode": "buffered"
+                })
+                .to_string(),
+            )
+            .with_entrypoint(crate::configure);
+
+        let response =
+            tester.request(UnitHttpRequest::post().with_body("this is forbidden content"));
+
+        assert_eq!(response.status_code(), 400);
+    }
+
+    #[test]
+    fn request_without_forbidden_string_passes_buffered() {
+        let mut tester = UnitTestBuilder::default()
+            .with_config(
+                json!({
+                    "forbiddenStrings": ["forbidden"],
+                    "searchMode": "buffered"
+                })
+                .to_string(),
+            )
+            .with_entrypoint(crate::configure);
+
+        let response = tester.request(UnitHttpRequest::post().with_body("this is safe content"));
+
+        assert_eq!(response.status_code(), 200);
+    }
+
+    #[test]
+    fn request_with_forbidden_string_is_rejected_streamed() {
+        let mut tester = UnitTestBuilder::default()
+            .with_config(
+                json!({
+                    "forbiddenStrings": ["forbidden"],
+                    "searchMode": "streamed"
+                })
+                .to_string(),
+            )
+            .with_entrypoint(crate::configure);
+
+        let response =
+            tester.request(UnitHttpRequest::post().with_body("this is forbidden content"));
+
+        assert_eq!(response.status_code(), 400);
+    }
+
+    #[test]
+    fn empty_body_passes_through() {
+        let mut tester = UnitTestBuilder::default()
+            .with_config(
+                json!({
+                    "forbiddenStrings": ["forbidden"],
+                    "searchMode": "buffered"
+                })
+                .to_string(),
+            )
+            .with_entrypoint(crate::configure);
+
+        let response = tester.request(UnitHttpRequest::post().with_body(""));
+
+        assert_eq!(response.status_code(), 200);
+    }
+}

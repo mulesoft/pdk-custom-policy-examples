@@ -1,0 +1,22 @@
+---
+apiVersion: gateway.mulesoft.com/v1alpha1
+kind: Extension
+metadata:
+  labels:
+    title: jwt-generation
+    category: Custom
+spec:
+  extends:
+    - name: extension-definition
+      namespace: default
+  properties:
+    privateKey:
+      type: string
+    jku:
+      type: string
+    kid:
+      type: string
+  required:
+    - privateKey
+    - jku
+    - kid

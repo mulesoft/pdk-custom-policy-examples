@@ -49,7 +49,7 @@ make run
 3. Make requests to the Flex Gateway by using the following Curl command:
 
 ```shell
-curl "https://localhost:8081"
+curl "http://localhost:8081"
 ```
 
 Flex Gateway logs the metrics that were successfully sent:

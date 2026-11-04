@@ -18,13 +18,12 @@ async fn request_filter(
     // Determine what kind of request is incoming.
     match cors.check_headers(state.handler().headers().as_slice()) {
         Ok(check) => match check.response_type() {
-
             // A preflight request must return a 200 OK.
             cors::ResponseType::Preflight => {
                 logger::info!("Preflight CORS response.");
                 Flow::Break(Response::new(200).with_headers(check.into_headers()))
             }
-            
+
             // A main request must continue.
             cors::ResponseType::Main => {
                 logger::info!("Main CORS response.");
@@ -88,4 +87,68 @@ async fn configure(
 
     // Launch the filter.
     launcher.launch(filter).await
+}
+
+#[cfg(test)]
+mod tests {
+    use pdk_unit::{UnitHttpRequest, UnitTestBuilder};
+    use serde_json::json;
+
+    fn config_with_origin(origin: &str) -> String {
+        json!({
+            "publicResource": false,
+            "supportCredentials": false,
+            "originGroups": [
+                {
+                    "name": "group1",
+                    "origins": [origin],
+                    "allowedMethods": [
+                        {"methodName": "GET", "allowed": true}
+                    ],
+                    "headers": [],
+                    "exposedHeaders": [],
+                    "accessControlMaxAge": 300.0
+                }
+            ]
+        })
+        .to_string()
+    }
+
+    #[test]
+    fn request_from_allowed_origin_passes() {
+        let mut tester = UnitTestBuilder::default()
+            .with_config(config_with_origin("https://example.com"))
+            .with_entrypoint(crate::configure);
+
+        let response =
+            tester.request(UnitHttpRequest::get().with_header("origin", "https://example.com"));
+
+        assert_eq!(response.status_code(), 200);
+    }
+
+    #[test]
+    fn preflight_request_returns_response() {
+        let mut tester = UnitTestBuilder::default()
+            .with_config(config_with_origin("https://example.com"))
+            .with_entrypoint(crate::configure);
+
+        let response = tester.request(
+            UnitHttpRequest::options()
+                .with_header("origin", "https://example.com")
+                .with_header("access-control-request-method", "GET"),
+        );
+
+        assert!(response.status_code() == 200 || response.status_code() == 204);
+    }
+
+    #[test]
+    fn request_without_origin_passes() {
+        let mut tester = UnitTestBuilder::default()
+            .with_config(config_with_origin("https://example.com"))
+            .with_entrypoint(crate::configure);
+
+        let response = tester.request(UnitHttpRequest::get());
+
+        assert_eq!(response.status_code(), 200);
+    }
 }

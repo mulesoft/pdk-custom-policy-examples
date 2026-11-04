@@ -21,6 +21,7 @@ fn init(abi: &dyn pdk::flex_abi::api::FlexAbi) -> Result<(), anyhow::Error> {
             )
         })?;
     abi.service_create(config.oauth_service)?;
+    abi.setup()?;
     Ok(())
 }
 fn de_token_extractor_0<'de, D>(deserializer: D) -> Result<pdk::script::Script, D::Error>

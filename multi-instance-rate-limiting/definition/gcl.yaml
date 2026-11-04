@@ -1,0 +1,48 @@
+---
+apiVersion: gateway.mulesoft.com/v1alpha1
+kind: Extension
+metadata:
+  labels:
+    title: "Multi-Instance Rate Limiting"
+    description: "Simple rate limiting policy that supports multiple configurations and can be shared across multiple gateway instances using Redis"
+    category: Custom
+    metadata/interfaceScope: api,resource
+spec:
+  extends:
+    - name: extension-definition
+      namespace: default
+  properties:
+    api_key_rate_limit:
+      type: object
+      description: Rate limiting configuration for API key
+      properties:
+        requests_per_window:
+          type: integer
+          description: Maximum number of requests allowed in the time window
+          minimum: 1
+        window_size_seconds:
+          type: integer
+          description: Time window size in seconds
+          minimum: 1
+      required:
+        - requests_per_window
+        - window_size_seconds
+    user_id_rate_limit:
+      type: object
+      description: Rate limiting configuration for user ID
+      properties:
+        requests_per_window:
+          type: integer
+          description: Maximum number of requests allowed in the time window
+          minimum: 1
+        window_size_seconds:
+          type: integer
+          description: Time window size in seconds
+          minimum: 1
+      required:
+        - requests_per_window
+        - window_size_seconds
+  
+  required:
+    - api_key_rate_limit
+    - user_id_rate_limit

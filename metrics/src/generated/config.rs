@@ -18,5 +18,6 @@ fn init(abi: &dyn pdk::flex_abi::api::FlexAbi) -> Result<(), anyhow::Error> {
             )
         })?;
     abi.service_create(config.metrics_sink)?;
+    abi.setup()?;
     Ok(())
 }

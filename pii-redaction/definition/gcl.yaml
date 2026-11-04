@@ -1,0 +1,53 @@
+---
+apiVersion: gateway.mulesoft.com/v1alpha1
+kind: Extension
+metadata:
+  labels:
+    title: PII Redaction Policy
+    description: >-
+      Redacts sensitive data (PII/PCI) from incoming requests before they reach
+      the upstream service. Masks configured request headers, scans plain-text
+      bodies for sensitive patterns, and masks configured fields in JSON bodies
+      (including deeply nested objects). Useful for GDPR / PCI-DSS compliance
+      where secrets must never be forwarded or logged downstream.
+    category: Custom
+    metadata/interfaceScope: api,resource
+spec:
+  extends:
+    - name: extension-definition
+      namespace: default
+  properties:
+    sensitiveHeaders:
+      type: array
+      default: []
+      items:
+        type: string
+      description: >-
+        Request header names whose values are replaced with the mask token.
+        Matching is case-insensitive. Example: authorization, cookie, x-api-key.
+    maskFields:
+      type: array
+      default: []
+      items:
+        type: string
+      description: >-
+        JSON field names (object keys) whose string values are replaced with the
+        mask token. Applied at every level of the JSON document.
+    patterns:
+      type: array
+      default: []
+      items:
+        type: string
+      description: >-
+        Regular expressions matched against text and JSON string values. Every
+        match is replaced with the mask token. Use for credit card numbers,
+        SSNs, emails, and similar sensitive value shapes.
+    maskWith:
+      type: string
+      default: "***REDACTED***"
+      description: Replacement token substituted for every redacted value.
+  required:
+    - sensitiveHeaders
+    - maskFields
+    - patterns
+    - maskWith

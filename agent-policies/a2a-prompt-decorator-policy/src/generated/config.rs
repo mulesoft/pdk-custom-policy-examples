@@ -26,6 +26,11 @@ pub struct Config {
     #[serde(alias = "textDecorators")]
     pub text_decorators: Option<Vec<TextDecorators0Config>>,
 }
+#[pdk::hl::entrypoint_flex]
+fn init(abi: &dyn pdk::flex_abi::api::FlexAbi) -> Result<(), anyhow::Error> {
+    abi.setup()?;
+    Ok(())
+}
 fn de_condition_0<'de, D>(
     deserializer: D,
 ) -> Result<Option<pdk::script::Script>, D::Error>

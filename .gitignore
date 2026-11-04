@@ -3,3 +3,4 @@
 .vscode/
 target/
 *registration.yaml
+failures.log
