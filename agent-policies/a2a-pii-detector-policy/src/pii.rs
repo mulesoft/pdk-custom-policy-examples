@@ -13,6 +13,9 @@ pub enum PiiType {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct PiiMatch {
     pub pii_type: PiiType,
+    // Never serialize the matched value: it is the PII itself and would leak
+    // into logs and response bodies.
+    #[serde(skip_serializing, default)]
     pub value: String,
     pub start: usize,
     pub end: usize,
@@ -87,6 +90,21 @@ impl PiiDetector for RegexPiiDetector {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn serialized_matches_do_not_leak_pii_values() {
+        let detector = RegexPiiDetector::new().unwrap();
+        let text = "My SSN is 123-45-6789 and my email is john.doe@example.com";
+
+        let matches = detector.detect(text).unwrap();
+        let serialized = serde_json::to_string_pretty(&matches).unwrap();
+
+        assert!(!serialized.contains("123-45-6789"), "{}", serialized);
+        assert!(!serialized.contains("john.doe@example.com"), "{}", serialized);
+        // Type and position are still reported
+        assert!(serialized.contains("Ssn"));
+        assert!(serialized.contains("\"start\""));
+    }
 
     #[test]
     fn test_regex_detector() {
