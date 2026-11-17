@@ -100,7 +100,7 @@ fn report_pii_if_detected(
                             );
                         }
                         _ => {
-                            logger::warn!("Request: `{}` has sensitive data: `{:?}`", s, result);
+                            logger::warn!("Request has sensitive data: `{}`", result);
                         }
                     }
                 }
